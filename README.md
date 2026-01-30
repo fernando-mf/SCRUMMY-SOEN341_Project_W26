@@ -22,8 +22,8 @@
 
 
 ## Team Members and Roles
-- **Azmi-Salah Bousedra** (ID: 40316065), UI 
-- **[Quoc Thien Minh Tran]** (ID: 40299089), Role 
-- **[Member 3]** (ID: XXXXXXXX), Role
-- **[Member 4]** (ID: XXXXXXXX), Role 
-- **[Member 5]** (ID: XXXXXXXX), Role
+- **Azmi-Salah Bousedra** (ID: 40316065), FrontEnd 
+- **[Quoc Thien Minh Tran]** (ID: 40299089), FrontEnd 
+- **[Tarek Al-Khen]** (ID: 40272705), FrontEnd
+- **[Member 4]** (ID: XXXXXXXX), BackEnd 
+- **[Member 5]** (ID: XXXXXXXX), DataBase

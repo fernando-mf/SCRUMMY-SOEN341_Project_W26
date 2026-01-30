@@ -3,6 +3,8 @@
 ## Project Description
 **MealMajor** is a web app for students to plan meals and support healthy living. It helps users manage their accounts, set dietary preferences and allergies, as well as manage recipes and build weekly meal plans.
 
+[**Planning**](https://docs.google.com/spreadsheets/d/1yTadVOF1WrZrYHETlC7Oqg4h1TOhrWvLbCHagTVBT5k/edit?gid=579141764#gid=579141764)
+
 ## Sprint Planning
 **Sprint 1 focus:** User Account Management  
 - User registration and login  

@@ -1,8 +1,10 @@
-import { neon } from "@neondatabase/serverless";
+import { neon, NeonQueryFunction } from "@neondatabase/serverless";
 import { UsersRepository, UsersService } from "@api/users";
 
+export type Core = ReturnType<typeof NewCore>;
+
 export function NewCore() {
-  const db = neon(process.env.DATABASE_URL!, { fullResults: true });
+  const db = getDatabase();
 
   const usersRepository = new UsersRepository(db);
 
@@ -11,4 +13,12 @@ export function NewCore() {
   };
 }
 
-export type Core = ReturnType<typeof NewCore>;
+function getDatabase(): NeonQueryFunction<false, true> {
+  const connectionString = process.env.DATABASE_URL!;
+  if (!connectionString) {
+    console.error("DATABASE_URL is not set");
+    process.exit(1);
+  }
+
+  return neon(connectionString, { fullResults: true });
+}

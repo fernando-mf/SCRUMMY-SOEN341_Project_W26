@@ -1,4 +1,4 @@
-import { neon, Pool } from "@neondatabase/serverless";
+import { neon } from "@neondatabase/serverless";
 import { UsersRepository, UsersService } from "@api/users";
 
 export function NewCore() {

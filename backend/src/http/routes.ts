@@ -1,5 +1,6 @@
 import { Router } from "express";
 import type { Core } from "@api/core";
+import { HandleGetUser, HandleUpdateUser } from "./users";
 
 export function Routes(core: Core) {
   const router = Router();
@@ -13,7 +14,11 @@ export function Routes(core: Core) {
     });
   });
 
-  // Add more route here
+  // users routes
+  router.get("/users/:id", HandleGetUser(core.UsersService));
+  router.put("/users/:id", HandleUpdateUser(core.UsersService));
+
+  // Add more routes here
   // ...
 
   return router;

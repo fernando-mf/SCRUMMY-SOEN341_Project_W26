@@ -25,7 +25,7 @@
 
 ## Team Members and Roles
 - **Azmi-Salah Bousedra** (ID: 40316065), FrontEnd 
-- **[Quoc Thien Minh Tran]** (ID: 40299089), FrontEnd 
-- **[Tarek Al-Khen]** (ID: 40272705), FrontEnd
-- **[Member 4]** (ID: XXXXXXXX), BackEnd 
-- **[Member 5]** (ID: XXXXXXXX), DataBase
+- **Quoc Thien Minh Tran** (ID: 40299089), FrontEnd 
+- **Tarek Al-Khen** (ID: 40272705), FrontEnd
+- **[Member 4]** (ID: XXXXXXXX), BackEnd/Database 
+- **Fernando Mamani** (ID: 40169982), Backend/Database

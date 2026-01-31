@@ -36,7 +36,6 @@ export class UsersService implements IUsersService {
 
   async Update(userID: number, req: UpdateUserRequest): Promise<void> {
     // TODO: validate request
-    // TODO: error handling
 
     const currentUser = await this.repository.Get(userID);
 

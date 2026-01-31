@@ -1,4 +1,5 @@
 import type { NeonQueryFunction } from "@neondatabase/serverless";
+import { NotFoundError } from "@api/helpers/errors";
 import type { IUsersRepository, User } from "./users";
 
 export class UsersRepository implements IUsersRepository {
@@ -22,7 +23,7 @@ export class UsersRepository implements IUsersRepository {
     `;
 
     if (result.rowCount === 0) {
-      // TODO: handle user not found error
+      throw new NotFoundError("user");
     }
   }
 
@@ -40,6 +41,10 @@ export class UsersRepository implements IUsersRepository {
       FROM users
       WHERE "id" = ${userID}
     `;
+
+    if (user.rows.length === 0) {
+      throw new NotFoundError("user");
+    }
 
     return user.rows[0] as User;
   }

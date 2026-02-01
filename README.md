@@ -27,5 +27,5 @@
 - **Azmi-Salah Bousedra** (ID: 40316065), FrontEnd 
 - **Quoc Thien Minh Tran** (ID: 40299089), FrontEnd 
 - **Tarek Al-Khen** (ID: 40272705), FrontEnd
-- **[Member 4]** (ID: XXXXXXXX), BackEnd/Database 
+- **Gianluca Marino** (ID: 40297326), BackEnd/Database 
 - **Fernando Mamani** (ID: 40169982), Backend/Database

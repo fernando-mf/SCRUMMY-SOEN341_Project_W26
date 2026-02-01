@@ -13,7 +13,7 @@ export function HandleUpdateUser(service: IUsersService): RequestHandler {
 
     await service.Update(userID, user);
 
-    res.status(201).send();
+    res.status(204).send();
   };
 }
 

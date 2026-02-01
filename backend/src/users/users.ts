@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { InvalidParamsError } from "@api/helpers/errors";
+
 export type User = {
   firstName: string;
   lastName: string;
@@ -6,12 +9,14 @@ export type User = {
   allergies: string[];
 };
 
-export type UpdateUserRequest = {
-  firstName: string;
-  lastName: string;
-  dietPreferences: string[];
-  allergies: string[];
-};
+const updateUserRequestSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  dietPreferences: z.array(z.string()),
+  allergies: z.array(z.string()),
+});
+
+export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
 
 export interface IUsersService {
   // TODO: user creation
@@ -35,7 +40,10 @@ export class UsersService implements IUsersService {
   }
 
   async Update(userID: number, req: UpdateUserRequest): Promise<void> {
-    // TODO: validate request
+    const validation = updateUserRequestSchema.safeParse(req);
+    if (validation.error) {
+      throw InvalidParamsError.FromZodError(validation.error);
+    }
 
     const currentUser = await this.repository.Get(userID);
 

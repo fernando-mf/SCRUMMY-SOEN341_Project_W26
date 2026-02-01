@@ -1,6 +1,13 @@
+import { ZodError } from "zod";
+
 export abstract class AppError extends Error {
+  // statusCode is the HTTP status code to return
   abstract statusCode: number;
+
+  // code is a small description of the error, included in the response body
   abstract code: string;
+
+  // GetMeta returns the error metadata, included in the response body
   abstract GetMeta(): Record<string, unknown>;
 }
 
@@ -30,6 +37,46 @@ export class InternalError extends AppError {
   GetMeta(): Record<string, unknown> {
     return {
       message: this.err,
+    };
+  }
+}
+
+type paramWithDescription = {
+  param: string;
+  description: string;
+};
+
+export class InvalidParamsError extends AppError {
+  statusCode = 400;
+  code = "invalid_params";
+
+  private params: Record<string, string>;
+
+  constructor(...params: paramWithDescription[]) {
+    const keys = params.map((p) => p.param);
+    super(`invalid params: ${Object.keys(keys).join(", ")}`);
+
+    this.params = params.reduce(
+      (acc, p) => ({
+        ...acc,
+        [p.param]: p.description,
+      }),
+      {},
+    );
+  }
+
+  static FromZodError(zodError: ZodError): InvalidParamsError {
+    const params: paramWithDescription[] = zodError.issues.map((issue) => ({
+      param: issue.path.join("."),
+      description: issue.message,
+    }));
+
+    return new InvalidParamsError(...params);
+  }
+
+  GetMeta(): Record<string, unknown> {
+    return {
+      params: this.params,
     };
   }
 }

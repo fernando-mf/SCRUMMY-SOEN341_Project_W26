@@ -1,5 +1,6 @@
 import type { RequestHandler } from "express";
 import { InvalidParamsError } from "@api/helpers/errors";
+import { HttpStatus } from "@api/helpers/http";
 import type { IUsersService, UpdateUserRequest } from "@api/users";
 
 export function HandleUpdateUser(service: IUsersService): RequestHandler {
@@ -13,7 +14,7 @@ export function HandleUpdateUser(service: IUsersService): RequestHandler {
 
     await service.Update(userID, user);
 
-    res.status(204).send();
+    res.status(HttpStatus.NoContent).send();
   };
 }
 
@@ -26,6 +27,6 @@ export function HandleGetUser(service: IUsersService): RequestHandler {
 
     const user = await service.Get(userID);
 
-    res.status(200).json(user);
+    res.status(HttpStatus.Ok).json(user);
   };
 }

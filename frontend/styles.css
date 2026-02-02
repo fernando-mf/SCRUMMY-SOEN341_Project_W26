@@ -1,3 +1,99 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f6efef;
+  color: #111;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 16px;
+}
+
+.brand {
+  margin: 0;
+  font-size: 48px;
+  font-weight: 800;
+}
+
+.title {
+  margin: 12px 0 28px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.card {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 28px;
+  box-shadow: 0 1px 10px rgba(0,0,0,0.08);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+label {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 12px 10px;
+  border: 1px solid #777;
+  border-radius: 2px;
+  font-size: 16px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 13px;
+  color: #444;
+}
+
+.message {
+  min-height: 18px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.message.error {
+  color: #b00020;
+}
+
+.message.ok {
+  color: #0a7a2f;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #777;
+  border-radius: 2px;
+  background: #f3eded;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #ece3e3;
 }

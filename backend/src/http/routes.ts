@@ -1,6 +1,8 @@
 import { Router } from "express";
+import swaggerUi from "swagger-ui-express";
 import type { Core } from "@api/core";
-import { HandleGetUser, HandleUpdateUser } from "./users";
+import { HandleGetUser, HandleUpdateUser } from "@api/http/controllers/users";
+import spec from "@api/http/docs/swagger.json"; //  this is generated automatically after running `npm run dev` or `npm run build`
 
 export function Routes(core: Core) {
   const router = Router();
@@ -14,7 +16,10 @@ export function Routes(core: Core) {
     });
   });
 
-  // users routes
+  // Swagger UI
+  router.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
+
+  // Users routes
   router.get("/users/:id", HandleGetUser(core.UsersService));
   router.put("/users/:id", HandleUpdateUser(core.UsersService));
 

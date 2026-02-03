@@ -56,9 +56,12 @@ This is the way of delivering the app to the user. In our case, we're using a HT
         - `index.ts`: express api setup
         - `routes.ts`: http routes
 
+    - `/helpers`: shared project utilities
+        - `errors.ts`: custom application errors
+
     - `/{moduleName}`: core logic for a module e.g. user management
         - `/{moduleName}.ts`: interfaces and domain rules
         - `/postgres_repository.ts`: postgressql code
         - `/{thirdParty}_provider.ts`: other third parties' implementations
-        
+
     - `core.ts`: single unit containing all application features

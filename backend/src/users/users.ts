@@ -9,6 +9,14 @@ export type User = {
   allergies: string[];
 };
 
+const createUserRequestSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  email: z.email(),
+});
+
+export type CreateUserRequest = z.infer<typeof createUserRequestSchema>;
+
 const updateUserRequestSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
@@ -19,8 +27,7 @@ const updateUserRequestSchema = z.object({
 export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
 
 export interface IUsersService {
-  // TODO: user creation
-  Create(user: User): Promise<User>;
+  Create(request: CreateUserRequest): Promise<User>;
   Update(userID: number, request: UpdateUserRequest): Promise<void>;
   Get(userID: number): Promise<User>;
 }
@@ -34,8 +41,20 @@ export interface IUsersRepository {
 export class UsersService implements IUsersService {
   constructor(private repository: IUsersRepository) {}
 
-  // TODO: implement user creation
-  Create(user: User): Promise<User> {
+  async Create(req: CreateUserRequest): Promise<User> {
+    const validation = createUserRequestSchema.safeParse(req);
+    if (validation.error) {
+      throw InvalidParamsError.FromZodError(validation.error);
+    }
+    
+    const user: User = {
+      firstName: req.firstName,
+      lastName: req.lastName,
+      email: req.email,
+      dietPreferences: [], // These aren't entered in account creation. Set only in update?
+      allergies: [],
+    }
+
     return this.repository.Create(user);
   }
 

@@ -69,6 +69,21 @@ input {
   color: #444;
 }
 
+.helper {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.link {
+  color: #111;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
 .message {
   min-height: 18px;
   margin: 0;

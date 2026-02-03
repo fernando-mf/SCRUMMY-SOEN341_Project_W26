@@ -1,27 +1,53 @@
-const form = document.getElementById("register-form");
-const message = document.getElementById("message");
+const registerForm = document.getElementById("register-form");
+const loginForm = document.getElementById("login-form");
 
-function setMessage(text, type) {
-  message.textContent = text;
-  message.className = "message " + (type || "");
+function setMessage(target, text, type) {
+  if (!target) {
+    return;
+  }
+
+  target.textContent = text;
+  target.className = "message " + (type || "");
 }
 
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
+if (registerForm) {
+  const registerMessage = document.getElementById("message");
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const confirm = document.getElementById("confirm-password").value;
+  registerForm.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-  if (!email || !password || !confirm) {
-    setMessage("Please fill in all fields.", "error");
-    return;
-  }
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm-password").value;
 
-  if (password !== confirm) {
-    setMessage("Passwords do not match.", "error");
-    return;
-  }
+    if (!email || !password || !confirm) {
+      setMessage(registerMessage, "Please fill in all fields.", "error");
+      return;
+    }
 
-  setMessage("UI ready. Registration logic will be added in Task 5.", "ok");
-});
+    if (password !== confirm) {
+      setMessage(registerMessage, "Passwords do not match.", "error");
+      return;
+    }
+
+    setMessage(registerMessage, "UI ready. Registration logic will be added in Task 5.", "ok");
+  });
+}
+
+if (loginForm) {
+  const loginMessage = document.getElementById("message");
+
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+      setMessage(loginMessage, "Please enter your email and password.", "error");
+      return;
+    }
+
+    setMessage(loginMessage, "UI ready. Login logic will be added in Task 5.", "ok");
+  });
+}

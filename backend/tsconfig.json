@@ -16,7 +16,9 @@
     "baseUrl": ".",
     "paths": {
       "@api/*": ["src/*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

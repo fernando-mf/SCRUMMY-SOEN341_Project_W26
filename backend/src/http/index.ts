@@ -2,7 +2,9 @@ import "dotenv/config";
 import cors from "cors";
 import express, { Application, NextFunction, Request, Response } from "express";
 import { NewCore } from "@api/core";
+import { ErrorMiddleware } from "./middleware";
 import { Routes } from "./routes";
+import "express-async-errors";
 
 // Initialize app core
 const core = NewCore();
@@ -19,10 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", Routes(core));
 
 // Error handling middleware
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
-});
+app.use(ErrorMiddleware);
 
 // Start server
 const PORT = process.env.PORT || 3000;

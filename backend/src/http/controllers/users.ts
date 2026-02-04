@@ -9,7 +9,7 @@ export function HandleCreateUser(service: IUsersService): RequestHandler {
 
     const user = await service.Create(userReq);
 
-    const { passwordHash, ...publicUser } = user; //public version without password
+    const { passwordHash, ...publicUser } = user; //public version without password. Should add for other handlers?
 
     res.status(HttpStatus.Created).json(publicUser);
   };

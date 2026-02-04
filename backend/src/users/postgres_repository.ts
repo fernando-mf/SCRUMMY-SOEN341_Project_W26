@@ -12,6 +12,7 @@ export class UsersRepository implements IUsersRepository {
           "firstName",
           "lastName",
           "email",
+          "passwordHash"
           "dietPreferences",
           "allergies"
         )
@@ -19,6 +20,7 @@ export class UsersRepository implements IUsersRepository {
           ${user.firstName},
           ${user.lastName},
           ${user.email},
+          ${user.passwordHash},
           ${user.dietPreferences},
           ${user.allergies}
         )
@@ -71,5 +73,19 @@ export class UsersRepository implements IUsersRepository {
     }
 
     return user.rows[0] as User;
+  }
+
+  async GetByEmail(email: string): Promise<User> {
+    const result = await this.db`
+      SELECT *
+      FROM users
+      WHERE email = ${email}
+    `;
+
+    if(result.rows.length === 0) {
+      throw new NotFoundError("user");
+    }
+
+    return result.rows[0] as User;
   }
 }

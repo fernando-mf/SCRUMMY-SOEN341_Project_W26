@@ -27,7 +27,7 @@ export class UsersRepository implements IUsersRepository {
 
       return result.rows[0] as User;
     } catch (err) {
-      if (err?.code === "23505") { // unique_violation
+      if (err instanceof NeonDbError && err.code === PostgresCode.UniqueViolation)
         throw new ConflictError("email");
       }
       

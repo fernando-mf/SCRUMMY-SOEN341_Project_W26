@@ -1,7 +1,17 @@
 import type { RequestHandler } from "express";
 import { InvalidParamsError } from "@api/helpers/errors";
 import { HttpStatus } from "@api/helpers/http";
-import type { IUsersService, UpdateUserRequest } from "@api/users";
+import type { CreateUserRequest, IUsersService, UpdateUserRequest } from "@api/users";
+
+export function HandleCreateUser(service: IUsersService): RequestHandler {
+  return async (req, res) => {
+    const userReq = req.body as CreateUserRequest;
+
+    const user = await service.Create(userReq);
+
+    res.status(HttpStatus.Created).json(user);
+  };
+}
 
 export function HandleUpdateUser(service: IUsersService): RequestHandler {
   return async (req, res) => {

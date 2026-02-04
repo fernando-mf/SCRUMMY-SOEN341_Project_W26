@@ -1,5 +1,6 @@
 const registerForm = document.getElementById("register-form");
 const loginForm = document.getElementById("login-form");
+const profileForm = document.getElementById("profile-form");
 
 function setMessage(target, text, type) {
   if (!target) {
@@ -49,5 +50,43 @@ if (loginForm) {
     }
 
     setMessage(loginMessage, "UI ready. Login logic will be added in Task 5.", "ok");
+  });
+}
+
+if (profileForm) {
+  const profileMessage = document.getElementById("message");
+
+  // Load mock user data
+  const mockUserData = {
+    email: "user@example.com",
+    username: "JohnDoe",
+    dietPreferences: "Vegetarian, Gluten-free",
+    allergies: "Peanuts, Shellfish"
+  };
+
+  // Populate form with existing data
+  document.getElementById("email").value = mockUserData.email;
+  document.getElementById("username").value = mockUserData.username;
+  document.getElementById("diet-preferences").value = mockUserData.dietPreferences;
+  document.getElementById("allergies").value = mockUserData.allergies;
+
+  profileForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById("username").value.trim();
+    const dietPreferences = document.getElementById("diet-preferences").value.trim();
+    const allergies = document.getElementById("allergies").value.trim();
+
+    if (!username) {
+      setMessage(profileMessage, "Username is required.", "error");
+      return;
+    }
+
+    if (username.length < 3) {
+      setMessage(profileMessage, "Username must be at least 3 characters long.", "error");
+      return;
+    }
+
+    setMessage(profileMessage, "Profile updated successfully! Backend integration coming soon.", "ok");
   });
 }

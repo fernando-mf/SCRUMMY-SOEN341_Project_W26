@@ -5,6 +5,8 @@ const confirmInput = document.getElementById("confirm-password");
 const messageBox = document.getElementById("form-message");
 const firstNameInput = document.getElementById("firstName");
 const lastNameInput = document.getElementById("lastName");
+const firstNameInput = document.getElementById("firstName");
+const lastNameInput = document.getElementById("lastName");
 
 function showError(text){
   messageBox.textContent = text;

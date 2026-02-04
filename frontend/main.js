@@ -2,6 +2,35 @@ const registerForm = document.getElementById("register-form");
 const loginForm = document.getElementById("login-form");
 const profileForm = document.getElementById("profile-form");
 
+// Diet preferences and allergies options
+const DIET_PREFERENCES = [
+  "Vegetarian",
+  "Vegan",
+  "Pescatarian",
+  "Keto",
+  "Paleo",
+  "Gluten-free",
+  "Dairy-free",
+  "Low-carb",
+  "Mediterranean",
+  "Halal",
+  "Kosher"
+];
+
+const ALLERGIES = [
+  "Peanuts",
+  "Tree Nuts",
+  "Dairy",
+  "Eggs",
+  "Soy",
+  "Wheat",
+  "Gluten",
+  "Shellfish",
+  "Fish",
+  "Sesame",
+  "Sulfites"
+];
+
 function setMessage(target, text, type) {
   if (!target) {
     return;
@@ -9,6 +38,32 @@ function setMessage(target, text, type) {
 
   target.textContent = text;
   target.className = "message " + (type || "");
+}
+
+function createTags(container, options, selectedValues = []) {
+  container.innerHTML = "";
+  
+  options.forEach(option => {
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = option;
+    tag.dataset.value = option;
+    
+    if (selectedValues.includes(option)) {
+      tag.classList.add("selected");
+    }
+    
+    tag.addEventListener("click", () => {
+      tag.classList.toggle("selected");
+    });
+    
+    container.appendChild(tag);
+  });
+}
+
+function getSelectedTags(container) {
+  const selectedTags = container.querySelectorAll(".tag.selected");
+  return Array.from(selectedTags).map(tag => tag.dataset.value);
 }
 
 if (registerForm) {
@@ -55,27 +110,31 @@ if (loginForm) {
 
 if (profileForm) {
   const profileMessage = document.getElementById("message");
+  const dietTagsContainer = document.getElementById("diet-tags");
+  const allergyTagsContainer = document.getElementById("allergy-tags");
 
-  // Load mock user data
+  // Mock user data with selected preferences
   const mockUserData = {
     email: "user@example.com",
     username: "JohnDoe",
-    dietPreferences: "Vegetarian, Gluten-free",
-    allergies: "Peanuts, Shellfish"
+    dietPreferences: ["Vegetarian", "Gluten-free"],
+    allergies: ["Peanuts", "Shellfish"]
   };
+
+  // Initialize tags
+  createTags(dietTagsContainer, DIET_PREFERENCES, mockUserData.dietPreferences);
+  createTags(allergyTagsContainer, ALLERGIES, mockUserData.allergies);
 
   // Populate form with existing data
   document.getElementById("email").value = mockUserData.email;
   document.getElementById("username").value = mockUserData.username;
-  document.getElementById("diet-preferences").value = mockUserData.dietPreferences;
-  document.getElementById("allergies").value = mockUserData.allergies;
 
   profileForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const username = document.getElementById("username").value.trim();
-    const dietPreferences = document.getElementById("diet-preferences").value.trim();
-    const allergies = document.getElementById("allergies").value.trim();
+    const selectedDietPreferences = getSelectedTags(dietTagsContainer);
+    const selectedAllergies = getSelectedTags(allergyTagsContainer);
 
     if (!username) {
       setMessage(profileMessage, "Username is required.", "error");
@@ -86,6 +145,13 @@ if (profileForm) {
       setMessage(profileMessage, "Username must be at least 3 characters long.", "error");
       return;
     }
+
+    // Log the data that would be sent to backend
+    console.log({
+      username,
+      dietPreferences: selectedDietPreferences,
+      allergies: selectedAllergies
+    });
 
     setMessage(profileMessage, "Profile updated successfully! Backend integration coming soon.", "ok");
   });

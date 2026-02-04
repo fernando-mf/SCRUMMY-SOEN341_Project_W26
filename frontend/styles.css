@@ -112,3 +112,32 @@ input {
 .btn:hover {
   background: #ece3e3;
 }
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tag {
+  padding: 0.5rem 1rem;
+  border: 2px solid #ddd;
+  border-radius: 20px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.tag:hover {
+  border-color: #007bff;
+  background-color: #f0f8ff;
+}
+
+.tag.selected {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+}

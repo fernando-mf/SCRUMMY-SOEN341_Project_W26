@@ -47,6 +47,21 @@ type paramWithDescription = {
   description: string;
 };
 
+export class ConflictError extends AppError {
+  statusCode = HttpStatus.Conflict;
+  code = "conflict";
+  
+  constructor(private err: string) {
+    super(`conflict: ${err}`)
+  }
+
+  GetMeta(): Record<string, unknown> {
+    return {
+      message: this.err,
+    };
+  }
+}
+
 export class InvalidParamsError extends AppError {
   statusCode = HttpStatus.BadRequest;
   code = "invalid_params";

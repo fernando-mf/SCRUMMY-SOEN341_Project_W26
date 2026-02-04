@@ -7,6 +7,7 @@ import { HttpStatus } from "@api/helpers/http";
 class UsersDocs extends Controller {
   @Post()
   @SuccessResponse(HttpStatus.Created, "User Created")
+  @Response(HttpStatus.Conflict, "Email already exists")
   async createUser(@Body() body: CreateUserRequest): Promise<User> {
     return null as any;
   }

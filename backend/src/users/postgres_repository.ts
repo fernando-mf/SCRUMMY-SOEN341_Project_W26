@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { NeonDbError, NeonQueryFunction } from "@neondatabase/serverless";
 import { ConflictError, NotFoundError } from "@api/helpers/errors";
 import { PostgresErrorCode } from "@api/helpers/postgres";
@@ -8,11 +9,14 @@ export class UsersRepository implements IUsersRepository {
 
   async Create(user: User): Promise<User> {
     try {
+      const hashedPassword = user.password ? await bcrypt.hash(user.password, 10) : undefined;
+
       const result = await this.db`
         INSERT INTO users (
           "firstName",
           "lastName",
           "email",
+          "password",
           "dietPreferences",
           "allergies"
         )
@@ -20,6 +24,7 @@ export class UsersRepository implements IUsersRepository {
           ${user.firstName},
           ${user.lastName},
           ${user.email},
+          ${hashedPassword || null},
           ${user.dietPreferences},
           ${user.allergies}
         )

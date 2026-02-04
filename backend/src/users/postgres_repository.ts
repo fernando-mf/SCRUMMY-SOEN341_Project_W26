@@ -26,11 +26,10 @@ export class UsersRepository implements IUsersRepository {
       `;
 
       return result.rows[0] as User;
-    } catch (err) {
-      if (err instanceof NeonDbError && err.code === PostgresCode.UniqueViolation)
+    } catch (err:any) {
+      if (err?.code === "23505") { //temp fix for now before fixing imports
         throw new ConflictError("email");
-      }
-      
+      }        
       throw err;
     }
   }

@@ -51,7 +51,7 @@ export class UsersService implements IUsersService {
       firstName: req.firstName,
       lastName: req.lastName,
       email: req.email,
-      dietPreferences: [], // These aren't entered in account creation. Set only in update?
+      dietPreferences: [],
       allergies: [],
     }
 

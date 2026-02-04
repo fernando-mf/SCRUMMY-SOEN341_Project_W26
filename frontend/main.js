@@ -42,6 +42,8 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   clearError();
 
+  const firstName = firstNameInput.value.trim();
+  const lastName = lastNameInput.value.trim();
   const email = emailInput.value.trim();
   const password = passwordInput.value;
   const confirmPassword = confirmInput.value;

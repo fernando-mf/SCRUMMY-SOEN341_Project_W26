@@ -26,7 +26,7 @@ export class UsersRepository implements IUsersRepository {
       `;
 
       return result.rows[0] as User;
-    } catch (err:any) {
+    } catch (err) {
       if (err?.code === "23505") { // unique_violation
         throw new ConflictError("email");
       }

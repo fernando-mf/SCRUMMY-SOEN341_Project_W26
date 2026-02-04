@@ -1,40 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MealMajor - Register</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <title>MealMajor Register</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="page">
-    <h1 class="brand">MealMajor</h1>
-    <h2 class="title">Create an Account</h2>
 
-    <section class="card">
-      <form id="register-form" class="form" novalidate>
-        <div class="field">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" autocomplete="email" required />
-        </div>
+  <h1>MealMajor</h1>
+  <h2>Create an Account</h2>
 
-        <div class="field">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" autocomplete="new-password" required />
-          <p class="hint">Minimum 8 characters, at least 1 number and 1 letter.</p>
-        </div>
+  <form id="register-form">
 
-        <div class="field">
-          <label for="confirm-password">Confirm Password</label>
-          <input type="password" id="confirm-password" name="confirmPassword" autocomplete="new-password" required />
-        </div>
+    <div id="form-message" class="message hidden" role="alert"></div>
+    
+    <label for="firstName">First Name</label>
+    <input type="text" id="firstName" required>
 
-        <p id="message" class="message" aria-live="polite"></p>
+    <label for="lastName">Last Name</label>
+    <input type="text" id="lastName" required>
 
-        <button type="submit" class="btn">Sign Up</button>
-      </form>
-    </section>
-  </main>
+    <label for="email">Email</label>
+    <input type="email" id="email" required>
+
+    <label for="password">Password</label>
+    <input type="password" id="password" required>
+    <p class="hint">Minimum 8 characters, at least 1 number and 1 letter.</p>
+
+    <label for="confirm-password">Confirm Password</label>
+    <input type="password" id="confirm-password" required>
+
+    <button type="submit">Sign Up</button>
+
+  </form>
 
   <script src="main.js"></script>
 </body>

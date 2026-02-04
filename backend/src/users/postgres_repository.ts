@@ -5,9 +5,28 @@ import type { IUsersRepository, User } from "./users";
 export class UsersRepository implements IUsersRepository {
   constructor(private db: NeonQueryFunction<false, true>) {}
 
-  // TODO: implement
   async Create(user: User): Promise<User> {
-    throw new Error("Method not implemented.");
+    // both "dietPreferences" and "allergies" are not entered by user
+    const result = await this.db`
+      INSERT INTO users (
+        "firstName",
+        "lastName",
+        "email",
+        "dietPreferences",
+        "allergies"
+      )
+      VALUES (
+        ${user.firstName},
+        ${user.lastName},
+        ${user.email},
+        ${user.dietPreferences},
+        ${user.allergies}
+      )
+      RETURNING *
+    `;
+
+    
+    return result.rows[0] as User;
   }
 
   async Update(userID: number, user: User): Promise<void> {

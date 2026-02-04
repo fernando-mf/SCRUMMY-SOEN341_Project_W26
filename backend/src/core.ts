@@ -1,4 +1,4 @@
-import { neon, NeonQueryFunction } from "@neondatabase/serverless";
+import postgres from "postgres";
 import { UsersRepository, UsersService } from "@api/users";
 
 export type Core = ReturnType<typeof NewCore>;
@@ -13,12 +13,12 @@ export function NewCore() {
   };
 }
 
-function getDatabase(): NeonQueryFunction<false, true> {
+function getDatabase(): postgres.Sql {
   const connectionString = process.env.DATABASE_URL!;
   if (!connectionString) {
     console.error("DATABASE_URL is not set");
     process.exit(1);
   }
 
-  return neon(connectionString, { fullResults: true });
+  return postgres(connectionString);
 }

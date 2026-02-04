@@ -69,6 +69,6 @@ form.addEventListener("submit", async (e) => {
     form.reset();
 
   }catch{
-    showError("Generic error: something went wrong.");
+    showError("Something went wrong");
   }
 });

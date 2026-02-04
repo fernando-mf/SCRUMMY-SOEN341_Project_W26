@@ -6,7 +6,6 @@ import type { CreateUserRequest, IUsersService, UpdateUserRequest } from "@api/u
 export function HandleCreateUser(service: IUsersService): RequestHandler {
   return async (req, res) => {
     const userReq = req.body as CreateUserRequest;
-    //validation?
 
     const user = await service.Create(userReq);
 

@@ -77,7 +77,7 @@ if (registerForm){
       const result = await registerRequest(firstName, lastName, email, password);
 
       if (!result.success){
-        if (result.status === 409 || (result.data && result.data.error === "EXISTS")){
+        if (result.status === 409) {
           showError(messageBox, "Existing Account error: this email is already registered.");
           return;
         }

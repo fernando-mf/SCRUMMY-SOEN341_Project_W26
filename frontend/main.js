@@ -73,7 +73,7 @@ form.addEventListener("submit", async (e) => {
     const result = await registerRequest(firstName, lastName, email, password);
 
     if (!result.success){
-      if (result.status === 409 || (result.data && result.data.error === "EXISTS")){
+      if (result.status === 409 || (result.data && result.data.code === "conflict")){
         showError("Existing Account error: this email is already registered.");
         return;
       }

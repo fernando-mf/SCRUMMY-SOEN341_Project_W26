@@ -1,10 +1,10 @@
-import { NeonDbError, NeonQueryFunction } from "@neondatabase/serverless";
+import postgres from "postgres";
 import { ConflictError, NotFoundError } from "@api/helpers/errors";
 import { PostgresErrorCode } from "@api/helpers/postgres";
-import type { IUsersRepository, User, AuthInfo, UserInternal } from "./users";
+import type { AuthInfo, IUsersRepository, User, UserInternal } from "./users";
 
 export class UsersRepository implements IUsersRepository {
-  constructor(private db: NeonQueryFunction<false, true>) {}
+  constructor(private db: postgres.Sql) {}
 
   async Create(user: Omit<UserInternal, "id">): Promise<UserInternal> {
     try {
@@ -28,9 +28,9 @@ export class UsersRepository implements IUsersRepository {
         RETURNING *
       `;
 
-      return result.rows[0] as UserInternal;
+      return result[0] as UserInternal;
     } catch (err) {
-      if (err instanceof NeonDbError && err.code === PostgresErrorCode.UniqueViolation) {
+      if (err instanceof postgres.PostgresError && err.code === PostgresErrorCode.UniqueViolation) {
         throw new ConflictError("email");
       }
 
@@ -50,7 +50,7 @@ export class UsersRepository implements IUsersRepository {
       WHERE "id" = ${userID}
     `;
 
-    if (result.rowCount === 0) {
+    if (result.count === 0) {
       throw new NotFoundError("user");
     }
   }
@@ -71,11 +71,11 @@ export class UsersRepository implements IUsersRepository {
       WHERE "id" = ${userID}
     `;
 
-    if (user.rows.length === 0) {
+    if (user.length === 0) {
       throw new NotFoundError("user");
     }
 
-    return user.rows[0] as User;
+    return user[0] as User;
   }
 
   async GetAuthInfoByEmail(email: string): Promise<AuthInfo> {
@@ -88,11 +88,11 @@ export class UsersRepository implements IUsersRepository {
       WHERE "email" = ${email}
     `;
 
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       throw new NotFoundError("user");
     }
 
-    return result.rows[0] as AuthInfo;
+    return result[0] as AuthInfo;
   }
 
   async GetAuthInfo(userID: number): Promise<AuthInfo> {
@@ -104,9 +104,9 @@ export class UsersRepository implements IUsersRepository {
       FROM users
       WHERE "id" = ${userID}
     `;
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       throw new NotFoundError("user");
     }
-    return result.rows[0] as AuthInfo;
+    return result[0] as AuthInfo;
   }
 }

@@ -23,17 +23,25 @@ function isPasswordValid(password){
   return hasLetter && hasNumber;
 }
 
-async function mockRegister(email){
-  const existingEmails = [
-    "test@test.com",
-    "existing@mealmajor.com"
-  ];
+async function registerRequest(firstName, lastName, email, password){
+  const response = await fetch("http://localhost:3000/api/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ firstName, lastName, email, password })
+  });
 
-  if (existingEmails.includes(email.toLowerCase())){
-    return { success: false, error: "EXISTS" };
+  let data = null;
+  try{
+    data = await response.json();
+  }catch{
+    data = null;
   }
 
-  return { success: true };
+  if (!response.ok){
+    return { success: false, status: response.status, data };
+  }
+
+  return { success: true, status: response.status, data };
 }
 
 form.addEventListener("submit", async (e) => {
@@ -50,6 +58,7 @@ form.addEventListener("submit", async (e) => {
     showError("Validation error: first and last name are required.");
     return;
   }
+
   if (!isPasswordValid(password)){
     showError("Validation error: password must be at least 8 characters and include at least 1 letter and 1 number.");
     return;
@@ -61,19 +70,19 @@ form.addEventListener("submit", async (e) => {
   }
 
   try{
-    const result = await mockRegister(email);
-
-    if (!result.success && result.error === "EXISTS"){
-      showError("Existing Account error: this email is already registered.");
-      return;
-    }
+    const result = await registerRequest(firstName, lastName, email, password);
 
     if (!result.success){
+      if (result.status === 409 || (result.data && result.data.error === "EXISTS")){
+        showError("Existing Account error: this email is already registered.");
+        return;
+      }
+
       showError("Something went wrong");
       return;
     }
 
-    alert("Account created (mock).");
+    alert("Account created.");
     form.reset();
 
   }catch{

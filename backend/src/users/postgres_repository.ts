@@ -1,5 +1,6 @@
-import type { NeonQueryFunction } from "@neondatabase/serverless";
+import { NeonDbError, NeonQueryFunction } from "@neondatabase/serverless";
 import { ConflictError, NotFoundError } from "@api/helpers/errors";
+import { PostgresErrorCode } from "@api/helpers/postgres";
 import type { IUsersRepository, User } from "./users";
 
 export class UsersRepository implements IUsersRepository {
@@ -27,10 +28,10 @@ export class UsersRepository implements IUsersRepository {
 
       return result.rows[0] as User;
     } catch (err) {
-      if (err instanceof NeonDbError && err.code === PostgresCode.UniqueViolation)
+      if (err instanceof NeonDbError && err.code === PostgresErrorCode.UniqueViolation) {
         throw new ConflictError("email");
       }
-      
+
       throw err;
     }
   }

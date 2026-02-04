@@ -48,6 +48,10 @@ form.addEventListener("submit", async (e) => {
   const password = passwordInput.value;
   const confirmPassword = confirmInput.value;
 
+  if (!firstName || !lastName) {
+    showError("Validation error: first and last name are required.");
+    return;
+  }
   if (!isPasswordValid(password)){
     showError("Validation error: password must be at least 8 characters and include at least 1 letter and 1 number.");
     return;

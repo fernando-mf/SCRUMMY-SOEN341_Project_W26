@@ -3,6 +3,8 @@ const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const confirmInput = document.getElementById("confirm-password");
 const messageBox = document.getElementById("form-message");
+const firstNameInput = document.getElementById("firstName");
+const lastNameInput = document.getElementById("lastName");
 
 function showError(text){
   messageBox.textContent = text;

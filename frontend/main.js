@@ -139,7 +139,7 @@ if (loginForm){
       const result = await loginRequest(email, password);
 
       if (!result.success){
-        if (result.status === 404 || result.status === 401 || (result.data && result.data.error === "NOT_FOUND")){
+        if (result.status === 404 || result.status === 401){
           showError(messageBox, "Login Error: account not found.");
           return;
         }

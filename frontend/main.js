@@ -1,3 +1,4 @@
+const BASE_URL = "http://localhost:3000";
 const registerForm = document.getElementById("register-form");
 const loginForm = document.getElementById("login-form");
 

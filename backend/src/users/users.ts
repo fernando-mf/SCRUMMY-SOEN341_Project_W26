@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { InvalidParamsError } from "@api/helpers/errors";
+import { AuthenticationError, InvalidParamsError, NotFoundError } from "@api/helpers/errors";
 import bcrypt from "bcrypt";
 import { signToken } from "@api/helpers/jwt";
 
 export type User = {
+  id: number;
   firstName: string;
   lastName: string;
   email: string;
@@ -45,7 +46,7 @@ export interface IUsersService {
 }
 
 export interface IUsersRepository {
-  Create(user: User): Promise<User>;
+  Create(user: Omit<User, "id">): Promise<User>;
   Update(userID: number, user: User): Promise<void>;
   Get(userID: number): Promise<User>;
   GetByEmail(email: string): Promise<User>;
@@ -62,7 +63,7 @@ export class UsersService implements IUsersService {
 
     const passwordHash = await bcrypt.hash(req.password, 12);
     
-    const user: User = {
+    const user: Omit<User, "id"> = {
       firstName: req.firstName,
       lastName: req.lastName,
       email: req.email,
@@ -83,19 +84,17 @@ export class UsersService implements IUsersService {
     let user:User;
     try {
       user = await this.repository.GetByEmail(req.email);
-    } catch {
-      throw new InvalidParamsError({
-        param: "email_or_password",
-        description: "wrong email or password",
-      });
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        throw new AuthenticationError("wrong email or password");
+      }
+      
+      throw err;
     }
 
     const isValid = await bcrypt.compare(req.password, user.passwordHash);
     if (!isValid) {
-      throw new InvalidParamsError({
-        param: "email_or_password",
-        description: "wrong email or password",
-      });
+      throw new AuthenticationError("wrong email or password");
     }
 
     const token = signToken({
@@ -117,6 +116,7 @@ export class UsersService implements IUsersService {
     const currentUser = await this.repository.Get(userID);
 
     const updatedUser: User = {
+      id: currentUser.id,
       email: currentUser.email,
       passwordHash: currentUser.passwordHash,
       firstName: req.firstName,

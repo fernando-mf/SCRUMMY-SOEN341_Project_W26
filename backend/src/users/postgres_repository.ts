@@ -13,7 +13,7 @@ export class UsersRepository implements IUsersRepository {
           "firstName",
           "lastName",
           "email",
-          "passwordHash"
+          "passwordHash",
           "dietPreferences",
           "allergies"
         )
@@ -25,7 +25,16 @@ export class UsersRepository implements IUsersRepository {
           ${user.dietPreferences},
           ${user.allergies}
         )
-        RETURNING *
+        RETURNING
+          "id",
+          "firstName",
+          "lastName",
+          "email",
+          "passwordHash",
+          "dietPreferences",
+          "allergies",
+          "createdAt",
+          "updatedAt"
       `;
 
       return result.rows[0] as User;
@@ -79,9 +88,17 @@ export class UsersRepository implements IUsersRepository {
 
   async GetByEmail(email: string): Promise<User> {
     const result = await this.db`
-      SELECT *
+      SELECT
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "dietPreferences",
+        "allergies",
+        "createdAt",
+        "updatedAt"
       FROM users
-      WHERE email = ${email}
+      WHERE "email" = ${email}
     `;
 
     if(result.rows.length === 0) {

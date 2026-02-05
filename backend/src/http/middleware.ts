@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
-import { AppError, InternalError, InvalidParamsError } from "@api/helpers/errors";
+import { AppError, InternalError, InvalidParamsError, AuthenticationError } from "@api/helpers/errors";
 import { verifyToken } from "@api/helpers/jwt";
+import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 
 export function ErrorMiddleware(err: Error, _req: Request, res: Response, _next: NextFunction) {
   console.error(err);
@@ -34,10 +35,15 @@ export function RequireAuth(req: Request, _res: Response, next: NextFunction) {
     const payload = verifyToken(token);
     (req as any).auth = payload; // attach session
     next();
-  } catch {
-    throw new InvalidParamsError({
-      param: "authorization",
-      description: "invalid or expired token",
-    });
+  } catch (err) {
+    if (err instanceof TokenExpiredError) {
+      throw new AuthenticationError("token expired");
+    }
+
+    if (err instanceof JsonWebTokenError) {
+      throw new AuthenticationError("invalid token");
+    }
+
+    throw err;
   }
 }

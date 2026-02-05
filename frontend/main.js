@@ -98,7 +98,7 @@ if (registerForm){
 
 /* ---------------- LOGIN (US.03) Task 11 FE ---------------- */
 async function loginRequest(email, password){
-  const response = await fetch("http://localhost:3000/login", {
+  const response = await fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })

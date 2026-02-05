@@ -67,7 +67,7 @@ export class AuthenticationError extends AppError {
   code = "authentication_failed";
 
   constructor(private err: string) {
-    super(`conflict: ${err}`)
+    super(`authentication: ${err}`)
   }
 
   GetMeta(): Record<string, unknown> {

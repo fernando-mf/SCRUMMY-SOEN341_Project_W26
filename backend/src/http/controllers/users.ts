@@ -9,7 +9,7 @@ export function HandleCreateUser(service: IUsersService): RequestHandler {
 
     const user = await service.Create(userReq);
 
-    const { passwordHash, ...publicUser } = user; //public version without password. Should add for other handlers?
+    const { passwordHash, ...publicUser } = user; //public version without password
 
     res.status(HttpStatus.Created).json(publicUser);
   };
@@ -37,8 +37,7 @@ export function HandleGetUser(service: IUsersService): RequestHandler {
       throw new InvalidParamsError({ param: "id", description: "user ID must be a number" });
     }
 
-    const user = await service.Get(userID);
-
-    res.status(HttpStatus.Ok).json(user);
+    const publicUser = await service.GetPublic(userID);
+    res.status(HttpStatus.Ok).json(publicUser);
   };
 }

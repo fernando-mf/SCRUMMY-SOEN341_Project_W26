@@ -22,12 +22,13 @@ export function Routes(core: Core) {
   router.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
 
   // Users routes
-  router.get("/users/:id", HandleGetUser(core.UsersService));
-  router.put("/users/:id", HandleUpdateUser(core.UsersService));
   router.post("/users", HandleCreateUser(core.UsersService));
   router.post("/auth", HandleLogin(core.UsersService));
-  router.get("/users/:id", RequireAuth, HandleGetUser(core.UsersService));
-  router.put("/users/:id", RequireAuth, HandleUpdateUser(core.UsersService));
+
+  router.use(RequireAuth);
+
+  router.get("/users/:id", HandleGetUser(core.UsersService));
+  router.put("/users/:id", HandleUpdateUser(core.UsersService));
   // Add more routes here
   // ...
 

@@ -43,12 +43,14 @@ export interface IUsersService {
   Login(request: LoginRequest): Promise<{user: User; token: string}>;
   Update(userID: number, request: UpdateUserRequest): Promise<void>;
   Get(userID: number): Promise<User>;
+  GetPublic(userID: number): Promise<Omit<User, "passwordHash">>;
 }
 
 export interface IUsersRepository {
   Create(user: Omit<User, "id">): Promise<User>;
   Update(userID: number, user: User): Promise<void>;
   Get(userID: number): Promise<User>;
+  GetPublic(userID: number): Promise<Omit<User, "passwordHash">>;
   GetByEmail(email: string): Promise<User>;
 }
 
@@ -130,5 +132,10 @@ export class UsersService implements IUsersService {
 
   Get(userID: number): Promise<User> {
     return this.repository.Get(userID);
+  }
+
+  async GetPublic(userID: number): Promise<Omit<User, "passwordHash">> {
+    const user = await this.repository.GetPublic(userID);
+    return user;
   }
 }

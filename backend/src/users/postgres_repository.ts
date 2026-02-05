@@ -6,7 +6,7 @@ import type { IUsersRepository, User } from "./users";
 export class UsersRepository implements IUsersRepository {
   constructor(private db: NeonQueryFunction<false, true>) {}
 
-  async Create(user: User): Promise<User> {
+  async Create(user: Omit<User, "id">): Promise<User> {
     try {
       const result = await this.db`
         INSERT INTO users (
@@ -71,6 +71,7 @@ export class UsersRepository implements IUsersRepository {
         "firstName",
         "lastName",
         "email",
+        "passwordHash",
         "dietPreferences",
         "allergies",
         "createdAt",
@@ -93,6 +94,7 @@ export class UsersRepository implements IUsersRepository {
         "firstName",
         "lastName",
         "email",
+        "passwordHash",
         "dietPreferences",
         "allergies",
         "createdAt",
@@ -106,5 +108,27 @@ export class UsersRepository implements IUsersRepository {
     }
 
     return result.rows[0] as User;
+  }
+
+  async GetPublic(userID: number): Promise<Omit<User, "passwordHash">> {
+    const result = await this.db`
+      SELECT
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "dietPreferences",
+        "allergies",
+        "createdAt",
+        "updatedAt"
+      FROM users
+      WHERE "id" = ${userID}
+    `;
+
+    if (result.rows.length === 0) {
+      throw new NotFoundError("user");
+    }
+
+    return result.rows[0] as Omit<User, "passwordHash">;
   }
 }

@@ -1,38 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>MealMajor Register</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <main class="page">
+    <h1 class="brand">MealMajor</h1>
+    <h2 class="title">Create an Account</h2>
 
-  <h1>MealMajor</h1>
-  <h2>Create an Account</h2>
+    <section class="card">
+      <form id="register-form" class="form" novalidate>
+        <div id="form-message" class="message hidden" role="alert" aria-live="polite"></div>
 
-  <form id="register-form">
+        <div class="field">
+          <label for="firstName">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            autocomplete="given-name"
+            required
+          />
+        </div>
 
-    <div id="form-message" class="message hidden" role="alert"></div>
-    
-    <label for="firstName">First Name</label>
-    <input type="text" id="firstName" required>
+        <div class="field">
+          <label for="lastName">Last Name</label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            autocomplete="family-name"
+            required
+          />
+        </div>
 
-    <label for="lastName">Last Name</label>
-    <input type="text" id="lastName" required>
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autocomplete="email"
+            required
+          />
+        </div>
 
-    <label for="email">Email</label>
-    <input type="email" id="email" required>
+        <div class="field">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            autocomplete="new-password"
+            required
+          />
+          <p class="hint">Minimum 8 characters, at least 1 number and 1 letter.</p>
+        </div>
 
-    <label for="password">Password</label>
-    <input type="password" id="password" required>
-    <p class="hint">Minimum 8 characters, at least 1 number and 1 letter.</p>
+        <div class="field">
+          <label for="confirm-password">Confirm Password</label>
+          <input
+            type="password"
+            id="confirm-password"
+            name="confirmPassword"
+            autocomplete="new-password"
+            required
+          />
+        </div>
 
-    <label for="confirm-password">Confirm Password</label>
-    <input type="password" id="confirm-password" required>
+        <button type="submit" class="btn">Sign Up</button>
+      </form>
 
-    <button type="submit">Sign Up</button>
-
-  </form>
+      <p class="hint helper">
+        Already have an account?
+        <a class="link" href="login.html">Login</a>
+      </p>
+    </section>
+  </main>
 
   <script src="main.js"></script>
 </body>

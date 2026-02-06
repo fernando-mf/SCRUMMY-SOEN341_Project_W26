@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>MealMajor - Login</title>
+	<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+	<main class="page">
+		<h1 class="brand">MealMajor</h1>
+		<h2 class="title">Welcome Back</h2>
+
+		<section class="card">
+			<form id="login-form" class="form" novalidate>
+				<div class="field">
+					<label for="email">Email</label>
+					<input type="email" id="email" name="email" autocomplete="email" required />
+				</div>
+
+				<div class="field">
+					<label for="password">Password</label>
+					<input type="password" id="password" name="password" autocomplete="current-password" required />
+				</div>
+
+				<p id="message" class="message" aria-live="polite"></p>
+
+				<button type="submit" class="btn">Sign In</button>
+			</form>
+
+			<p class="hint helper">
+				Don't have an account?
+				<a class="link" href="index.html">Create one</a>
+			</p>
+		</section>
+	</main>
+
+	<script src="main.js"></script>
+</body>
+</html>

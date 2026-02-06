@@ -1,47 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MealMajor - Profile</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <main class="page">
+    <h1 class="brand">MealMajor</h1>
+    <h2 class="title">My Profile</h2>
 
-  <h1>MealMajor</h1>
-  <h2>Edit Your Profile</h2>
+    <section class="card">
+      <form id="profile-form" class="form" novalidate>
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" autocomplete="username" required />
+        </div>
 
-  <form id="profile-form">
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" autocomplete="email" disabled />
+          <p class="hint">Email cannot be changed.</p>
+        </div>
 
-    <div id="form-message" class="message hidden" role="alert"></div>
-    
-    <label for="username">Username</label>
-    <input type="text" id="username" required>
+        <div class="field">
+          <label>Diet Preferences</label>
+          <div id="diet-tags" class="tags-container"></div>
+          <p class="hint">Select all that apply.</p>
+        </div>
 
-    <label for="email">Email</label>
-    <input type="email" id="email" disabled>
-    <p class="hint">Email cannot be changed.</p>
+        <div class="field">
+          <label>Allergies</label>
+          <div id="allergy-tags" class="tags-container"></div>
+          <p class="hint">Select all that apply.</p>
+        </div>
 
-    <label for="password">New Password (optional)</label>
-    <input type="password" id="password">
-    <p class="hint">Leave blank to keep current password. Minimum 8 characters, at least 1 number and 1 letter.</p>
+        <p id="message" class="message" aria-live="polite"></p>
 
-    <label for="confirm-password">Confirm New Password</label>
-    <input type="password" id="confirm-password">
+        <button type="submit" class="btn">Save Changes</button>
+      </form>
 
-    <label>Dietary Preferences</label>
-    <div id="diet-tags" class="tags-container"></div>
-    <p class="hint">Select all that apply.</p>
-
-    <label>Allergies</label>
-    <div id="allergy-tags" class="tags-container"></div>
-    <p class="hint">Select all that apply.</p>
-
-    <button type="submit">Save Changes</button>
-
-  </form>
-
-  <p class="hint"><a href="login.html">Logout</a></p>
+      <p class="hint helper">
+        <a class="link" href="index.html">Back to Home</a>
+      </p>
+    </section>
+  </main>
 
   <script src="main.js"></script>
 </body>

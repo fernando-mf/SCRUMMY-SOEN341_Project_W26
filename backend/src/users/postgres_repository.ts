@@ -2,12 +2,12 @@ import bcrypt from "bcrypt";
 import { NeonDbError, NeonQueryFunction } from "@neondatabase/serverless";
 import { ConflictError, NotFoundError } from "@api/helpers/errors";
 import { PostgresErrorCode } from "@api/helpers/postgres";
-import type { IUsersRepository, User } from "./users";
+import type { IUsersRepository, User, AuthInfo, UserInternal } from "./users";
 
 export class UsersRepository implements IUsersRepository {
   constructor(private db: NeonQueryFunction<false, true>) {}
 
-  async Create(user: User): Promise<User> {
+  async Create(user: Omit<UserInternal, "id">): Promise<UserInternal> {
     try {
       const hashedPassword = user.password ? await bcrypt.hash(user.password, 10) : undefined;
 
@@ -16,7 +16,11 @@ export class UsersRepository implements IUsersRepository {
           "firstName",
           "lastName",
           "email",
+<<<<<<< HEAD
           "password",
+=======
+          "passwordHash",
+>>>>>>> main
           "dietPreferences",
           "allergies"
         )
@@ -24,14 +28,18 @@ export class UsersRepository implements IUsersRepository {
           ${user.firstName},
           ${user.lastName},
           ${user.email},
+<<<<<<< HEAD
           ${hashedPassword || null},
+=======
+          ${user.passwordHash},
+>>>>>>> main
           ${user.dietPreferences},
           ${user.allergies}
         )
         RETURNING *
       `;
 
-      return result.rows[0] as User;
+      return result.rows[0] as UserInternal;
     } catch (err) {
       if (err instanceof NeonDbError && err.code === PostgresErrorCode.UniqueViolation) {
         throw new ConflictError("email");
@@ -65,6 +73,7 @@ export class UsersRepository implements IUsersRepository {
         "firstName",
         "lastName",
         "email",
+        "passwordHash",
         "dietPreferences",
         "allergies",
         "createdAt",
@@ -78,5 +87,37 @@ export class UsersRepository implements IUsersRepository {
     }
 
     return user.rows[0] as User;
+  }
+
+  async GetAuthInfoByEmail(email: string): Promise<AuthInfo> {
+    const result = await this.db`
+      SELECT
+        "id",
+        "email",
+        "passwordHash"
+      FROM users
+      WHERE "email" = ${email}
+    `;
+
+    if (result.rows.length === 0) {
+      throw new NotFoundError("user");
+    }
+
+    return result.rows[0] as AuthInfo;
+  }
+
+  async GetAuthInfo(userID: number): Promise<AuthInfo> {
+    const result = await this.db`
+      SELECT
+        "id",
+        "email",
+        "passwordHash"
+      FROM users
+      WHERE "id" = ${userID}
+    `;
+    if (result.rows.length === 0) {
+      throw new NotFoundError("user");
+    }
+    return result.rows[0] as AuthInfo;
   }
 }

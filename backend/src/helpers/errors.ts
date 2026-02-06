@@ -50,9 +50,24 @@ type paramWithDescription = {
 export class ConflictError extends AppError {
   statusCode = HttpStatus.Conflict;
   code = "conflict";
-  
+
   constructor(private err: string) {
     super(`conflict: ${err}`)
+  }
+
+  GetMeta(): Record<string, unknown> {
+    return {
+      message: this.err,
+    };
+  }
+}
+
+export class AuthenticationError extends AppError {
+  statusCode = HttpStatus.Unauthorized;
+  code = "authentication_failed";
+
+  constructor(private err: string) {
+    super(`authentication: ${err}`)
   }
 
   GetMeta(): Record<string, unknown> {

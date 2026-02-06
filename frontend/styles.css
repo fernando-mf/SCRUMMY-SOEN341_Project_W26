@@ -55,16 +55,78 @@ button{
   margin-top: 4px;
 }
 
+.helper {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.link {
+  color: #111;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Unified message box (works for register, login, profile) */
 .message{
-  margin-bottom: 15px;
+  margin: 0 0 15px 0;
   padding: 12px;
   border-radius: 6px;
   background: #fff3f3;
   border: 1px solid #caa;
   color: #7a1a1a;
   font-size: 14px;
+  min-height: 18px;
+}
+
+.message.ok{
+  background: #f2fff5;
+  border-color: #9ec9a5;
+  color: #1f5a2a;
+}
+
+.message.error{
+  background: #fff3f3;
+  border-color: #caa;
+  color: #7a1a1a;
 }
 
 .hidden{
   display: none;
+}
+
+.btn:hover {
+  background: #ece3e3;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tag {
+  padding: 0.5rem 1rem;
+  border: 2px solid #ddd;
+  border-radius: 20px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.tag:hover {
+  border-color: #007bff;
+  background-color: #f0f8ff;
+}
+
+.tag.selected {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
 }

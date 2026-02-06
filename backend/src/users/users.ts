@@ -1,7 +1,10 @@
 import { z } from "zod";
-import { InvalidParamsError } from "@api/helpers/errors";
+import { AuthenticationError, InvalidParamsError, NotFoundError } from "@api/helpers/errors";
+import bcrypt from "bcrypt";
+import { signToken } from "@api/helpers/jwt";
 
 export type User = {
+  id: number;
   firstName: string;
   lastName: string;
   email: string;
@@ -10,22 +13,46 @@ export type User = {
   allergies: string[];
 };
 
+export type UserInternal = User & {
+  passwordHash: string;
+};
+
+export type AuthInfo = {
+  id: number;
+  email: string;
+  passwordHash: string;
+};
+
+type LoginResponse = {
+  token: string;
+  expires_in: number;
+};
+
 const createUserRequestSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   email: z.email(),
+  password: z.string().min(8), //could be changed to be more strict
 });
 
 export type CreateUserRequest = z.infer<typeof createUserRequestSchema>;
 
+<<<<<<< HEAD
 const registerUserRequestSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
+=======
+const loginRequestSchema = z.object({
+>>>>>>> main
   email: z.email(),
   password: z.string().min(8),
 });
 
+<<<<<<< HEAD
 export type RegisterUserRequest = z.infer<typeof registerUserRequestSchema>;
+=======
+export type LoginRequest = z.infer<typeof loginRequestSchema>;
+>>>>>>> main
 
 const updateUserRequestSchema = z.object({
   firstName: z.string().min(1),
@@ -38,15 +65,21 @@ export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
 
 export interface IUsersService {
   Create(request: CreateUserRequest): Promise<User>;
+<<<<<<< HEAD
   Register(request: RegisterUserRequest): Promise<User>;
+=======
+  Login(request: LoginRequest): Promise<LoginResponse>;
+>>>>>>> main
   Update(userID: number, request: UpdateUserRequest): Promise<void>;
   Get(userID: number): Promise<User>;
 }
 
 export interface IUsersRepository {
-  Create(user: User): Promise<User>;
+  Create(user: Omit<User, "id">): Promise<UserInternal>;
   Update(userID: number, user: User): Promise<void>;
   Get(userID: number): Promise<User>;
+  GetAuthInfo(userID: number): Promise<AuthInfo>;
+  GetAuthInfoByEmail(email: string): Promise<AuthInfo>;
 }
 
 export class UsersService implements IUsersService {
@@ -57,11 +90,14 @@ export class UsersService implements IUsersService {
     if (validation.error) {
       throw InvalidParamsError.FromZodError(validation.error);
     }
+
+    const passwordHash = await bcrypt.hash(req.password, 12);
     
-    const user: User = {
+    const user: Omit<UserInternal, "id"> = {
       firstName: req.firstName,
       lastName: req.lastName,
       email: req.email,
+      passwordHash,
       dietPreferences: [],
       allergies: [],
     }
@@ -69,12 +105,18 @@ export class UsersService implements IUsersService {
     return this.repository.Create(user);
   }
 
+<<<<<<< HEAD
   async Register(req: RegisterUserRequest): Promise<User> {
     const validation = registerUserRequestSchema.safeParse(req);
+=======
+  async Login(req: LoginRequest): Promise<LoginResponse> {
+    const validation = loginRequestSchema.safeParse(req);
+>>>>>>> main
     if (validation.error) {
       throw InvalidParamsError.FromZodError(validation.error);
     }
 
+<<<<<<< HEAD
     const user: User = {
       firstName: req.firstName,
       lastName: req.lastName,
@@ -85,6 +127,33 @@ export class UsersService implements IUsersService {
     }
 
     return this.repository.Create(user);
+=======
+    let authInfo: AuthInfo;
+    try {
+      authInfo = await this.repository.GetAuthInfoByEmail(req.email);
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        throw new AuthenticationError("wrong email or password");
+      }
+
+      throw err;
+    }
+
+    const isValid = await bcrypt.compare(req.password, authInfo.passwordHash);
+    if (!isValid) {
+      throw new AuthenticationError("wrong email or password");
+    }
+
+    const token = signToken({
+      sub: authInfo.id,
+      email: authInfo.email
+    });
+
+    return {
+      token,
+      expires_in: 3600
+    };
+>>>>>>> main
   }
 
   async Update(userID: number, req: UpdateUserRequest): Promise<void> {
@@ -96,6 +165,7 @@ export class UsersService implements IUsersService {
     const currentUser = await this.repository.Get(userID);
 
     const updatedUser: User = {
+      id: currentUser.id,
       email: currentUser.email,
       firstName: req.firstName,
       lastName: req.lastName,
@@ -109,4 +179,5 @@ export class UsersService implements IUsersService {
   Get(userID: number): Promise<User> {
     return this.repository.Get(userID);
   }
+  
 }

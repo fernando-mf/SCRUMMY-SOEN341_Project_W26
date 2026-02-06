@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MealMajor - Register</title>
+  <title>MealMajor Register</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -13,23 +12,63 @@
 
     <section class="card">
       <form id="register-form" class="form" novalidate>
+        <div id="form-message" class="message hidden" role="alert" aria-live="polite"></div>
+
+        <div class="field">
+          <label for="firstName">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            autocomplete="given-name"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="lastName">Last Name</label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            autocomplete="family-name"
+            required
+          />
+        </div>
+
         <div class="field">
           <label for="email">Email</label>
-          <input type="email" id="email" name="email" autocomplete="email" required />
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autocomplete="email"
+            required
+          />
         </div>
 
         <div class="field">
           <label for="password">Password</label>
-          <input type="password" id="password" name="password" autocomplete="new-password" required />
+          <input
+            type="password"
+            id="password"
+            name="password"
+            autocomplete="new-password"
+            required
+          />
           <p class="hint">Minimum 8 characters, at least 1 number and 1 letter.</p>
         </div>
 
         <div class="field">
           <label for="confirm-password">Confirm Password</label>
-          <input type="password" id="confirm-password" name="confirmPassword" autocomplete="new-password" required />
+          <input
+            type="password"
+            id="confirm-password"
+            name="confirmPassword"
+            autocomplete="new-password"
+            required
+          />
         </div>
-
-        <p id="message" class="message" aria-live="polite"></p>
 
         <button type="submit" class="btn">Sign Up</button>
       </form>

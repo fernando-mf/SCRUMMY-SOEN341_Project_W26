@@ -1,3 +1,5 @@
+const BASE_URL = "http://localhost:3000";
+
 const registerForm = document.getElementById("register-form");
 const loginForm = document.getElementById("login-form");
 const profileForm = document.getElementById("profile-form");
@@ -14,7 +16,7 @@ const DIET_PREFERENCES = [
   "Low-carb",
   "Mediterranean",
   "Halal",
-  "Kosher"
+  "Kosher",
 ];
 
 const ALLERGIES = [
@@ -28,88 +30,199 @@ const ALLERGIES = [
   "Shellfish",
   "Fish",
   "Sesame",
-  "Sulfites"
+  "Sulfites",
 ];
 
 function setMessage(target, text, type) {
-  if (!target) {
-    return;
-  }
+  if (!target) return;
 
-  target.textContent = text;
-  target.className = "message " + (type || "");
+  target.textContent = text || "";
+  target.className = "message" + (type ? ` ${type}` : "");
+
+  // If your CSS uses .hidden, this makes it work with both styles
+  if (!text) target.classList.add("hidden");
+  else target.classList.remove("hidden");
+}
+
+function isPasswordValid(password) {
+  if (password.length < 8) return false;
+  const hasLetter = /[A-Za-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  return hasLetter && hasNumber;
 }
 
 function createTags(container, options, selectedValues = []) {
+  if (!container) return;
+
   container.innerHTML = "";
-  
-  options.forEach(option => {
+
+  options.forEach((option) => {
     const tag = document.createElement("span");
     tag.className = "tag";
     tag.textContent = option;
     tag.dataset.value = option;
-    
+
     if (selectedValues.includes(option)) {
       tag.classList.add("selected");
     }
-    
+
     tag.addEventListener("click", () => {
       tag.classList.toggle("selected");
     });
-    
+
     container.appendChild(tag);
   });
 }
 
 function getSelectedTags(container) {
+  if (!container) return [];
   const selectedTags = container.querySelectorAll(".tag.selected");
-  return Array.from(selectedTags).map(tag => tag.dataset.value);
+  return Array.from(selectedTags).map((tag) => tag.dataset.value);
+}
+
+/* ---------------- REGISTER ---------------- */
+async function registerRequest(firstName, lastName, email, password) {
+  const response = await fetch(`${BASE_URL}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ firstName, lastName, email, password }),
+  });
+
+  let data = null;
+  try {
+    data = await response.json();
+  } catch {
+    data = null;
+  }
+
+  if (!response.ok) {
+    return { success: false, status: response.status, data };
+  }
+
+  return { success: true, status: response.status, data };
 }
 
 if (registerForm) {
-  const registerMessage = document.getElementById("message");
+  const messageBox = document.getElementById("form-message");
 
-  registerForm.addEventListener("submit", (e) => {
+  const firstNameInput = document.getElementById("firstName");
+  const lastNameInput = document.getElementById("lastName");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const confirmInput = document.getElementById("confirm-password");
+
+  registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    setMessage(messageBox, "", "");
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const confirm = document.getElementById("confirm-password").value;
+    const firstName = firstNameInput ? firstNameInput.value.trim() : "";
+    const lastName = lastNameInput ? lastNameInput.value.trim() : "";
+    const email = emailInput ? emailInput.value.trim() : "";
+    const password = passwordInput ? passwordInput.value : "";
+    const confirmPassword = confirmInput ? confirmInput.value : "";
 
-    if (!email || !password || !confirm) {
-      setMessage(registerMessage, "Please fill in all fields.", "error");
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+      setMessage(messageBox, "Please fill in all fields.", "error");
       return;
     }
 
-    if (password !== confirm) {
-      setMessage(registerMessage, "Passwords do not match.", "error");
+    if (!isPasswordValid(password)) {
+      setMessage(
+        messageBox,
+        "Password must be at least 8 characters and include at least 1 letter and 1 number.",
+        "error",
+      );
       return;
     }
 
-    setMessage(registerMessage, "UI ready. Registration logic will be added in Task 5.", "ok");
+    if (password !== confirmPassword) {
+      setMessage(messageBox, "Passwords do not match.", "error");
+      return;
+    }
+
+    try {
+      const result = await registerRequest(firstName, lastName, email, password);
+
+      if (!result.success) {
+        if (result.status === 409) {
+          setMessage(messageBox, "This email is already registered.", "error");
+          return;
+        }
+        setMessage(messageBox, "Something went wrong.", "error");
+        return;
+      }
+
+      setMessage(messageBox, "Account created successfully.", "ok");
+      registerForm.reset();
+    } catch {
+      setMessage(messageBox, "Something went wrong.", "error");
+    }
   });
+}
+
+/* ---------------- LOGIN ---------------- */
+async function loginRequest(email, password) {
+  const response = await fetch(`${BASE_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  let data = null;
+  try {
+    data = await response.json();
+  } catch {
+    data = null;
+  }
+
+  if (!response.ok) {
+    return { success: false, status: response.status, data };
+  }
+
+  return { success: true, status: response.status, data };
 }
 
 if (loginForm) {
-  const loginMessage = document.getElementById("message");
+  const messageBox = document.getElementById("form-message");
 
-  loginForm.addEventListener("submit", (e) => {
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    setMessage(messageBox, "", "");
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+    const email = emailInput ? emailInput.value.trim() : "";
+    const password = passwordInput ? passwordInput.value : "";
 
     if (!email || !password) {
-      setMessage(loginMessage, "Please enter your email and password.", "error");
+      setMessage(messageBox, "Please enter your email and password.", "error");
       return;
     }
 
-    setMessage(loginMessage, "UI ready. Login logic will be added in Task 5.", "ok");
+    try {
+      const result = await loginRequest(email, password);
+
+      if (!result.success) {
+        if (result.status === 404 || result.status === 401) {
+          setMessage(messageBox, "Account not found or wrong password.", "error");
+          return;
+        }
+        setMessage(messageBox, "Something went wrong.", "error");
+        return;
+      }
+
+      // If your backend returns a token, you can store it here later.
+      window.location.href = "profile.html";
+    } catch {
+      setMessage(messageBox, "Something went wrong.", "error");
+    }
   });
 }
 
+/* ---------------- PROFILE (UI only for now) ---------------- */
 if (profileForm) {
-  const profileMessage = document.getElementById("message");
+  const messageBox = document.getElementById("form-message");
   const dietTagsContainer = document.getElementById("diet-tags");
   const allergyTagsContainer = document.getElementById("allergy-tags");
 
@@ -118,41 +231,42 @@ if (profileForm) {
     email: "user@example.com",
     username: "JohnDoe",
     dietPreferences: ["Vegetarian", "Gluten-free"],
-    allergies: ["Peanuts", "Shellfish"]
+    allergies: ["Peanuts", "Shellfish"],
   };
 
-  // Initialize tags
   createTags(dietTagsContainer, DIET_PREFERENCES, mockUserData.dietPreferences);
   createTags(allergyTagsContainer, ALLERGIES, mockUserData.allergies);
 
-  // Populate form with existing data
-  document.getElementById("email").value = mockUserData.email;
-  document.getElementById("username").value = mockUserData.username;
+  const emailInput = document.getElementById("email");
+  const usernameInput = document.getElementById("username");
+
+  if (emailInput) emailInput.value = mockUserData.email;
+  if (usernameInput) usernameInput.value = mockUserData.username;
 
   profileForm.addEventListener("submit", (e) => {
     e.preventDefault();
+    setMessage(messageBox, "", "");
 
-    const username = document.getElementById("username").value.trim();
+    const username = usernameInput ? usernameInput.value.trim() : "";
     const selectedDietPreferences = getSelectedTags(dietTagsContainer);
     const selectedAllergies = getSelectedTags(allergyTagsContainer);
 
     if (!username) {
-      setMessage(profileMessage, "Username is required.", "error");
+      setMessage(messageBox, "Username is required.", "error");
       return;
     }
 
     if (username.length < 3) {
-      setMessage(profileMessage, "Username must be at least 3 characters long.", "error");
+      setMessage(messageBox, "Username must be at least 3 characters long.", "error");
       return;
     }
 
-    // Log the data that would be sent to backend
     console.log({
       username,
       dietPreferences: selectedDietPreferences,
-      allergies: selectedAllergies
+      allergies: selectedAllergies,
     });
 
-    setMessage(profileMessage, "Profile updated successfully! Backend integration coming soon.", "ok");
+    setMessage(messageBox, "Profile updated successfully! Backend integration coming soon.", "ok");
   });
 }

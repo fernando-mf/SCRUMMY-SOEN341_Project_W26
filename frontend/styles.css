@@ -1,72 +1,58 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
+body{
   font-family: Arial, sans-serif;
-  background: #f6efef;
-  color: #111;
-}
-
-.page {
-  min-height: 100vh;
+  background: #f7eeee;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 16px;
+  padding-top: 40px;
 }
 
-.brand {
-  margin: 0;
+h1{
   font-size: 48px;
-  font-weight: 800;
+  margin-bottom: 5px;
 }
 
-.title {
-  margin: 12px 0 28px;
-  font-size: 28px;
-  font-weight: 700;
+h2{
+  margin-bottom: 25px;
 }
 
-.card {
+form{
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 380px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+label{
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+input{
   width: 100%;
-  max-width: 520px;
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 28px;
-  box-shadow: 0 1px 10px rgba(0,0,0,0.08);
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-label {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-input {
+button{
   width: 100%;
-  padding: 12px 10px;
-  border: 1px solid #777;
-  border-radius: 2px;
+  margin-top: 25px;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  background: #f4eded;
   font-size: 16px;
+  cursor: pointer;
 }
 
-.hint {
-  margin: 0;
-  font-size: 13px;
-  color: #444;
+.hint{
+  font-size: 12px;
+  color: #555;
+  margin-top: 4px;
 }
 
 .helper {
@@ -84,29 +70,32 @@ input {
   text-decoration: underline;
 }
 
-.message {
-  min-height: 18px;
-  margin: 0;
+/* Unified message box (works for register, login, profile) */
+.message{
+  margin: 0 0 15px 0;
+  padding: 12px;
+  border-radius: 6px;
+  background: #fff3f3;
+  border: 1px solid #caa;
+  color: #7a1a1a;
   font-size: 14px;
-  font-weight: 600;
+  min-height: 18px;
 }
 
-.message.error {
-  color: #b00020;
+.message.ok{
+  background: #f2fff5;
+  border-color: #9ec9a5;
+  color: #1f5a2a;
 }
 
-.message.ok {
-  color: #0a7a2f;
+.message.error{
+  background: #fff3f3;
+  border-color: #caa;
+  color: #7a1a1a;
 }
 
-.btn {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid #777;
-  border-radius: 2px;
-  background: #f3eded;
-  font-size: 16px;
-  cursor: pointer;
+.hidden{
+  display: none;
 }
 
 .btn:hover {

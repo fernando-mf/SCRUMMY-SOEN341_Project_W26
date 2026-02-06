@@ -1,7 +1,7 @@
 import type { RequestHandler } from "express";
-import { ConflictError, InvalidParamsError } from "@api/helpers/errors";
+import { InvalidParamsError } from "@api/helpers/errors";
 import { HttpStatus } from "@api/helpers/http";
-import type { CreateUserRequest, IUsersService, RegisterUserRequest, UpdateUserRequest } from "@api/users";
+import type { CreateUserRequest, IUsersService, UpdateUserRequest } from "@api/users";
 
 export function HandleCreateUser(service: IUsersService): RequestHandler {
   return async (req, res) => {
@@ -10,23 +10,6 @@ export function HandleCreateUser(service: IUsersService): RequestHandler {
     const user = await service.Create(userReq);
 
     res.status(HttpStatus.Created).json(user);
-  };
-}
-
-export function HandleRegister(service: IUsersService): RequestHandler {
-  return async (req, res) => {
-    try {
-      const registerReq = req.body as RegisterUserRequest;
-      await service.Register(registerReq);
-      res.status(HttpStatus.Created).json({ success: true });
-    } catch (err) {
-      console.error("Registration error:", err); // Add this line
-      if (err instanceof ConflictError) {
-        res.status(HttpStatus.BadRequest).json({ success: false, error: "EXISTS" });
-      } else {
-        res.status(HttpStatus.BadRequest).json({ success: false });
-      }
-    }
   };
 }
 

@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import { NeonDbError, NeonQueryFunction } from "@neondatabase/serverless";
 import { ConflictError, NotFoundError } from "@api/helpers/errors";
 import { PostgresErrorCode } from "@api/helpers/postgres";

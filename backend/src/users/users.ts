@@ -8,7 +8,6 @@ export type User = {
   firstName: string;
   lastName: string;
   email: string;
-  password?: string;
   dietPreferences: string[];
   allergies: string[];
 };
@@ -31,20 +30,11 @@ type LoginResponse = {
 const createUserRequestSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(8), // could be changed to be more strict
 });
 
 export type CreateUserRequest = z.infer<typeof createUserRequestSchema>;
-
-const registerUserRequestSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  email: z.string().email(),
-  password: z.string().min(8),
-});
-
-export type RegisterUserRequest = z.infer<typeof registerUserRequestSchema>;
 
 const loginRequestSchema = z.object({
   email: z.string().email(),
@@ -64,7 +54,6 @@ export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
 
 export interface IUsersService {
   Create(request: CreateUserRequest): Promise<User>;
-  Register(request: RegisterUserRequest): Promise<User>;
   Login(request: LoginRequest): Promise<LoginResponse>;
   Update(userID: number, request: UpdateUserRequest): Promise<void>;
   Get(userID: number): Promise<User>;
@@ -83,26 +72,6 @@ export class UsersService implements IUsersService {
 
   async Create(req: CreateUserRequest): Promise<User> {
     const validation = createUserRequestSchema.safeParse(req);
-    if (validation.error) {
-      throw InvalidParamsError.FromZodError(validation.error);
-    }
-
-    const passwordHash = await bcrypt.hash(req.password, 12);
-
-    const user: Omit<UserInternal, "id"> = {
-      firstName: req.firstName,
-      lastName: req.lastName,
-      email: req.email,
-      passwordHash,
-      dietPreferences: [],
-      allergies: [],
-    };
-
-    return this.repository.Create(user);
-  }
-
-  async Register(req: RegisterUserRequest): Promise<User> {
-    const validation = registerUserRequestSchema.safeParse(req);
     if (validation.error) {
       throw InvalidParamsError.FromZodError(validation.error);
     }

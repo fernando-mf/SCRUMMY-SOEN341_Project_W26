@@ -22,6 +22,11 @@ export type AuthInfo = {
   passwordHash: string;
 };
 
+type LoginResponse = {
+  token: string;
+  expires_in: number;
+};
+
 const createUserRequestSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
@@ -49,7 +54,7 @@ export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
 
 export interface IUsersService {
   Create(request: CreateUserRequest): Promise<User>;
-  Login(request: LoginRequest): Promise<{user: User; token: string}>;
+  Login(request: LoginRequest): Promise<LoginResponse>;
   Update(userID: number, request: UpdateUserRequest): Promise<void>;
   Get(userID: number): Promise<User>;
 }
@@ -85,7 +90,7 @@ export class UsersService implements IUsersService {
     return this.repository.Create(user);
   }
 
-  async Login(req: LoginRequest): Promise<{user: User; token: string}>{
+  async Login(req: LoginRequest): Promise<LoginResponse> {
     const validation = loginRequestSchema.safeParse(req);
     if (validation.error) {
       throw InvalidParamsError.FromZodError(validation.error);
@@ -112,11 +117,9 @@ export class UsersService implements IUsersService {
       email: authInfo.email
     });
 
-    const user = await this.repository.Get(authInfo.id);
-
     return {
-      user,
       token,
+      expires_in: 3600
     };
   }
 
@@ -143,9 +146,5 @@ export class UsersService implements IUsersService {
   Get(userID: number): Promise<User> {
     return this.repository.Get(userID);
   }
-
-  async GetAuthInfo(userID: number): Promise<AuthInfo> {
-    const authInfo = await this.repository.GetAuthInfo(userID);
-    return authInfo;
-  }
+  
 }

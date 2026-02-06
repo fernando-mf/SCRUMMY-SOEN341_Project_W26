@@ -1,8 +1,8 @@
 import { Router } from "express";
 import swaggerUi from "swagger-ui-express";
 import type { Core } from "@api/core";
-import { HandleCreateUser, HandleGetUser, HandleUpdateUser } from "@api/http/controllers/users";
 import { HandleLogin } from "@api/http/controllers/auth";
+import { HandleCreateUser, HandleGetUser, HandleUpdateUser } from "@api/http/controllers/users";
 import spec from "@api/http/docs/swagger.json"; //  this is generated automatically after running `npm run dev` or `npm run build`
 import { RequireAuth } from "@api/http/middleware";
 

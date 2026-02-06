@@ -52,7 +52,7 @@ export class ConflictError extends AppError {
   code = "conflict";
 
   constructor(private err: string) {
-    super(`conflict: ${err}`)
+    super(`conflict: ${err}`);
   }
 
   GetMeta(): Record<string, unknown> {
@@ -67,7 +67,7 @@ export class AuthenticationError extends AppError {
   code = "authentication_failed";
 
   constructor(private err: string) {
-    super(`authentication: ${err}`)
+    super(`authentication: ${err}`);
   }
 
   GetMeta(): Record<string, unknown> {
@@ -85,7 +85,7 @@ export class InvalidParamsError extends AppError {
 
   constructor(...params: paramWithDescription[]) {
     const keys = params.map((p) => p.param);
-    super(`invalid params: ${Object.keys(keys).join(", ")}`);
+    super(`invalid params: ${keys.join(", ")}`);
 
     this.params = params.reduce(
       (acc, p) => ({

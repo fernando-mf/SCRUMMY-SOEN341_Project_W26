@@ -59,8 +59,7 @@ services:
       target: tests
     environment:
       DATABASE_URL: postgres://dev:dev@db:5432/mealmajor
-      NODE_ENV: development
-      PORT: 3000
+      API_URL: http://api:3000
     depends_on:
       api:
         condition: service_healthy

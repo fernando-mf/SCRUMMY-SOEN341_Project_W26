@@ -1,9 +1,12 @@
 import postgres from "postgres";
-import { UsersRepository, UsersService } from "@api/users";
+import { IUsersService, UsersRepository, UsersService } from "@api/users";
 
-export type Core = ReturnType<typeof NewCore>;
+// Core is our main entry point. It defines the services and features our application provides.
+export type Core = {
+  UsersService: IUsersService;
+};
 
-export function NewCore() {
+export function NewCore(): Core {
   const db = getDatabase();
 
   const usersRepository = new UsersRepository(db);

@@ -1,6 +1,6 @@
+import bcrypt from "bcrypt";
 import { z } from "zod";
 import { AuthenticationError, InvalidParamsError, NotFoundError } from "@api/helpers/errors";
-import bcrypt from "bcrypt";
 import { signToken } from "@api/helpers/jwt";
 
 export type User = {
@@ -22,7 +22,7 @@ export type AuthInfo = {
   passwordHash: string;
 };
 
-type LoginResponse = {
+export type LoginResponse = {
   token: string;
   expires_in: number;
 };
@@ -77,7 +77,7 @@ export class UsersService implements IUsersService {
     }
 
     const passwordHash = await bcrypt.hash(req.password, 12);
-    
+
     const user: Omit<UserInternal, "id"> = {
       firstName: req.firstName,
       lastName: req.lastName,
@@ -85,7 +85,7 @@ export class UsersService implements IUsersService {
       passwordHash,
       dietPreferences: [],
       allergies: [],
-    }
+    };
 
     return this.repository.Create(user);
   }
@@ -114,12 +114,12 @@ export class UsersService implements IUsersService {
 
     const token = signToken({
       sub: authInfo.id,
-      email: authInfo.email
+      email: authInfo.email,
     });
 
     return {
       token,
-      expires_in: 3600
+      expires_in: 3600,
     };
   }
 
@@ -146,5 +146,4 @@ export class UsersService implements IUsersService {
   Get(userID: number): Promise<User> {
     return this.repository.Get(userID);
   }
-  
 }

@@ -23,10 +23,7 @@ export function RequireAuth(req: Request, _res: Response, next: NextFunction) {
   const header = req.headers.authorization;
 
   if (!header || !header.startsWith("Bearer ")) {
-    throw new InvalidParamsError({
-      param: "authorization",
-      description: "missing or invalid Authorization header",
-    });
+    throw new AuthenticationError("missing token");
   }
 
   const token = header.substring(7);

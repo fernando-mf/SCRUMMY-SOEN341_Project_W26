@@ -8,10 +8,19 @@ export type User = {
   firstName: string;
   lastName: string;
   email: string;
-  passwordHash: string;
   dietPreferences: string[];
   allergies: string[];
-}; 
+};
+
+export type UserInternal = User & {
+  passwordHash: string;
+};
+
+export type AuthInfo = {
+  id: number;
+  email: string;
+  passwordHash: string;
+};
 
 const createUserRequestSchema = z.object({
   firstName: z.string().min(1),
@@ -43,15 +52,14 @@ export interface IUsersService {
   Login(request: LoginRequest): Promise<{user: User; token: string}>;
   Update(userID: number, request: UpdateUserRequest): Promise<void>;
   Get(userID: number): Promise<User>;
-  GetPublic(userID: number): Promise<Omit<User, "passwordHash">>;
 }
 
 export interface IUsersRepository {
-  Create(user: Omit<User, "id">): Promise<User>;
+  Create(user: Omit<User, "id">): Promise<UserInternal>;
   Update(userID: number, user: User): Promise<void>;
   Get(userID: number): Promise<User>;
-  GetPublic(userID: number): Promise<Omit<User, "passwordHash">>;
-  GetByEmail(email: string): Promise<User>;
+  GetAuthInfo(userID: number): Promise<AuthInfo>;
+  GetAuthInfoByEmail(email: string): Promise<AuthInfo>;
 }
 
 export class UsersService implements IUsersService {
@@ -65,7 +73,7 @@ export class UsersService implements IUsersService {
 
     const passwordHash = await bcrypt.hash(req.password, 12);
     
-    const user: Omit<User, "id"> = {
+    const user: Omit<UserInternal, "id"> = {
       firstName: req.firstName,
       lastName: req.lastName,
       email: req.email,
@@ -83,28 +91,31 @@ export class UsersService implements IUsersService {
       throw InvalidParamsError.FromZodError(validation.error);
     }
 
-    let user:User;
+    let authInfo: AuthInfo;
     try {
-      user = await this.repository.GetByEmail(req.email);
+      authInfo = await this.repository.GetAuthInfoByEmail(req.email);
     } catch (err) {
       if (err instanceof NotFoundError) {
         throw new AuthenticationError("wrong email or password");
       }
-      
+
       throw err;
     }
 
-    const isValid = await bcrypt.compare(req.password, user.passwordHash);
+    const isValid = await bcrypt.compare(req.password, authInfo.passwordHash);
     if (!isValid) {
       throw new AuthenticationError("wrong email or password");
     }
 
     const token = signToken({
-      sub: user.email // should be id?
-    })
+      sub: authInfo.id,
+      email: authInfo.email
+    });
+
+    const user = await this.repository.Get(authInfo.id);
 
     return {
-      user: user,
+      user,
       token,
     };
   }
@@ -120,7 +131,6 @@ export class UsersService implements IUsersService {
     const updatedUser: User = {
       id: currentUser.id,
       email: currentUser.email,
-      passwordHash: currentUser.passwordHash,
       firstName: req.firstName,
       lastName: req.lastName,
       dietPreferences: req.dietPreferences,
@@ -134,8 +144,8 @@ export class UsersService implements IUsersService {
     return this.repository.Get(userID);
   }
 
-  async GetPublic(userID: number): Promise<Omit<User, "passwordHash">> {
-    const user = await this.repository.GetPublic(userID);
-    return user;
+  async GetAuthInfo(userID: number): Promise<AuthInfo> {
+    const authInfo = await this.repository.GetAuthInfo(userID);
+    return authInfo;
   }
 }

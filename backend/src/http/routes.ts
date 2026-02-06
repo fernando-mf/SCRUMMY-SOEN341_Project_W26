@@ -22,8 +22,8 @@ export function Routes(core: Core) {
   router.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
 
   // Users routes
-  router.post("/users", HandleCreateUser(core.UsersService));
-  router.post("/auth", HandleLogin(core.UsersService));
+  router.post("/auth/register", HandleCreateUser(core.UsersService));
+  router.post("/auth/login", HandleLogin(core.UsersService));
 
   router.use(RequireAuth);
 

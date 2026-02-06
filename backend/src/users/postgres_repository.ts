@@ -1,12 +1,12 @@
 import { NeonDbError, NeonQueryFunction } from "@neondatabase/serverless";
 import { ConflictError, NotFoundError } from "@api/helpers/errors";
 import { PostgresErrorCode } from "@api/helpers/postgres";
-import type { IUsersRepository, User } from "./users";
+import type { IUsersRepository, User, AuthInfo, UserInternal } from "./users";
 
 export class UsersRepository implements IUsersRepository {
   constructor(private db: NeonQueryFunction<false, true>) {}
 
-  async Create(user: Omit<User, "id">): Promise<User> {
+  async Create(user: Omit<UserInternal, "id">): Promise<UserInternal> {
     try {
       const result = await this.db`
         INSERT INTO users (
@@ -25,19 +25,10 @@ export class UsersRepository implements IUsersRepository {
           ${user.dietPreferences},
           ${user.allergies}
         )
-        RETURNING
-          "id",
-          "firstName",
-          "lastName",
-          "email",
-          "passwordHash",
-          "dietPreferences",
-          "allergies",
-          "createdAt",
-          "updatedAt"
+        RETURNING *
       `;
 
-      return result.rows[0] as User;
+      return result.rows[0] as UserInternal;
     } catch (err) {
       if (err instanceof NeonDbError && err.code === PostgresErrorCode.UniqueViolation) {
         throw new ConflictError("email");
@@ -87,48 +78,35 @@ export class UsersRepository implements IUsersRepository {
     return user.rows[0] as User;
   }
 
-  async GetByEmail(email: string): Promise<User> {
+  async GetAuthInfoByEmail(email: string): Promise<AuthInfo> {
     const result = await this.db`
       SELECT
         "id",
-        "firstName",
-        "lastName",
         "email",
-        "passwordHash",
-        "dietPreferences",
-        "allergies",
-        "createdAt",
-        "updatedAt"
+        "passwordHash"
       FROM users
       WHERE "email" = ${email}
-    `;
-
-    if(result.rows.length === 0) {
-      throw new NotFoundError("user");
-    }
-
-    return result.rows[0] as User;
-  }
-
-  async GetPublic(userID: number): Promise<Omit<User, "passwordHash">> {
-    const result = await this.db`
-      SELECT
-        "id",
-        "firstName",
-        "lastName",
-        "email",
-        "dietPreferences",
-        "allergies",
-        "createdAt",
-        "updatedAt"
-      FROM users
-      WHERE "id" = ${userID}
     `;
 
     if (result.rows.length === 0) {
       throw new NotFoundError("user");
     }
 
-    return result.rows[0] as Omit<User, "passwordHash">;
+    return result.rows[0] as AuthInfo;
+  }
+
+  async GetAuthInfo(userID: number): Promise<AuthInfo> {
+    const result = await this.db`
+      SELECT
+        "id",
+        "email",
+        "passwordHash"
+      FROM users
+      WHERE "id" = ${userID}
+    `;
+    if (result.rows.length === 0) {
+      throw new NotFoundError("user");
+    }
+    return result.rows[0] as AuthInfo;
   }
 }

@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "http://localhost:3000/api";
 
 const registerForm = document.getElementById("register-form");
 const loginForm = document.getElementById("login-form");
@@ -82,7 +82,7 @@ function getSelectedTags(container) {
 
 /* ---------------- REGISTER ---------------- */
 async function registerRequest(firstName, lastName, email, password) {
-  const response = await fetch(`${BASE_URL}/register`, {
+  const response = await fetch(`${BASE_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ firstName, lastName, email, password }),
@@ -141,7 +141,12 @@ if (registerForm) {
     }
 
     try {
-      const result = await registerRequest(firstName, lastName, email, password);
+      const result = await registerRequest(
+        firstName,
+        lastName,
+        email,
+        password,
+      );
 
       if (!result.success) {
         if (result.status === 409) {
@@ -162,7 +167,7 @@ if (registerForm) {
 
 /* ---------------- LOGIN ---------------- */
 async function loginRequest(email, password) {
-  const response = await fetch(`${BASE_URL}/login`, {
+  const response = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -205,7 +210,11 @@ if (loginForm) {
 
       if (!result.success) {
         if (result.status === 404 || result.status === 401) {
-          setMessage(messageBox, "Account not found or wrong password.", "error");
+          setMessage(
+            messageBox,
+            "Account not found or wrong password.",
+            "error",
+          );
           return;
         }
         setMessage(messageBox, "Something went wrong.", "error");
@@ -257,7 +266,11 @@ if (profileForm) {
     }
 
     if (username.length < 3) {
-      setMessage(messageBox, "Username must be at least 3 characters long.", "error");
+      setMessage(
+        messageBox,
+        "Username must be at least 3 characters long.",
+        "error",
+      );
       return;
     }
 
@@ -267,6 +280,10 @@ if (profileForm) {
       allergies: selectedAllergies,
     });
 
-    setMessage(messageBox, "Profile updated successfully! Backend integration coming soon.", "ok");
+    setMessage(
+      messageBox,
+      "Profile updated successfully! Backend integration coming soon.",
+      "ok",
+    );
   });
 }

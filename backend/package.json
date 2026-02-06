@@ -13,7 +13,8 @@
     "format:check": "prettier . --check",
     "spec": "tsoa spec",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "test:integration:docker": "scripts/run-tests.sh"
+    "test:integration:docker": "scripts/run-tests.sh",
+    "test:integration:docker:Windows": "scripts\\run-tests.bat"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

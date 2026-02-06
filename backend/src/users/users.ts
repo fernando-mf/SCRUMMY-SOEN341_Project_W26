@@ -31,28 +31,27 @@ type LoginResponse = {
 const createUserRequestSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  email: z.email(),
-  password: z.string().min(8), //could be changed to be more strict
+  email: z.string().email(),
+  password: z.string().min(8), // could be changed to be more strict
 });
 
 export type CreateUserRequest = z.infer<typeof createUserRequestSchema>;
 
-<<<<<<< HEAD
 const registerUserRequestSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-=======
-const loginRequestSchema = z.object({
->>>>>>> main
-  email: z.email(),
+  email: z.string().email(),
   password: z.string().min(8),
 });
 
-<<<<<<< HEAD
 export type RegisterUserRequest = z.infer<typeof registerUserRequestSchema>;
-=======
+
+const loginRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
 export type LoginRequest = z.infer<typeof loginRequestSchema>;
->>>>>>> main
 
 const updateUserRequestSchema = z.object({
   firstName: z.string().min(1),
@@ -65,11 +64,8 @@ export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
 
 export interface IUsersService {
   Create(request: CreateUserRequest): Promise<User>;
-<<<<<<< HEAD
   Register(request: RegisterUserRequest): Promise<User>;
-=======
   Login(request: LoginRequest): Promise<LoginResponse>;
->>>>>>> main
   Update(userID: number, request: UpdateUserRequest): Promise<void>;
   Get(userID: number): Promise<User>;
 }
@@ -92,7 +88,7 @@ export class UsersService implements IUsersService {
     }
 
     const passwordHash = await bcrypt.hash(req.password, 12);
-    
+
     const user: Omit<UserInternal, "id"> = {
       firstName: req.firstName,
       lastName: req.lastName,
@@ -100,34 +96,37 @@ export class UsersService implements IUsersService {
       passwordHash,
       dietPreferences: [],
       allergies: [],
-    }
+    };
 
     return this.repository.Create(user);
   }
 
-<<<<<<< HEAD
   async Register(req: RegisterUserRequest): Promise<User> {
     const validation = registerUserRequestSchema.safeParse(req);
-=======
-  async Login(req: LoginRequest): Promise<LoginResponse> {
-    const validation = loginRequestSchema.safeParse(req);
->>>>>>> main
     if (validation.error) {
       throw InvalidParamsError.FromZodError(validation.error);
     }
 
-<<<<<<< HEAD
-    const user: User = {
+    const passwordHash = await bcrypt.hash(req.password, 12);
+
+    const user: Omit<UserInternal, "id"> = {
       firstName: req.firstName,
       lastName: req.lastName,
       email: req.email,
-      password: req.password,
+      passwordHash,
       dietPreferences: [],
       allergies: [],
-    }
+    };
 
     return this.repository.Create(user);
-=======
+  }
+
+  async Login(req: LoginRequest): Promise<LoginResponse> {
+    const validation = loginRequestSchema.safeParse(req);
+    if (validation.error) {
+      throw InvalidParamsError.FromZodError(validation.error);
+    }
+
     let authInfo: AuthInfo;
     try {
       authInfo = await this.repository.GetAuthInfoByEmail(req.email);
@@ -146,14 +145,13 @@ export class UsersService implements IUsersService {
 
     const token = signToken({
       sub: authInfo.id,
-      email: authInfo.email
+      email: authInfo.email,
     });
 
     return {
       token,
-      expires_in: 3600
+      expires_in: 3600,
     };
->>>>>>> main
   }
 
   async Update(userID: number, req: UpdateUserRequest): Promise<void> {
@@ -179,5 +177,4 @@ export class UsersService implements IUsersService {
   Get(userID: number): Promise<User> {
     return this.repository.Get(userID);
   }
-  
 }

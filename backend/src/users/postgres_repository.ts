@@ -9,18 +9,12 @@ export class UsersRepository implements IUsersRepository {
 
   async Create(user: Omit<UserInternal, "id">): Promise<UserInternal> {
     try {
-      const hashedPassword = user.password ? await bcrypt.hash(user.password, 10) : undefined;
-
       const result = await this.db`
         INSERT INTO users (
           "firstName",
           "lastName",
           "email",
-<<<<<<< HEAD
-          "password",
-=======
           "passwordHash",
->>>>>>> main
           "dietPreferences",
           "allergies"
         )
@@ -28,11 +22,7 @@ export class UsersRepository implements IUsersRepository {
           ${user.firstName},
           ${user.lastName},
           ${user.email},
-<<<<<<< HEAD
-          ${hashedPassword || null},
-=======
           ${user.passwordHash},
->>>>>>> main
           ${user.dietPreferences},
           ${user.allergies}
         )

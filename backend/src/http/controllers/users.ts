@@ -36,7 +36,6 @@ export function HandleGetUser(service: IUsersService): RequestHandler {
     }
 
     const user = await service.Get(userID);
-
     res.status(HttpStatus.Ok).json(user);
   };
 }

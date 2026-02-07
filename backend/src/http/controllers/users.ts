@@ -27,9 +27,10 @@ export function HandleCreateUser(service: IUsersService): RequestHandler {
 
 export function HandleUpdateUser(service: IUsersService): RequestHandler {
   return async (req, res) => {
-    const userID = parseInt(req.params.id);
+    const auth = (req as any).auth;
+    const userID = parseInt(auth?.sub);
     if (isNaN(userID)) {
-      throw new InvalidParamsError({ param: "id", description: "user ID must be a number" });
+      throw new InvalidParamsError({ param: "token", description: "session token must include a numeric user ID" });
     }
 
     const user = req.body as UpdateUserRequest;
@@ -53,9 +54,10 @@ export function HandleUpdateMe(service: IUsersService): RequestHandler {
 
 export function HandleGetUser(service: IUsersService): RequestHandler {
   return async (req, res) => {
-    const userID = parseInt(req.params.id);
+    const auth = (req as any).auth;
+    const userID = parseInt(auth?.sub);
     if (isNaN(userID)) {
-      throw new InvalidParamsError({ param: "id", description: "user ID must be a number" });
+      throw new InvalidParamsError({ param: "token", description: "session token must include a numeric user ID" });
     }
 
     const user = await service.Get(userID);

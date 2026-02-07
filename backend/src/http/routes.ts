@@ -27,10 +27,8 @@ export function Routes(core: Core) {
 
   router.use(RequireAuth);
 
-  router.get("/users/me", HandleGetMe(core.UsersService));
-  router.put("/users/me", HandleUpdateMe(core.UsersService));
-  router.get("/users/:id", HandleGetUser(core.UsersService));
-  router.put("/users/:id", HandleUpdateUser(core.UsersService));
+  router.get("/users", HandleGetUser(core.UsersService));
+  router.put("/users", HandleUpdateUser(core.UsersService));
   // Add more routes here
   // ...
 

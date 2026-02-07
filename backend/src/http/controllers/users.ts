@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { InvalidParamsError } from "@api/helpers/errors";
+import { AuthenticationError, InvalidParamsError } from "@api/helpers/errors";
 import { HttpStatus } from "@api/helpers/http";
 import type { CreateUserRequest, IUsersService, UpdateUserRequest } from "@api/users";
 
@@ -18,7 +18,7 @@ export function HandleUpdateUser(service: IUsersService): RequestHandler {
     const auth = (req as any).auth;
     const userID = parseInt(auth?.sub);
     if (isNaN(userID)) {
-      throw new InvalidParamsError({ param: "token", description: "session token must include a numeric user ID" });
+      throw new AuthenticationError("invalid token");
     }
 
     const user = req.body as UpdateUserRequest;
@@ -34,7 +34,7 @@ export function HandleGetUser(service: IUsersService): RequestHandler {
     const auth = (req as any).auth;
     const userID = parseInt(auth?.sub);
     if (isNaN(userID)) {
-      throw new InvalidParamsError({ param: "token", description: "session token must include a numeric user ID" });
+      throw new AuthenticationError("invalid token");
     }
 
     const user = await service.Get(userID);

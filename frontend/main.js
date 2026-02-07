@@ -221,7 +221,9 @@ if (loginForm) {
         return;
       }
 
-      // If your backend returns a token, you can store it here later.
+      if (result.data && result.data.token) {
+        localStorage.setItem("token", result.data.token);
+      }
       window.location.href = "profile.html";
     } catch {
       setMessage(messageBox, "Something went wrong.", "error");
@@ -229,61 +231,86 @@ if (loginForm) {
   });
 }
 
-/* ---------------- PROFILE (UI only for now) ---------------- */
+/* ---------------- PROFILE ---------------- */
 if (profileForm) {
   const messageBox = document.getElementById("form-message");
   const dietTagsContainer = document.getElementById("diet-tags");
   const allergyTagsContainer = document.getElementById("allergy-tags");
 
-  // Mock user data with selected preferences
-  const mockUserData = {
-    email: "user@example.com",
-    username: "JohnDoe",
-    dietPreferences: ["Vegetarian", "Gluten-free"],
-    allergies: ["Peanuts", "Shellfish"],
-  };
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "login.html";
+  } else {
+    const emailInput = document.getElementById("email");
+    const firstNameInput = document.getElementById("firstName");
+    const lastNameInput = document.getElementById("lastName");
 
-  createTags(dietTagsContainer, DIET_PREFERENCES, mockUserData.dietPreferences);
-  createTags(allergyTagsContainer, ALLERGIES, mockUserData.allergies);
+    const authHeaders = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
 
-  const emailInput = document.getElementById("email");
-  const usernameInput = document.getElementById("username");
+    async function loadProfile() {
+      try {
+        const response = await fetch(`${BASE_URL}/users`, {
+          headers: authHeaders,
+        });
 
-  if (emailInput) emailInput.value = mockUserData.email;
-  if (usernameInput) usernameInput.value = mockUserData.username;
+        if (!response.ok) {
+          setMessage(messageBox, "Failed to load profile.", "error");
+          return;
+        }
 
-  profileForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    setMessage(messageBox, "", "");
+        const user = await response.json();
 
-    const username = usernameInput ? usernameInput.value.trim() : "";
-    const selectedDietPreferences = getSelectedTags(dietTagsContainer);
-    const selectedAllergies = getSelectedTags(allergyTagsContainer);
+        if (emailInput) emailInput.value = user.email || "";
+        if (firstNameInput) firstNameInput.value = user.firstName || "";
+        if (lastNameInput) lastNameInput.value = user.lastName || "";
 
-    if (!username) {
-      setMessage(messageBox, "Username is required.", "error");
-      return;
+        createTags(dietTagsContainer, DIET_PREFERENCES, user.dietPreferences || []);
+        createTags(allergyTagsContainer, ALLERGIES, user.allergies || []);
+      } catch {
+        setMessage(messageBox, "Failed to load profile.", "error");
+      }
     }
 
-    if (username.length < 3) {
-      setMessage(
-        messageBox,
-        "Username must be at least 3 characters long.",
-        "error",
-      );
-      return;
-    }
+    loadProfile();
 
-    console.log({
-      username,
-      dietPreferences: selectedDietPreferences,
-      allergies: selectedAllergies,
+    profileForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setMessage(messageBox, "", "");
+
+      const firstName = firstNameInput ? firstNameInput.value.trim() : "";
+      const lastName = lastNameInput ? lastNameInput.value.trim() : "";
+      const selectedDietPreferences = getSelectedTags(dietTagsContainer);
+      const selectedAllergies = getSelectedTags(allergyTagsContainer);
+
+      if (!firstName || !lastName) {
+        setMessage(messageBox, "First name and last name are required.", "error");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BASE_URL}/users`, {
+          method: "PUT",
+          headers: authHeaders,
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            dietPreferences: selectedDietPreferences,
+            allergies: selectedAllergies,
+          }),
+        });
+
+        if (!response.ok) {
+          setMessage(messageBox, "Failed to update profile.", "error");
+          return;
+        }
+
+        setMessage(messageBox, "Profile updated successfully.", "ok");
+      } catch {
+        setMessage(messageBox, "Failed to update profile.", "error");
+      }
     });
-
-    setMessage(
-      messageBox,
-      "Profile updated successfully! Backend integration coming soon.",
-      "ok",
-    );
-  });
+  }
 }

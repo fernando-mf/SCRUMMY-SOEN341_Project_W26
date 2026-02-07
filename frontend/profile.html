@@ -14,8 +14,13 @@
     <section class="card">
       <form id="profile-form" class="form" novalidate>
         <div class="field">
-          <label for="username">Username</label>
-          <input type="text" id="username" name="username" autocomplete="username" required />
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" name="firstName" autocomplete="given-name" required />
+        </div>
+
+        <div class="field">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" name="lastName" autocomplete="family-name" required />
         </div>
 
         <div class="field">
@@ -36,7 +41,7 @@
           <p class="hint">Select all that apply.</p>
         </div>
 
-        <p id="message" class="message" aria-live="polite"></p>
+        <div id="form-message" class="message hidden" role="alert" aria-live="polite"></div>
 
         <button type="submit" class="btn">Save Changes</button>
       </form>
@@ -47,6 +52,6 @@
     </section>
   </main>
 
-  <script src="main.js"></script>
+  <script src="main.js?v=2"></script>
 </body>
 </html>

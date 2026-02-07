@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Path, Put, Route, SuccessResponse, Response, Tags } from "tsoa";
+import { Body, Controller, Post, Get, Path, Put, Route, SuccessResponse, Response, Tags, Security } from "tsoa";
 import { User, UpdateUserRequest, CreateUserRequest } from "@api/users";
 import { HttpStatus } from "@api/helpers/http";
 
@@ -12,14 +12,17 @@ class UsersDocs extends Controller {
     return null as any;
   }
 
-  @Get("{id}")
+  @Get()
+  @Security("jwt")
   @Response(HttpStatus.NotFound, "User not found")
-  async getUser(@Path() id: number): Promise<User> {
+  async getUser(): Promise<User> {
     return null as any;
   }
 
-  @Put("{id}")
+  @Put()
+  @Security("jwt")
   @SuccessResponse(204, "No Content")
   @Response(HttpStatus.NotFound, "User not found")
-  async updateUser(@Path() id: number, @Body() body: UpdateUserRequest): Promise<void> {}
+  async updateUser(@Body() body: UpdateUserRequest): Promise<void> {}
+
 }

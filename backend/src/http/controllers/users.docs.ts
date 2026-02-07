@@ -18,8 +18,19 @@ class UsersDocs extends Controller {
     return null as any;
   }
 
+  @Get("me")
+  @Response(HttpStatus.NotFound, "User not found")
+  async getMe(): Promise<User> {
+    return null as any;
+  }
+
   @Put("{id}")
   @SuccessResponse(204, "No Content")
   @Response(HttpStatus.NotFound, "User not found")
   async updateUser(@Path() id: number, @Body() body: UpdateUserRequest): Promise<void> {}
+
+  @Put("me")
+  @SuccessResponse(204, "No Content")
+  @Response(HttpStatus.NotFound, "User not found")
+  async updateMe(@Body() body: UpdateUserRequest): Promise<void> {}
 }

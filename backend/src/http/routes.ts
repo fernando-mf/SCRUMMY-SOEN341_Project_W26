@@ -2,7 +2,7 @@ import { Router } from "express";
 import swaggerUi from "swagger-ui-express";
 import type { Core } from "@api/core";
 import { HandleLogin } from "@api/http/controllers/auth";
-import { HandleCreateUser, HandleGetUser, HandleUpdateUser } from "@api/http/controllers/users";
+import { HandleCreateUser, HandleGetMe, HandleGetUser, HandleUpdateMe, HandleUpdateUser } from "@api/http/controllers/users";
 import spec from "@api/http/docs/swagger.json"; //  this is generated automatically after running `npm run dev` or `npm run build`
 import { RequireAuth } from "@api/http/middleware";
 
@@ -27,6 +27,8 @@ export function Routes(core: Core) {
 
   router.use(RequireAuth);
 
+  router.get("/users/me", HandleGetMe(core.UsersService));
+  router.put("/users/me", HandleUpdateMe(core.UsersService));
   router.get("/users/:id", HandleGetUser(core.UsersService));
   router.put("/users/:id", HandleUpdateUser(core.UsersService));
   // Add more routes here

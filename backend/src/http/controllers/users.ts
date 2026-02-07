@@ -1,7 +1,19 @@
 import type { RequestHandler } from "express";
-import { InvalidParamsError } from "@api/helpers/errors";
+import { AuthenticationError, InvalidParamsError } from "@api/helpers/errors";
 import { HttpStatus } from "@api/helpers/http";
 import type { CreateUserRequest, IUsersService, UpdateUserRequest } from "@api/users";
+
+function getAuthUserId(req: Parameters<RequestHandler>[0]) {
+  const auth = (req as any).auth as { sub?: number | string } | undefined;
+  const rawId = auth?.sub;
+  const userId = typeof rawId === "string" ? parseInt(rawId, 10) : rawId;
+
+  if (!userId || Number.isNaN(userId)) {
+    throw new AuthenticationError("invalid token");
+  }
+
+  return userId;
+}
 
 export function HandleCreateUser(service: IUsersService): RequestHandler {
   return async (req, res) => {
@@ -28,6 +40,17 @@ export function HandleUpdateUser(service: IUsersService): RequestHandler {
   };
 }
 
+export function HandleUpdateMe(service: IUsersService): RequestHandler {
+  return async (req, res) => {
+    const userID = getAuthUserId(req);
+    const user = req.body as UpdateUserRequest;
+
+    await service.Update(userID, user);
+
+    res.status(HttpStatus.NoContent).send();
+  };
+}
+
 export function HandleGetUser(service: IUsersService): RequestHandler {
   return async (req, res) => {
     const userID = parseInt(req.params.id);
@@ -35,6 +58,14 @@ export function HandleGetUser(service: IUsersService): RequestHandler {
       throw new InvalidParamsError({ param: "id", description: "user ID must be a number" });
     }
 
+    const user = await service.Get(userID);
+    res.status(HttpStatus.Ok).json(user);
+  };
+}
+
+export function HandleGetMe(service: IUsersService): RequestHandler {
+  return async (req, res) => {
+    const userID = getAuthUserId(req);
     const user = await service.Get(userID);
     res.status(HttpStatus.Ok).json(user);
   };

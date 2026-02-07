@@ -252,7 +252,7 @@ if (profileForm) {
 
     async function loadProfile() {
       try {
-        const response = await fetch(`${BASE_URL}/users/me`, {
+        const response = await fetch(`${BASE_URL}/users`, {
           headers: authHeaders,
         });
 
@@ -291,7 +291,7 @@ if (profileForm) {
       }
 
       try {
-        const response = await fetch(`${BASE_URL}/users/me`, {
+        const response = await fetch(`${BASE_URL}/users`, {
           method: "PUT",
           headers: authHeaders,
           body: JSON.stringify({

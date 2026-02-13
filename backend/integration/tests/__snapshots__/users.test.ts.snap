@@ -1,0 +1,40 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`UsersService > Create > success > create user response 1`] = `
+{
+  "allergies": [],
+  "dietPreferences": [],
+  "email": "test@gmail.com",
+  "firstName": "Jon",
+  "id": 1,
+  "lastName": "Doe",
+}
+`;
+
+exports[`UsersService > Get > success > get user response 1`] = `
+{
+  "allergies": [],
+  "dietPreferences": [],
+  "email": "test@gmail.com",
+  "firstName": "Jon",
+  "id": 1,
+  "lastName": "Doe",
+}
+`;
+
+exports[`UsersService > Update > success > update user response 1`] = `
+{
+  "allergies": [
+    "allergy1",
+    "allergy2",
+  ],
+  "dietPreferences": [
+    "diet1",
+    "diet2",
+  ],
+  "email": "test@gmail.com",
+  "firstName": "first name update",
+  "id": 1,
+  "lastName": "last name update",
+}
+`;

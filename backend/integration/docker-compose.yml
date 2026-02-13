@@ -38,6 +38,7 @@ services:
     environment:
       DATABASE_URL: postgres://dev:dev@db:5432/mealmajor
       NODE_ENV: development
+      JWT_SECRET: test-secret
       PORT: 3000
     ports:
       - "3000:3000"

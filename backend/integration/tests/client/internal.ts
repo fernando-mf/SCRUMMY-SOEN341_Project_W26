@@ -1,3 +1,5 @@
+import { HttpStatus } from "@api/helpers/http";
+
 // apiError represents our custom errors, see `ErrorMiddleware` in backend/src/http/middleware.ts
 type apiError = { code: string };
 
@@ -41,9 +43,7 @@ export class ApiClient {
     };
 
     if (this.accessToken) {
-      params.headers = {
-        Authorization: `Bearer ${this.accessToken}`,
-      };
+      params.headers = { ...params.headers, Authorization: `Bearer ${this.accessToken}` };
     }
 
     const res = await fetch(`${this.baseUrl}${req.url}`, params);
@@ -53,6 +53,10 @@ export class ApiClient {
       if (isAppError(rawError)) {
         throw new ApiError(res.status, rawError);
       }
+    }
+
+    if (res.status === HttpStatus.NoContent) {
+      return undefined as T;
     }
 
     return res.json() as Promise<T>;

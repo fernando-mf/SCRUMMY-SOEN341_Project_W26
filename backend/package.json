@@ -6,6 +6,7 @@
   "scripts": {
     "predev": "npm run spec",
     "dev": "nodemon -r tsconfig-paths/register src/http/index.ts",
+    "dev:docker": "docker compose -f integration/docker-compose.yml down && docker compose -f integration/docker-compose.yml up api --build --abort-on-container-exit --attach api",
     "prebuild": "npm run spec",
     "build": "tsc && tsc-alias",
     "start": "node dist/http/index.js",

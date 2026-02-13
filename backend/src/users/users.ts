@@ -60,7 +60,7 @@ export interface IUsersService {
 }
 
 export interface IUsersRepository {
-  Create(user: Omit<User, "id">): Promise<UserInternal>;
+  Create(user: Omit<UserInternal, "id">): Promise<User>;
   Update(userID: number, user: User): Promise<void>;
   Get(userID: number): Promise<User>;
   GetAuthInfo(userID: number): Promise<AuthInfo>;

@@ -6,7 +6,7 @@ import type { AuthInfo, IUsersRepository, User, UserInternal } from "./users";
 export class UsersRepository implements IUsersRepository {
   constructor(private db: postgres.Sql) {}
 
-  async Create(user: Omit<UserInternal, "id">): Promise<UserInternal> {
+  async Create(user: Omit<UserInternal, "id">): Promise<User> {
     try {
       const result = await this.db`
         INSERT INTO users (
@@ -34,7 +34,7 @@ export class UsersRepository implements IUsersRepository {
           "allergies"
       `;
 
-      return result[0] as UserInternal;
+      return result[0] as User;
     } catch (err) {
       if (err instanceof postgres.PostgresError && err.code === PostgresErrorCode.UniqueViolation) {
         throw new ConflictError("email");

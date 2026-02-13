@@ -25,7 +25,13 @@ export class UsersRepository implements IUsersRepository {
           ${user.dietPreferences},
           ${user.allergies}
         )
-        RETURNING *
+        RETURNING
+          "id",
+          "firstName",
+          "lastName",
+          "email",
+          "dietPreferences",
+          "allergies"
       `;
 
       return result[0] as UserInternal;
@@ -62,11 +68,8 @@ export class UsersRepository implements IUsersRepository {
         "firstName",
         "lastName",
         "email",
-        "passwordHash",
         "dietPreferences",
-        "allergies",
-        "createdAt",
-        "updatedAt"
+        "allergies"
       FROM users
       WHERE "id" = ${userID}
     `;

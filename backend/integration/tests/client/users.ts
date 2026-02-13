@@ -22,7 +22,7 @@ export class UsersHttpClient implements IUsersService {
 
   Update(userID: number, request: UpdateUserRequest): Promise<void> {
     return this.client.Request({
-      url: `/api/users/${userID}`,
+      url: `/api/users`,
       method: "PUT",
       body: request,
     });
@@ -30,7 +30,7 @@ export class UsersHttpClient implements IUsersService {
 
   Get(userID: number): Promise<User> {
     return this.client.Request({
-      url: `/api/users/${userID}`,
+      url: `/api/users`,
       method: "GET",
     });
   }

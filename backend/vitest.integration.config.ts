@@ -1,3 +1,4 @@
+import path from "path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
@@ -8,6 +9,11 @@ export default defineConfig({
     pool: "forks",
     poolOptions: {
       forks: { singleFork: true },
+    },
+  },
+  resolve: {
+    alias: {
+      "@api": path.resolve(__dirname, "./src"),
     },
   },
 });

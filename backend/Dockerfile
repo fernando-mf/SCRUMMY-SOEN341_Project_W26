@@ -19,7 +19,7 @@ COPY scripts/migrate.js ./migrate.js
 CMD ["node", "migrate.js"]
 
 # Test runner
-FROM base AS tests
+FROM api AS tests
 COPY integration/tests ./integration/tests
 COPY vitest.integration.config.ts ./
 CMD ["npm", "run", "test:integration"]

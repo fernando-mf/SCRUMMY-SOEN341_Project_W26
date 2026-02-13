@@ -10,8 +10,11 @@ npm run dev           # Start development server (http://localhost:3000)
 **Available Scripts:**
 
 - `npm run dev` - Start development server with hot reload
+- `npm run dev:docker` - Runs the production build in a containerized development environment, useful for running integration tests locally
 - `npm run build` - Compile TypeScript to JavaScript
 - `npm start` - Run production build
+- `npm run test:integration` - Runs the integration tests, **this needs a running API and Database** otherwise tests are going to fail
+- `npm run test:integration:docker` - Runs the integration tests suite in a containerized environment, this spins up its own local api and database.
 
 ## Project Structure
 
@@ -65,3 +68,40 @@ This is the way of delivering the app to the user. In our case, we're using a HT
         - `/{thirdParty}_provider.ts`: other third parties' implementations
 
     - `core.ts`: single unit containing all application features
+
+## Running Integration Tests
+
+### Docker environment
+
+- Run `npm run test:integration:docker` or `npm run test:integration:docker:Windows` (if you are on Windows).
+- That will run the tests as well as their dependencies. Once the script completes, the results will be printed in the terminal.
+
+### Local development
+
+This option is useful for a quick feedback loop when writing integration tests.
+
+1. In one terminal window run `npm run dev:docker`, it will run the API and the Database in docker.
+
+2. In a different terminal window run `npm run test:integration`.
+
+If you make changes to your integration tests, just repeat step 2 and check if the tests pass. This is much faster than going through docker every time tests are changed.
+
+## Writing Integration Tests
+
+1. First complete your task in `/src`
+2. Start the app using docker `npm run dev:docker`
+3. Write your test in `/integration/tests`, follow existing examples
+4. In a different terminal, run your test with `npm run test:integration`
+5. If the test fails and you have to change the source code (`/src`), stop the docker server and start it again (`npm run dev:docker`). Then run the tests `npm run test:integration`
+
+**Updating snapshots**
+
+Just add the flag `-- -u` to the `npm run test:integration` command. 
+
+```sh
+npm run test:integration -- -u
+```
+
+Some tests use vitest snapshots, if any of the tested models changes e.g. adding a new field to the `User` model, the test will fail. We have 2 options:
+1. Failure is expected: update snapshots
+2. Failure is unexpected: double check the code, maybe a bug was introduced

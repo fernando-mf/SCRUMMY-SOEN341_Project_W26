@@ -157,8 +157,19 @@ if (registerForm) {
         return;
       }
 
-      setMessage(messageBox, "Account created successfully.", "ok");
-      registerForm.reset();
+      setMessage(messageBox, "Account created successfully. Redirecting...", "ok");
+      localStorage.setItem("token", result.data.token);
+
+      //this is a brute force way to disable inputs when redirecting. Smt better could maybe be used
+      Array.from(registerForm.elements).forEach((el) => {
+        el.disabled = true;
+      });
+
+      setTimeout(() => {
+        window.location.href = "profile.html";
+      }, 3000);
+
+      //registerForm.reset();
     } catch {
       setMessage(messageBox, "Something went wrong.", "error");
     }

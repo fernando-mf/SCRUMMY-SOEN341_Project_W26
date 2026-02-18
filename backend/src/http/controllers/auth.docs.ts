@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Route, SuccessResponse, Response, Tags } from "tsoa";
 import { HttpStatus } from "@api/helpers/http";
-import { CreateUserRequest, LoginRequest, LoginResponse, User } from "@api/users";
+import { CreateUserRequest, LoginRequest, LoginResponse, CreateUserResponse } from "@api/users";
 
 @Route("api/auth")
 @Tags("Auth")
@@ -15,7 +15,7 @@ class AuthDocs extends Controller {
   @Post("register")
   @SuccessResponse(HttpStatus.Created, "User Created")
   @Response(HttpStatus.Conflict, "Email already exists")
-  async createUser(@Body() body: CreateUserRequest): Promise<User> {
+  async createUser(@Body() body: CreateUserRequest): Promise<CreateUserResponse> {
     return null as any;
   }
 }

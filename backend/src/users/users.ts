@@ -27,6 +27,12 @@ export type LoginResponse = {
   expires_in: number;
 };
 
+export type CreateUserResponse = {
+  user: User; //this or AuthInfo?
+  token: string;
+  expires_in: number;
+};
+
 const createUserRequestSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
@@ -53,7 +59,7 @@ const updateUserRequestSchema = z.object({
 export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
 
 export interface IUsersService {
-  Create(request: CreateUserRequest): Promise<User>;
+  Create(request: CreateUserRequest): Promise<CreateUserResponse>;
   Login(request: LoginRequest): Promise<LoginResponse>;
   Update(userID: number, request: UpdateUserRequest): Promise<void>;
   Get(userID: number): Promise<User>;
@@ -70,7 +76,7 @@ export interface IUsersRepository {
 export class UsersService implements IUsersService {
   constructor(private repository: IUsersRepository) {}
 
-  async Create(req: CreateUserRequest): Promise<User> {
+  async Create(req: CreateUserRequest): Promise<CreateUserResponse> {
     const validation = createUserRequestSchema.safeParse(req);
     if (validation.error) {
       throw InvalidParamsError.FromZodError(validation.error);
@@ -87,7 +93,18 @@ export class UsersService implements IUsersService {
       allergies: [],
     };
 
-    return this.repository.Create(user);
+    const createdUser = await this.repository.Create(user);
+
+    const token = signToken({
+      sub: createdUser.id,
+      email: createdUser.email,
+    });
+
+    return {
+      user: createdUser,
+      token,
+      expires_in: 3600,
+    };
   }
 
   async Login(req: LoginRequest): Promise<LoginResponse> {

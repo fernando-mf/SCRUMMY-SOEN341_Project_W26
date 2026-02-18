@@ -29,10 +29,9 @@ export async function BeginUserSession(c: Client, params?: CreateUserRequest) {
     ...params,
   };
 
-  const user = await c.UsersService.Create(newUser);
-  const auth = await c.UsersService.Login({ email: newUser.email, password: newUser.password });
+  const { user, token } = await c.UsersService.Create(newUser);
 
-  c.SetAccessToken(auth.token);
+  c.SetAccessToken(token);
 
-  return { user, auth };
+  return { user, token };
 }

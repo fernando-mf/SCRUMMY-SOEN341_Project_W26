@@ -11,5 +11,7 @@ Our setup is supported by docker compose.
 - Install [docker](https://www.docker.com/get-started/)
 
 ### Running test suite
+While docker engine is running:
 
-- Run `npm run test:integration:docker`
+- Run (Unix) `npm run test:integration:docker`
+- Run (Windows) `npm run test:integration:docker:Windows`

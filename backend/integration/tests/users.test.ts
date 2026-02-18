@@ -12,15 +12,16 @@ describe("UsersService", () => {
     test("success", async () => {
       const client = NewClient();
 
-      const user = await client.UsersService.Create({
+      const res = await client.UsersService.Create({
         email: "test@gmail.com",
         firstName: "Jon",
         lastName: "Doe",
         password: "password123",
       });
 
-      expect(user.id).greaterThan(0);
-      expect(user).toMatchSnapshot("create user response");
+      expect(res.user.id).greaterThan(0);
+      expect(res.token).toBeTruthy();
+      expect(res.user).toMatchSnapshot("create user response");
     });
 
     test("duplicate email", async () => {

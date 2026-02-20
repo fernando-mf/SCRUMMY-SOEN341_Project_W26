@@ -10,9 +10,10 @@
 - User registration and login  
 - Profile management (diet preferences, allergies)
 
-**Sprint 2 focus:** TBA 
-- TBA
-- TBA
+**Sprint 2 focus:** Recipe Management 
+- Create, edit and delete recipes
+- Recipes contain attributes (prep, difficulty, cost, etc.)
+- Search and filter recipes by certain profile and recipe attributes
 
 **Sprint 3 focus:** TBA 
 - TBA

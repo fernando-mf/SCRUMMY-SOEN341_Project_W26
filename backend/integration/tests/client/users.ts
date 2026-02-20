@@ -1,10 +1,10 @@
-import { CreateUserRequest, IUsersService, LoginRequest, LoginResponse, UpdateUserRequest, User } from "@api/users";
+import { CreateUserRequest, CreateUserResponse, IUsersService, LoginRequest, LoginResponse, UpdateUserRequest, User } from "@api/users";
 import { ApiClient } from "./internal";
 
 export class UsersHttpClient implements IUsersService {
   constructor(private client: ApiClient) {}
 
-  Create(request: CreateUserRequest): Promise<User> {
+  Create(request: CreateUserRequest): Promise<CreateUserResponse> {
     return this.client.Request({
       url: "/api/auth/register",
       method: "POST",

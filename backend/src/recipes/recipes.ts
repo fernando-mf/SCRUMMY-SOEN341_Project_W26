@@ -30,7 +30,7 @@ export type Recipe = {
   difficulty: Difficulty;
   dietaryTags: string[];
   allergens: string;
-  servings?: number;
+  servings: number;
 };
 
 //Request Schemas

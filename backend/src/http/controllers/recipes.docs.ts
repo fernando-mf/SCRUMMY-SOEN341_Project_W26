@@ -5,7 +5,7 @@ import { CreateRecipeRequest, CreateRecipeResponse } from "@api/recipes";
 @Route("api/recipes")
 @Tags("Recipes")
 class RecipesDocs extends Controller {
-    @Post("create")
+    @Post()
     @SuccessResponse(HttpStatus.Ok, "Recipe Created")
     @Response(HttpStatus.BadRequest, "Recipe Invalid")
     async createRecipe(@Body() body: CreateRecipeRequest): Promise<CreateRecipeResponse> {

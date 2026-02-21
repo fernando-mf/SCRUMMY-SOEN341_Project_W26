@@ -15,7 +15,15 @@ export class RecipesHttpClient implements IRecipesService {
     throw new Error("Method not implemented.");
   }
 
+  Delete(recipeID: number): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
   List(req: ListRecipesRequest): Promise<PaginatedResponse<Recipe>> {
+    throw new Error("Method not implemented.");
+  }
+
+  Get(recipeID: number): Promise<Recipe> {
     throw new Error("Method not implemented.");
   }
 }

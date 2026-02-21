@@ -6,13 +6,17 @@ import type {
   ListRecipesRequest,
   UpdateRecipeRequest,
 } from "@api/recipes/recipes";
+import { AuthenticationError, ForbiddenError } from "@api/helpers/errors";
 
 export function HandleCreateRecipe(service: IRecipesService): RequestHandler {
   return async (req, res) => {
-    const recipeReq = req.body as CreateRecipeRequest;
+    const auth = (req as any).auth;
+    const authorID = parseInt(auth?.sub);
+    if (isNaN(authorID)) {
+      throw new AuthenticationError("invalid token");
+    }
 
-    const authReq = (req as any).user;
-    const authorID = authReq.user.sub;
+    const recipeReq = req.body as CreateRecipeRequest;
 
     const recipe = await service.Create(authorID, recipeReq);
 
@@ -22,11 +26,44 @@ export function HandleCreateRecipe(service: IRecipesService): RequestHandler {
 
 export function HandleUpdateRecipe(service: IRecipesService): RequestHandler {
   return async (req, res) => {
+    const auth = (req as any).auth;
+    const authorID = parseInt(auth?.sub);
+    if (isNaN(authorID)) {
+      throw new AuthenticationError("invalid token");
+    }
+
     const recipeID = Number(req.params.recipeID);
+    const recipeReq = req.body as UpdateRecipeRequest;
 
-    const recipe = req.body as UpdateRecipeRequest;
+    const existingRecipe = await service.Get(recipeID);
 
-    await service.Update(recipeID, recipe);
+    if (existingRecipe.authorID !== authorID) {
+      throw new ForbiddenError("you cannot update this recipe");
+    }
+
+    await service.Update(recipeID, recipeReq);
+
+    res.status(HttpStatus.NoContent).send();
+  };
+}
+
+export function HandleDeleteRecipe(service: IRecipesService): RequestHandler {
+  return async (req, res) => {
+    const auth = (req as any).auth;
+    const authorID = parseInt(auth?.sub);
+    if (isNaN(authorID)) {
+      throw new AuthenticationError("invalid token");
+    }
+
+    const recipeID = Number(req.params.recipeID); 
+
+    const existingRecipe = await service.Get(recipeID);
+
+    if (existingRecipe.authorID !== authorID) {
+      throw new ForbiddenError("you cannot delete this recipe");
+    }
+
+    await service.Delete(recipeID);
 
     res.status(HttpStatus.NoContent).send();
   };

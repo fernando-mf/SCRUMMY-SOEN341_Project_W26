@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put, Route, SuccessResponse, Response, Tags, Get, Security, Queries } from "tsoa";
+import { Body, Controller, Post, Put, Route, SuccessResponse, Response, Tags, Get, Security, Queries, Delete } from "tsoa";
 import { HttpStatus } from "@api/helpers/http";
 import {
   CreateRecipeRequest,
@@ -24,6 +24,14 @@ class RecipesDocs extends Controller {
   @SuccessResponse(HttpStatus.Ok, "Recipe Updated")
   @Response(HttpStatus.BadRequest, "Recipe Invalid")
   async updateRecipe(@Body() body: UpdateRecipeRequest): Promise<void> {
+    return null as any;
+  }
+
+  @Delete("{recipeID}")
+  @Security("jwt")
+  @SuccessResponse(HttpStatus.NoContent, "Recipe Deleted")
+  @Response(HttpStatus.Forbidden, "Denied")
+  async deleteRecipe(): Promise<void> {
     return null as any;
   }
 

@@ -1,40 +1,41 @@
 import { z } from "zod";
+import { PaginatedResponse, PaginationQuery } from "@api/helpers/pagination";
 
 export enum Unit {
-    G = "g",
-    ML = "ml",
-    TBSP = "tbsp",
-    TSP = "tsp",
-};
+  G = "g",
+  ML = "ml",
+  TBSP = "tbsp",
+  TSP = "tsp",
+}
 
 export enum Difficulty {
-    EASY = "easy",
-    MEDIUM = "medium",
-    HARD = "hard",
-};
+  EASY = "easy",
+  MEDIUM = "medium",
+  HARD = "hard",
+}
 
 export type Ingredient = {
-    name: string;
-    amount: number;
-    unit: Unit;
+  name: string;
+  amount: number;
+  unit: Unit;
 };
 
 export type Recipe = {
-    id: number;
-    authorID: number;
-    ingredients: Ingredient[];
-    prepTime: number;
-    prepSteps: string;
-    cost: number;
-    difficulty: Difficulty;
-    dietaryTags: string[];
-    allergens: string;
-    servings?: number;
+  id: number;
+  authorID: number;
+  ingredients: Ingredient[];
+  prepTime: number;
+  prepSteps: string;
+  cost: number;
+  difficulty: Difficulty;
+  dietaryTags: string[];
+  allergens: string;
+  servings?: number;
 };
 
 //Request Schemas
 const createRecipeRequestSchema = z.object({
-    //TODO
+  //TODO
 });
 
 export type CreateRecipeRequest = z.infer<typeof createRecipeRequestSchema>;
@@ -45,28 +46,39 @@ const updateRecipeRequestSchema = z.object({
 
 export type UpdateRecipeRequest = z.infer<typeof updateRecipeRequestSchema>;
 
+export interface ListRecipesRequest extends PaginationQuery {
+  authors?: number[];
+}
+
+export type ListRecipesResponse = PaginatedResponse<Recipe>;
+
 //Interfaces
 export interface IRecipesService {
-    Create(authorID: number, request: CreateRecipeRequest): Promise<Recipe>;
-    Update(recipeID: number, request: UpdateRecipeRequest): Promise<void>;
+  Create(authorID: number, request: CreateRecipeRequest): Promise<Recipe>;
+  Update(recipeID: number, request: UpdateRecipeRequest): Promise<void>;
+  List(req: ListRecipesRequest): Promise<ListRecipesResponse>;
 }
 
 export interface IRecipesRepository {
-    Create(recipe: Omit<Recipe, "id">): Promise<Recipe>;
-    Update(recipeID: number, recipe: Recipe): Promise<void>;
+  Create(recipe: Omit<Recipe, "id">): Promise<Recipe>;
+  Update(recipeID: number, recipe: Recipe): Promise<void>;
+  List(params: ListRecipesRequest): Promise<ListRecipesResponse>;
 }
 
 export class RecipesService implements IRecipesService {
-    constructor(private repository: IRecipesRepository) { }
+  constructor(private repository: IRecipesRepository) {}
 
-    async Create(authorID: number, request: CreateRecipeRequest): Promise<Recipe> {
-        //TODO
-        throw new Error("Method not implemented.");
-    }
+  async Create(authorID: number, request: CreateRecipeRequest): Promise<Recipe> {
+    //TODO
+    throw new Error("Method not implemented.");
+  }
 
-    async Update(recipeID: number, req: UpdateRecipeRequest): Promise<void> {
-        //TODO
-        throw new Error("Method not implemented.");
-    }
+  async Update(recipeID: number, req: UpdateRecipeRequest): Promise<void> {
+    //TODO
+    throw new Error("Method not implemented.");
+  }
 
+  async List(): Promise<ListRecipesResponse> {
+    throw new Error("Method not implemented.");
+  }
 }

@@ -21,3 +21,4 @@
 ## **Fernando Mamani** (ID: 40169982), Backend/Database
 
 - 20-02-2026 - 15 minutes - Created time tracking file and updated PR template.
+- 21-02-2026 - 30 minutes - Task.10: added swagger spec for list recipes endpoint

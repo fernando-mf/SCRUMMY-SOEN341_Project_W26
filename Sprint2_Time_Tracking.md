@@ -14,8 +14,9 @@
 
 ## **Gianluca Marino** (ID: 40297326), BackEnd/Database 
 
-- 20-02-2025 - 1 hour - Task.01: fixed account redirection.
+- 20-02-2026 - 1 hour - Task.01: fixed account redirection.
+- 20-02-2026 - 45 minutes - Task.06: recipe creation backend.
 
 ## **Fernando Mamani** (ID: 40169982), Backend/Database
 
-- 20-02-2025 - 15 minutes - Created time tracking file and updated PR template.
+- 20-02-2026 - 15 minutes - Created time tracking file and updated PR template.

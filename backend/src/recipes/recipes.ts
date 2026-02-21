@@ -24,13 +24,13 @@ export type Recipe = {
   id: number;
   authorID: number;
   ingredients: Ingredient[];
-  prepTime: number;
+  prepTimeMinutes: number;
   prepSteps: string;
   cost: number;
   difficulty: Difficulty;
   dietaryTags: string[];
   allergens: string;
-  servings?: number;
+  servings: number;
 };
 
 //Request Schemas

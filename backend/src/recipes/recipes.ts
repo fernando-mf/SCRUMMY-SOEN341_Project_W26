@@ -40,6 +40,12 @@ const createRecipeRequestSchema = z.object({
 
 export type CreateRecipeRequest = z.infer<typeof createRecipeRequestSchema>;
 
+const updateRecipeRequestSchema = z.object({
+    //TODO
+});
+
+export type UpdateRecipeRequest = z.infer<typeof updateRecipeRequestSchema>;
+
 export interface ListRecipesRequest extends PaginationQuery {
   authors?: number[];
 }
@@ -49,12 +55,18 @@ export type ListRecipesResponse = PaginatedResponse<Recipe>;
 //Interfaces
 export interface IRecipesService {
   Create(authorID: number, request: CreateRecipeRequest): Promise<Recipe>;
+  Update(recipeID: number, request: UpdateRecipeRequest): Promise<void>;
+  Delete(recipeID: number): Promise<void>;
   List(req: ListRecipesRequest): Promise<ListRecipesResponse>;
+  Get(recipeID: number): Promise<Recipe>;
 }
 
 export interface IRecipesRepository {
   Create(recipe: Omit<Recipe, "id">): Promise<Recipe>;
+  Update(recipeID: number, recipe: Recipe): Promise<void>;
+  Delete(recipeID: number): Promise<void>;
   List(params: ListRecipesRequest): Promise<ListRecipesResponse>;
+  Get(recipeID: number): Promise<Recipe>;
 }
 
 export class RecipesService implements IRecipesService {
@@ -65,7 +77,21 @@ export class RecipesService implements IRecipesService {
     throw new Error("Method not implemented.");
   }
 
+  async Update(recipeID: number, request: UpdateRecipeRequest): Promise<void> {
+    //TODO
+    throw new Error("Method not implemented.");
+  }
+
+  async Delete(recipeID: number): Promise<void> {
+    //TODO
+    throw new Error("Method not implemented.");
+  }
+
   async List(): Promise<ListRecipesResponse> {
     throw new Error("Method not implemented.");
+  }
+
+  async Get(recipeID: number): Promise<Recipe> {
+    return await this.repository.Get(recipeID);
   }
 }

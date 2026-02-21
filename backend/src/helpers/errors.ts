@@ -77,6 +77,21 @@ export class AuthenticationError extends AppError {
   }
 }
 
+export class ForbiddenError extends AppError {
+  statusCode = HttpStatus.Forbidden;
+  code = "forbidden";
+
+  constructor(private err: string) {
+    super(`forbidden: ${err}`);
+  }
+
+  GetMeta(): Record<string, unknown> {
+    return {
+      message: this.err,
+    };
+  }
+}
+
 export class InvalidParamsError extends AppError {
   statusCode = HttpStatus.BadRequest;
   code = "invalid_params";

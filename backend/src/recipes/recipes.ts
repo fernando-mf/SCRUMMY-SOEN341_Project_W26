@@ -24,7 +24,7 @@ export type Recipe = {
   id: number;
   authorID: number;
   ingredients: Ingredient[];
-  prepTime: number;
+  prepTimeMinutes: number;
   prepSteps: string;
   cost: number;
   difficulty: Difficulty;

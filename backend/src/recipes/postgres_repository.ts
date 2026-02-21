@@ -9,4 +9,8 @@ export class RecipesRepository implements IRecipesRepository {
         throw new Error("Method not implemented.");
     }
     
+    async Update(recipeID: number, recipe: Recipe): Promise<void> {
+        //TODO
+        throw new Error("Method not implemented.");
+    }
 }

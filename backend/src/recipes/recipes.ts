@@ -39,21 +39,34 @@ const createRecipeRequestSchema = z.object({
 
 export type CreateRecipeRequest = z.infer<typeof createRecipeRequestSchema>;
 
+const updateRecipeRequestSchema = z.object({
+    //TODO
+});
+
+export type UpdateRecipeRequest = z.infer<typeof updateRecipeRequestSchema>;
+
 //Interfaces
 export interface IRecipesService {
     Create(authorID: number, request: CreateRecipeRequest): Promise<Recipe>;
+    Update(recipeID: number, request: UpdateRecipeRequest): Promise<void>;
 }
 
 export interface IRecipesRepository {
     Create(recipe: Omit<Recipe, "id">): Promise<Recipe>;
+    Update(recipeID: number, recipe: Recipe): Promise<void>;
 }
 
 export class RecipesService implements IRecipesService {
-    constructor(private repository: IRecipesRepository) {}
+    constructor(private repository: IRecipesRepository) { }
 
     async Create(authorID: number, request: CreateRecipeRequest): Promise<Recipe> {
         //TODO
         throw new Error("Method not implemented.");
     }
-    
+
+    async Update(recipeID: number, req: UpdateRecipeRequest): Promise<void> {
+        //TODO
+        throw new Error("Method not implemented.");
+    }
+
 }

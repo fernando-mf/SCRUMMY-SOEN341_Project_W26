@@ -30,7 +30,7 @@ class RecipesDocs extends Controller {
   @Delete("{recipeID}")
   @Security("jwt")
   @SuccessResponse(HttpStatus.NoContent, "Recipe Deleted")
-  @Response(HttpStatus.Forbidden, "Denied")
+  @Response(HttpStatus.BadRequest, "Recipe Invalid")
   async deleteRecipe(): Promise<void> {
     return null as any;
   }

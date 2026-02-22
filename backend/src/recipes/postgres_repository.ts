@@ -10,12 +10,23 @@ export class RecipesRepository implements IRecipesRepository {
     throw new Error("Method not implemented.");
   }
 
-  async Update(recipeID: number, recipe: Recipe): Promise<void> {
+  async Update(userID: number, recipeID: number, recipe: Recipe): Promise<void> {
     //TODO
+    /*
+    Putting this as reference for implementation
+    UPDATE recipes 
+    SET name = :name, cost = :cost, ... 
+    WHERE userId = :userId
+
+    const result = await db`UPDATE ... WHERE userId = ${userId}`
+    if (result.count == 0) {
+      throw new NotFoundError("recipe")
+    }
+    */
     throw new Error("Method not implemented.");
   }
 
-  async Delete(recipeID: number): Promise<void> {
+  async Delete(userID: number, recipeID: number): Promise<void> {
     throw new Error("Method not implemented.");
   }
 

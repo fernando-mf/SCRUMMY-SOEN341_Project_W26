@@ -35,13 +35,7 @@ export function HandleUpdateRecipe(service: IRecipesService): RequestHandler {
     const recipeID = Number(req.params.recipeID);
     const recipeReq = req.body as UpdateRecipeRequest;
 
-    const existingRecipe = await service.Get(recipeID);
-
-    if (existingRecipe.authorID !== authorID) {
-      throw new ForbiddenError("you cannot update this recipe");
-    }
-
-    await service.Update(recipeID, recipeReq);
+    await service.Update(authorID, recipeID, recipeReq);
 
     res.status(HttpStatus.NoContent).send();
   };
@@ -57,13 +51,7 @@ export function HandleDeleteRecipe(service: IRecipesService): RequestHandler {
 
     const recipeID = Number(req.params.recipeID); 
 
-    const existingRecipe = await service.Get(recipeID);
-
-    if (existingRecipe.authorID !== authorID) {
-      throw new ForbiddenError("you cannot delete this recipe");
-    }
-
-    await service.Delete(recipeID);
+    await service.Delete(authorID, recipeID);
 
     res.status(HttpStatus.NoContent).send();
   };

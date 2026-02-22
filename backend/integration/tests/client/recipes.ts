@@ -10,12 +10,12 @@ export class RecipesHttpClient implements IRecipesService {
     throw new Error("Method not implemented.");
   }
 
-  Update(recipeID: number, request: UpdateRecipeRequest): Promise<void> {
+  Update(userID: number, recipeID: number, request: UpdateRecipeRequest): Promise<void> {
     //TODO
     throw new Error("Method not implemented.");
   }
 
-  Delete(recipeID: number): Promise<void> {
+  Delete(userID: number, recipeID: number): Promise<void> {
     throw new Error("Method not implemented.");
   }
 

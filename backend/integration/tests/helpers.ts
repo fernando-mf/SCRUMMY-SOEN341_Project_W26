@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { Recipe } from "@api/recipes";
 import { CreateUserRequest, User } from "@api/users";
 import { Client } from "./client";
 
@@ -34,4 +35,47 @@ export async function BeginUserSession(c: Client, params?: CreateUserRequest) {
   c.SetAccessToken(token);
 
   return { user, token };
+}
+
+// TODO: TEMPORARY FUNCTION UNTIL THE `CREATE` METHOD IS IMPLEMENTED IN RECIPES SERVICE
+// TODO: TEMPORARY FUNCTION UNTIL THE `CREATE` METHOD IS IMPLEMENTED IN RECIPES SERVICE
+// TODO: TEMPORARY FUNCTION UNTIL THE `CREATE` METHOD IS IMPLEMENTED IN RECIPES SERVICE
+export async function InsertRecipe(recipe: Omit<Recipe, "id">) {
+  const result = await db<{ id: number }[]>`
+    INSERT INTO recipes (
+      "authorID",
+      "name",
+      "prepTimeMinutes",
+      "prepSteps",
+      "cost",
+      "difficulty",
+      "dietaryTags",
+      "allergens",
+      "servings"
+    ) VALUES (
+      ${recipe.authorID},
+      ${recipe.name},
+      ${recipe.prepTimeMinutes},
+      ${recipe.prepSteps},
+      ${recipe.cost},
+      ${recipe.difficulty},
+      ${recipe.dietaryTags},
+      ${recipe.allergens},
+      ${recipe.servings}
+    ) RETURNING "id";
+  `;
+  const recipeId = result[0].id;
+
+  if (recipe.ingredients.length == 0) {
+    return;
+  }
+
+  const recipeData = recipe.ingredients.map((r) => ({
+    ...r,
+    recipeId,
+  }));
+
+  await db`
+    INSERT INTO recipe_ingredients ${db(recipeData)}
+  `;
 }

@@ -1,6 +1,7 @@
 CREATE TABLE recipes (
     "id" INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     "authorID" INT NOT NULL REFERENCES users("id"),
+    "name" VARCHAR(255) NOT NULL,
     "prepTimeMinutes" INT NOT NULL,
     "prepSteps" TEXT NOT NULL,
     "cost" NUMERIC(10, 2) NOT NULL,
@@ -13,9 +14,9 @@ CREATE TABLE recipes (
 );
 
 CREATE TABLE recipe_ingredients (
-    "recipeID" INT NOT NULL REFERENCES recipes ("id") ON DELETE CASCADE,
+    "recipeId" INT NOT NULL REFERENCES recipes ("id") ON DELETE CASCADE,
     "name" VARCHAR(255) NOT NULL,
     "amount" NUMERIC(10, 2) NOT NULL,
     "unit" VARCHAR(10) NOT NULL,
-    PRIMARY KEY ("recipeID", "name")
+    PRIMARY KEY ("recipeId", "name")
 );

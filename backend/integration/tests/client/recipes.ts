@@ -11,6 +11,15 @@ export class RecipesHttpClient implements IRecipesService {
   }
 
   List(req: ListRecipesRequest): Promise<PaginatedResponse<Recipe>> {
-    throw new Error("Method not implemented.");
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(req)) {
+      const serialized = Array.isArray(value) ? value.join(",") : value.toString();
+      params.append(key, serialized);
+    }
+
+    return this.client.Request({
+      url: `/api/recipes?${params}`,
+      method: "GET",
+    });
   }
 }

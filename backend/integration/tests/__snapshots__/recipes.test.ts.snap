@@ -1,0 +1,211 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RecipesService > List > success - with results and default params 1`] = `
+{
+  "currentPage": 1,
+  "data": [
+    {
+      "allergens": [
+        "gluten",
+        "dairy",
+      ],
+      "authorID": 1,
+      "cost": "10.00",
+      "dietaryTags": [
+        "vegan",
+        "vegetarian",
+      ],
+      "difficulty": "easy",
+      "id": 1,
+      "ingredients": [
+        {
+          "amount": "100.00",
+          "name": "Ingredient 1",
+          "unit": "g",
+        },
+        {
+          "amount": "200.00",
+          "name": "Ingredient 2",
+          "unit": "ml",
+        },
+        {
+          "amount": "300.00",
+          "name": "Ingredient 3",
+          "unit": "tbsp",
+        },
+        {
+          "amount": "400.00",
+          "name": "Ingredient 4",
+          "unit": "tsp",
+        },
+      ],
+      "name": "Recipe 1",
+      "prepSteps": "Test steps",
+      "prepTimeMinutes": 10,
+      "servings": 4,
+    },
+    {
+      "allergens": [
+        "gluten",
+        "dairy",
+      ],
+      "authorID": 1,
+      "cost": "10.00",
+      "dietaryTags": [
+        "vegan",
+        "vegetarian",
+      ],
+      "difficulty": "easy",
+      "id": 2,
+      "ingredients": [
+        {
+          "amount": "100.00",
+          "name": "Ingredient 1",
+          "unit": "g",
+        },
+        {
+          "amount": "200.00",
+          "name": "Ingredient 2",
+          "unit": "ml",
+        },
+        {
+          "amount": "300.00",
+          "name": "Ingredient 3",
+          "unit": "tbsp",
+        },
+        {
+          "amount": "400.00",
+          "name": "Ingredient 4",
+          "unit": "tsp",
+        },
+      ],
+      "name": "Recipe 2",
+      "prepSteps": "Test steps",
+      "prepTimeMinutes": 10,
+      "servings": 4,
+    },
+    {
+      "allergens": [
+        "gluten",
+        "dairy",
+      ],
+      "authorID": 1,
+      "cost": "10.00",
+      "dietaryTags": [
+        "vegan",
+        "vegetarian",
+      ],
+      "difficulty": "easy",
+      "id": 3,
+      "ingredients": [
+        {
+          "amount": "100.00",
+          "name": "Ingredient 1",
+          "unit": "g",
+        },
+        {
+          "amount": "200.00",
+          "name": "Ingredient 2",
+          "unit": "ml",
+        },
+        {
+          "amount": "300.00",
+          "name": "Ingredient 3",
+          "unit": "tbsp",
+        },
+        {
+          "amount": "400.00",
+          "name": "Ingredient 4",
+          "unit": "tsp",
+        },
+      ],
+      "name": "Recipe 3",
+      "prepSteps": "Test steps",
+      "prepTimeMinutes": 10,
+      "servings": 4,
+    },
+    {
+      "allergens": [
+        "gluten",
+        "dairy",
+      ],
+      "authorID": 1,
+      "cost": "10.00",
+      "dietaryTags": [
+        "vegan",
+        "vegetarian",
+      ],
+      "difficulty": "easy",
+      "id": 4,
+      "ingredients": [
+        {
+          "amount": "100.00",
+          "name": "Ingredient 1",
+          "unit": "g",
+        },
+        {
+          "amount": "200.00",
+          "name": "Ingredient 2",
+          "unit": "ml",
+        },
+        {
+          "amount": "300.00",
+          "name": "Ingredient 3",
+          "unit": "tbsp",
+        },
+        {
+          "amount": "400.00",
+          "name": "Ingredient 4",
+          "unit": "tsp",
+        },
+      ],
+      "name": "Recipe 4",
+      "prepSteps": "Test steps",
+      "prepTimeMinutes": 10,
+      "servings": 4,
+    },
+    {
+      "allergens": [
+        "gluten",
+        "dairy",
+      ],
+      "authorID": 1,
+      "cost": "10.00",
+      "dietaryTags": [
+        "vegan",
+        "vegetarian",
+      ],
+      "difficulty": "easy",
+      "id": 5,
+      "ingredients": [
+        {
+          "amount": "100.00",
+          "name": "Ingredient 1",
+          "unit": "g",
+        },
+        {
+          "amount": "200.00",
+          "name": "Ingredient 2",
+          "unit": "ml",
+        },
+        {
+          "amount": "300.00",
+          "name": "Ingredient 3",
+          "unit": "tbsp",
+        },
+        {
+          "amount": "400.00",
+          "name": "Ingredient 4",
+          "unit": "tsp",
+        },
+      ],
+      "name": "Recipe 5",
+      "prepSteps": "Test steps",
+      "prepTimeMinutes": 10,
+      "servings": 4,
+    },
+  ],
+  "totalCount": 5,
+  "totalPages": 1,
+}
+`;

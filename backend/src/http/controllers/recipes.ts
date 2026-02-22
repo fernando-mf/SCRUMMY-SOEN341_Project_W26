@@ -32,7 +32,7 @@ export function HandleUpdateRecipe(service: IRecipesService): RequestHandler {
       throw new AuthenticationError("invalid token");
     }
 
-    const recipeID = Number(req.params.recipeID);
+    const recipeID = Number(req.params.id);
     const recipeReq = req.body as UpdateRecipeRequest;
 
     await service.Update(authorID, recipeID, recipeReq);
@@ -49,7 +49,7 @@ export function HandleDeleteRecipe(service: IRecipesService): RequestHandler {
       throw new AuthenticationError("invalid token");
     }
 
-    const recipeID = Number(req.params.recipeID); 
+    const recipeID = Number(req.params.id);
 
     await service.Delete(authorID, recipeID);
 

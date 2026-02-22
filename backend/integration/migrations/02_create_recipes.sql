@@ -1,6 +1,6 @@
 CREATE TABLE recipes (
     "id" INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    "authorID" INT NOT NULL REFERENCES users("id"),
+    "authorId" INT NOT NULL REFERENCES users("id"),
     "name" VARCHAR(255) NOT NULL,
     "prepTimeMinutes" INT NOT NULL,
     "prepSteps" TEXT NOT NULL,

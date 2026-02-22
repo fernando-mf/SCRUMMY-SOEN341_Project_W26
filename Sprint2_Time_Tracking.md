@@ -23,3 +23,4 @@
 - 20-02-2026 - 15 minutes - Created time tracking file and updated PR template.
 - 21-02-2026 - 30 minutes - Task.31: added swagger spec for list recipes endpoint
 - 21-02-2026 - 4 hours - Task.34: implemented recipes list feature
+- 22-02-2026 - 1.5 hours - Task.35: implemented authors filter

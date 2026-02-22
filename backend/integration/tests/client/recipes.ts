@@ -5,7 +5,7 @@ import { ApiClient } from "./internal";
 export class RecipesHttpClient implements IRecipesService {
   constructor(private client: ApiClient) {}
 
-  Create(authorID: number, request: CreateRecipeRequest): Promise<Recipe> {
+  Create(authorId: number, request: CreateRecipeRequest): Promise<Recipe> {
     //TODO
     throw new Error("Method not implemented.");
   }

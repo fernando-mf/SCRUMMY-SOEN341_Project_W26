@@ -43,7 +43,7 @@ export async function BeginUserSession(c: Client, params?: CreateUserRequest) {
 export async function InsertRecipe(recipe: Omit<Recipe, "id">) {
   const result = await db<{ id: number }[]>`
     INSERT INTO recipes (
-      "authorID",
+      "authorId",
       "name",
       "prepTimeMinutes",
       "prepSteps",
@@ -53,7 +53,7 @@ export async function InsertRecipe(recipe: Omit<Recipe, "id">) {
       "allergens",
       "servings"
     ) VALUES (
-      ${recipe.authorID},
+      ${recipe.authorId},
       ${recipe.name},
       ${recipe.prepTimeMinutes},
       ${recipe.prepSteps},

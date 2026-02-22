@@ -1,4 +1,5 @@
 import type { RequestHandler } from "express";
+import { AuthenticationError, ForbiddenError } from "@api/helpers/errors";
 import { HttpStatus } from "@api/helpers/http";
 import type {
   CreateRecipeRequest,
@@ -6,19 +7,18 @@ import type {
   ListRecipesRequest,
   UpdateRecipeRequest,
 } from "@api/recipes/recipes";
-import { AuthenticationError, ForbiddenError } from "@api/helpers/errors";
 
 export function HandleCreateRecipe(service: IRecipesService): RequestHandler {
   return async (req, res) => {
     const auth = (req as any).auth;
-    const authorID = parseInt(auth?.sub);
-    if (isNaN(authorID)) {
+    const authorId = parseInt(auth?.sub);
+    if (isNaN(authorId)) {
       throw new AuthenticationError("invalid token");
     }
 
     const recipeReq = req.body as CreateRecipeRequest;
 
-    const recipe = await service.Create(authorID, recipeReq);
+    const recipe = await service.Create(authorId, recipeReq);
 
     res.status(HttpStatus.Created).json(recipe);
   };

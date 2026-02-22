@@ -102,13 +102,30 @@ describe("RecipesService", () => {
       expect(res.currentPage).toBe(4);
       expect(res.data.length).toBe(0); // no more results
     });
+
+    test("filters - authors", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+      const otherUserId = userId + 1;
+
+      await insertTestRecipes(userId, 1);
+
+      let res = await client.RecipesService.List({ authors: [userId] });
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].authorId).toBe(userId);
+
+      res = await client.RecipesService.List({ authors: [otherUserId] });
+      expect(res.data.length).toBe(0);
+    });
   });
 });
 
 async function insertTestRecipes(userId: number, count: number) {
   for (let i = 0; i < count; i++) {
     await InsertRecipe({
-      authorID: userId,
+      authorId: userId,
       name: `Recipe ${i + 1}`,
       ingredients: [
         { amount: 100, name: "Ingredient 1", unit: Unit.G },

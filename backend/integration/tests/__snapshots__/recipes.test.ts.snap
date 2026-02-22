@@ -9,7 +9,7 @@ exports[`RecipesService > List > success - with results and default params 1`] =
         "gluten",
         "dairy",
       ],
-      "authorID": 1,
+      "authorId": 1,
       "cost": "10.00",
       "dietaryTags": [
         "vegan",
@@ -49,7 +49,7 @@ exports[`RecipesService > List > success - with results and default params 1`] =
         "gluten",
         "dairy",
       ],
-      "authorID": 1,
+      "authorId": 1,
       "cost": "10.00",
       "dietaryTags": [
         "vegan",
@@ -89,7 +89,7 @@ exports[`RecipesService > List > success - with results and default params 1`] =
         "gluten",
         "dairy",
       ],
-      "authorID": 1,
+      "authorId": 1,
       "cost": "10.00",
       "dietaryTags": [
         "vegan",
@@ -129,7 +129,7 @@ exports[`RecipesService > List > success - with results and default params 1`] =
         "gluten",
         "dairy",
       ],
-      "authorID": 1,
+      "authorId": 1,
       "cost": "10.00",
       "dietaryTags": [
         "vegan",
@@ -169,7 +169,7 @@ exports[`RecipesService > List > success - with results and default params 1`] =
         "gluten",
         "dairy",
       ],
-      "authorID": 1,
+      "authorId": 1,
       "cost": "10.00",
       "dietaryTags": [
         "vegan",

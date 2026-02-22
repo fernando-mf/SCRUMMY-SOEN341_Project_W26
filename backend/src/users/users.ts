@@ -28,7 +28,7 @@ export type LoginResponse = {
 };
 
 export type CreateUserResponse = {
-  user: User; //this or AuthInfo?
+  user: User;
   token: string;
   expires_in: number;
 };
@@ -37,7 +37,7 @@ const createUserRequestSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   email: z.email(),
-  password: z.string().min(8), //could be changed to be more strict
+  password: z.string().min(8),
 });
 
 export type CreateUserRequest = z.infer<typeof createUserRequestSchema>;

@@ -16,6 +16,7 @@
 
 - 20-02-2026 - 1 hour - Task.22: fixed account redirection.
 - 20-02-2026 - 45 minutes - Task.27: recipe creation backend.
+- 20-02-2026 - 45 minutes - Task.37 & Task.41 : added recipe editing and deletion spec.
 
 ## **Fernando Mamani** (ID: 40169982), Backend/Database
 

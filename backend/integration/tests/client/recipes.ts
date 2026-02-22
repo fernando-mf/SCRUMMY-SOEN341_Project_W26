@@ -1,5 +1,5 @@
 import { PaginatedResponse } from "@api/helpers/pagination";
-import { CreateRecipeRequest, IRecipesService, ListRecipesRequest, Recipe } from "@api/recipes";
+import { CreateRecipeRequest, IRecipesService, ListRecipesRequest, Recipe, UpdateRecipeRequest } from "@api/recipes";
 import { ApiClient } from "./internal";
 
 export class RecipesHttpClient implements IRecipesService {
@@ -7,6 +7,15 @@ export class RecipesHttpClient implements IRecipesService {
 
   Create(authorID: number, request: CreateRecipeRequest): Promise<Recipe> {
     //TODO
+    throw new Error("Method not implemented.");
+  }
+
+  Update(userID: number, recipeID: number, request: UpdateRecipeRequest): Promise<void> {
+    //TODO
+    throw new Error("Method not implemented.");
+  }
+
+  Delete(userID: number, recipeID: number): Promise<void> {
     throw new Error("Method not implemented.");
   }
 
@@ -21,5 +30,9 @@ export class RecipesHttpClient implements IRecipesService {
       url: `/api/recipes?${params}`,
       method: "GET",
     });
+  }
+
+  Get(recipeID: number): Promise<Recipe> {
+    throw new Error("Method not implemented.");
   }
 }

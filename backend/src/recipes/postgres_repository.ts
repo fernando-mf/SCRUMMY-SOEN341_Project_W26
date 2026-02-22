@@ -32,9 +32,15 @@ export class RecipesRepository implements IRecipesRepository {
   }
 
   async List(req: ListRecipesRequest): Promise<ListRecipesResponse> {
-    const countResult = await this.db`
-      SELECT COUNT(*) as total
-      FROM recipes
+    const whereClause = this.db`
+      WHERE true
+        ${this.applyIfSet(req.authors, this.db`AND r."authorId" IN ${this.db(req.authors)}`)}
+    `;
+
+    const countResult = await this.db<{ total: number }[]>`
+      SELECT COUNT(DISTINCT r."id") as total
+      FROM recipes r
+      ${whereClause}
     `;
     const total = Number(countResult[0].total);
     if (isNaN(total)) {
@@ -46,7 +52,7 @@ export class RecipesRepository implements IRecipesRepository {
     const rawRecipes = await this.db<Recipe[]>`
       SELECT
         r."id",
-        r."authorID",
+        r."authorId",
         r."name",
         r."prepTimeMinutes",
         r."prepSteps",
@@ -56,6 +62,7 @@ export class RecipesRepository implements IRecipesRepository {
         r."allergens",
         r."servings"
       FROM recipes r
+      ${whereClause}
       LIMIT ${req.limit}
       OFFSET ${offset}
     `;
@@ -114,5 +121,14 @@ export class RecipesRepository implements IRecipesRepository {
     }
 
     return recipe[0] as Recipe;
+  }
+
+  private applyIfSet<T>(val: T[] | T, fragment: any) {
+    let isValid = Boolean(val);
+    if (Array.isArray(val)) {
+      isValid = val.length > 0;
+    }
+
+    return isValid ? fragment : this.db``;
   }
 }

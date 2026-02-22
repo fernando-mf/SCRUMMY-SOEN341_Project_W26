@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { PaginatedResponse, PaginationQuery } from "@api/helpers/pagination";
+import { InvalidParamsError } from "@api/helpers/errors";
+import { PaginatedResponse, PaginationQuerySchema } from "@api/helpers/pagination";
 
 export enum Unit {
   G = "g",
@@ -23,13 +24,14 @@ export type Ingredient = {
 export type Recipe = {
   id: number;
   authorID: number;
+  name: string;
   ingredients: Ingredient[];
   prepTimeMinutes: number;
   prepSteps: string;
   cost: number;
   difficulty: Difficulty;
   dietaryTags: string[];
-  allergens: string;
+  allergens: string[];
   servings: number;
 };
 
@@ -46,9 +48,11 @@ const updateRecipeRequestSchema = z.object({
 
 export type UpdateRecipeRequest = z.infer<typeof updateRecipeRequestSchema>;
 
-export interface ListRecipesRequest extends PaginationQuery {
-  authors?: number[];
-}
+const listRecipesRequestSchema = PaginationQuerySchema.extend({
+  authors: z.array(z.number()).default([]),
+});
+
+export type ListRecipesRequest = z.infer<typeof listRecipesRequestSchema>;
 
 export type ListRecipesResponse = PaginatedResponse<Recipe>;
 
@@ -57,7 +61,7 @@ export interface IRecipesService {
   Create(authorID: number, request: CreateRecipeRequest): Promise<Recipe>;
   Update(userID: number, recipeID: number, request: UpdateRecipeRequest): Promise<void>;
   Delete(userID: number, recipeID: number): Promise<void>;
-  List(req: ListRecipesRequest): Promise<ListRecipesResponse>;
+  List(req: Partial<ListRecipesRequest>): Promise<ListRecipesResponse>;
   Get(recipeID: number): Promise<Recipe>;
 }
 
@@ -97,8 +101,13 @@ export class RecipesService implements IRecipesService {
     throw new Error("Method not implemented.");
   }
 
-  async List(): Promise<ListRecipesResponse> {
-    throw new Error("Method not implemented.");
+  async List(rawQuery: Partial<ListRecipesRequest>): Promise<ListRecipesResponse> {
+    const validation = listRecipesRequestSchema.safeParse(rawQuery);
+    if (validation.error) {
+      throw InvalidParamsError.FromZodError(validation.error);
+    }
+
+    return this.repository.List(validation.data);
   }
 
   async Get(recipeID: number): Promise<Recipe> {

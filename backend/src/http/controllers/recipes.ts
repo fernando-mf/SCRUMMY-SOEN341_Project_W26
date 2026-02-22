@@ -59,10 +59,22 @@ export function HandleDeleteRecipe(service: IRecipesService): RequestHandler {
 
 export function HandleListRecipes(service: IRecipesService): RequestHandler {
   return async (req, res) => {
-    const recipesRequest = req.query as unknown as ListRecipesRequest;
+    const rawQuery = req.query as Record<string, string>;
 
-    const recipes = await service.List(recipesRequest);
+    const request: Partial<ListRecipesRequest> = {
+      page: parseNumber(rawQuery.page),
+      limit: parseNumber(rawQuery.limit),
+      authors: rawQuery.authors ? rawQuery.authors.split(",").map(Number) : [],
+    };
+
+    const recipes = await service.List(request);
 
     res.status(HttpStatus.Ok).json(recipes);
   };
+}
+
+function parseNumber(value?: string): number | undefined {
+  if (value) {
+    return Number(value);
+  }
 }

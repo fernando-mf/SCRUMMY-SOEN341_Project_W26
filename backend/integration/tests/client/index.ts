@@ -1,7 +1,7 @@
 import { Core } from "@api/core";
 import { ApiClient } from "./internal";
-import { UsersHttpClient } from "./users";
 import { RecipesHttpClient } from "./recipes";
+import { UsersHttpClient } from "./users";
 
 export interface Client extends Core {
   SetAccessToken(token: string): void;

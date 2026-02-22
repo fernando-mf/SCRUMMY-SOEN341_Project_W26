@@ -1,5 +1,5 @@
 import postgres from "postgres";
-import { InternalError } from "@api/helpers/errors";
+import { InternalError, NotFoundError } from "@api/helpers/errors";
 import { GetPaginationParams } from "@api/helpers/pagination";
 import { Ingredient, IRecipesRepository, ListRecipesRequest, ListRecipesResponse, Recipe } from "./recipes";
 

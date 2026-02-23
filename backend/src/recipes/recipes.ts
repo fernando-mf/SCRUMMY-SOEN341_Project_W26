@@ -58,19 +58,19 @@ export type ListRecipesResponse = PaginatedResponse<Recipe>;
 
 // Interfaces
 export interface IRecipesService {
-  Create(authorID: number, request: CreateRecipeRequest): Promise<Recipe>;
-  Update(userID: number, recipeID: number, request: UpdateRecipeRequest): Promise<void>;
-  Delete(userID: number, recipeID: number): Promise<void>;
+  Create(authorId: number, request: CreateRecipeRequest): Promise<Recipe>;
+  Update(userId: number, recipeId: number, request: UpdateRecipeRequest): Promise<void>;
+  Delete(userId: number, recipeId: number): Promise<void>;
   List(req: Partial<ListRecipesRequest>): Promise<ListRecipesResponse>;
-  Get(recipeID: number): Promise<Recipe>;
+  Get(recipeId: number): Promise<Recipe>;
 }
 
 export interface IRecipesRepository {
   Create(recipe: Omit<Recipe, "id">): Promise<Recipe>;
-  Update(userID: number, recipeID: number, recipe: Recipe): Promise<void>;
-  Delete(userID: number, recipeID: number): Promise<void>;
+  Update(userId: number, recipeId: number, recipe: Recipe): Promise<void>;
+  Delete(userId: number, recipeId: number): Promise<void>;
   List(params: ListRecipesRequest): Promise<ListRecipesResponse>;
-  Get(recipeID: number): Promise<Recipe>;
+  Get(recipeId: number): Promise<Recipe>;
 }
 
 export class RecipesService implements IRecipesService {
@@ -81,24 +81,23 @@ export class RecipesService implements IRecipesService {
     throw new Error("Method not implemented.");
   }
 
-  async Update(userID: number, recipeID: number, request: UpdateRecipeRequest): Promise<void> {
+  async Update(userId: number, recipeId: number, request: UpdateRecipeRequest): Promise<void> {
     //TODO
     /*
     Putting this as reference for implementation
-    const recipeID = Number(req.params.recipeID); 
+    const recipeId = Number(req.params.recipeId); 
 
-    const existingRecipe = await service.Get(recipeID);
+    const existingRecipe = await service.Get(recipeId);
 
-    if (existingRecipe.authorID !== authorID) {
+    if (existingRecipe.authorId !== authorId) {
       throw new ForbiddenError("you cannot delete this recipe");
     }
     */
     throw new Error("Method not implemented.");
   }
 
-  async Delete(userID: number, recipeID: number): Promise<void> {
-    //TODO
-    throw new Error("Method not implemented.");
+  async Delete(userId: number, recipeId: number): Promise<void> {
+    await this.repository.Delete(userId, recipeId);
   }
 
   async List(rawQuery: Partial<ListRecipesRequest>): Promise<ListRecipesResponse> {
@@ -110,7 +109,7 @@ export class RecipesService implements IRecipesService {
     return this.repository.List(validation.data);
   }
 
-  async Get(recipeID: number): Promise<Recipe> {
-    return await this.repository.Get(recipeID);
+  async Get(recipeId: number): Promise<Recipe> {
+    return await this.repository.Get(recipeId);
   }
 }

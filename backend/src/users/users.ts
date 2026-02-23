@@ -61,15 +61,15 @@ export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
 export interface IUsersService {
   Create(request: CreateUserRequest): Promise<CreateUserResponse>;
   Login(request: LoginRequest): Promise<LoginResponse>;
-  Update(userID: number, request: UpdateUserRequest): Promise<void>;
-  Get(userID: number): Promise<User>;
+  Update(userId: number, request: UpdateUserRequest): Promise<void>;
+  Get(userId: number): Promise<User>;
 }
 
 export interface IUsersRepository {
   Create(user: Omit<UserInternal, "id">): Promise<User>;
-  Update(userID: number, user: User): Promise<void>;
-  Get(userID: number): Promise<User>;
-  GetAuthInfo(userID: number): Promise<AuthInfo>;
+  Update(userId: number, user: User): Promise<void>;
+  Get(userId: number): Promise<User>;
+  GetAuthInfo(userId: number): Promise<AuthInfo>;
   GetAuthInfoByEmail(email: string): Promise<AuthInfo>;
 }
 
@@ -140,13 +140,13 @@ export class UsersService implements IUsersService {
     };
   }
 
-  async Update(userID: number, req: UpdateUserRequest): Promise<void> {
+  async Update(userId: number, req: UpdateUserRequest): Promise<void> {
     const validation = updateUserRequestSchema.safeParse(req);
     if (validation.error) {
       throw InvalidParamsError.FromZodError(validation.error);
     }
 
-    const currentUser = await this.repository.Get(userID);
+    const currentUser = await this.repository.Get(userId);
 
     const updatedUser: User = {
       id: currentUser.id,
@@ -157,10 +157,10 @@ export class UsersService implements IUsersService {
       allergies: req.allergies,
     };
 
-    await this.repository.Update(userID, updatedUser);
+    await this.repository.Update(userId, updatedUser);
   }
 
-  Get(userID: number): Promise<User> {
-    return this.repository.Get(userID);
+  Get(userId: number): Promise<User> {
+    return this.repository.Get(userId);
   }
 }

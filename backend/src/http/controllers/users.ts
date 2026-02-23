@@ -6,14 +6,14 @@ import type { IUsersService, UpdateUserRequest } from "@api/users";
 export function HandleUpdateUser(service: IUsersService): RequestHandler {
   return async (req, res) => {
     const auth = (req as any).auth;
-    const userID = parseInt(auth?.sub);
-    if (isNaN(userID)) {
+    const userId = parseInt(auth?.sub);
+    if (isNaN(userId)) {
       throw new AuthenticationError("invalid token");
     }
 
     const user = req.body as UpdateUserRequest;
 
-    await service.Update(userID, user);
+    await service.Update(userId, user);
 
     res.status(HttpStatus.NoContent).send();
   };
@@ -22,12 +22,12 @@ export function HandleUpdateUser(service: IUsersService): RequestHandler {
 export function HandleGetUser(service: IUsersService): RequestHandler {
   return async (req, res) => {
     const auth = (req as any).auth;
-    const userID = parseInt(auth?.sub);
-    if (isNaN(userID)) {
+    const userId = parseInt(auth?.sub);
+    if (isNaN(userId)) {
       throw new AuthenticationError("invalid token");
     }
 
-    const user = await service.Get(userID);
+    const user = await service.Get(userId);
     res.status(HttpStatus.Ok).json(user);
   };
 }

@@ -27,15 +27,15 @@ export function HandleCreateRecipe(service: IRecipesService): RequestHandler {
 export function HandleUpdateRecipe(service: IRecipesService): RequestHandler {
   return async (req, res) => {
     const auth = (req as any).auth;
-    const authorID = parseInt(auth?.sub);
-    if (isNaN(authorID)) {
+    const authorId = parseInt(auth?.sub);
+    if (isNaN(authorId)) {
       throw new AuthenticationError("invalid token");
     }
 
-    const recipeID = Number(req.params.id);
+    const recipeId = Number(req.params.id);
     const recipeReq = req.body as UpdateRecipeRequest;
 
-    await service.Update(authorID, recipeID, recipeReq);
+    await service.Update(authorId, recipeId, recipeReq);
 
     res.status(HttpStatus.NoContent).send();
   };
@@ -44,14 +44,14 @@ export function HandleUpdateRecipe(service: IRecipesService): RequestHandler {
 export function HandleDeleteRecipe(service: IRecipesService): RequestHandler {
   return async (req, res) => {
     const auth = (req as any).auth;
-    const authorID = parseInt(auth?.sub);
-    if (isNaN(authorID)) {
+    const authorId = parseInt(auth?.sub);
+    if (isNaN(authorId)) {
       throw new AuthenticationError("invalid token");
     }
 
-    const recipeID = Number(req.params.id);
+    const recipeId = Number(req.params.id);
 
-    await service.Delete(authorID, recipeID);
+    await service.Delete(authorId, recipeId);
 
     res.status(HttpStatus.NoContent).send();
   };

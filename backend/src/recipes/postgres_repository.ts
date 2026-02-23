@@ -11,7 +11,7 @@ export class RecipesRepository implements IRecipesRepository {
     throw new Error("Method not implemented.");
   }
 
-  async Update(userID: number, recipeID: number, recipe: Recipe): Promise<void> {
+  async Update(userId: number, recipeId: number, recipe: Recipe): Promise<void> {
     //TODO
     /*
     Putting this as reference for implementation
@@ -27,8 +27,16 @@ export class RecipesRepository implements IRecipesRepository {
     throw new Error("Method not implemented.");
   }
 
-  async Delete(userID: number, recipeID: number): Promise<void> {
-    throw new Error("Method not implemented.");
+  async Delete(userId: number, recipeId: number): Promise<void> {
+    const result = await this.db`
+      DELETE FROM recipes
+      WHERE "id" = ${recipeId}
+        AND "authorId" = ${userId}
+    `;
+
+    if (result.count === 0) {
+      throw new NotFoundError("recipe");
+    }
   }
 
   async List(req: ListRecipesRequest): Promise<ListRecipesResponse> {
@@ -112,9 +120,9 @@ export class RecipesRepository implements IRecipesRepository {
     }));
   }
 
-  async Get(recipeID: number): Promise<Recipe> {
+  async Get(recipeId: number): Promise<Recipe> {
     const recipe = await this.db`
-    SELECT * FROM recipes WHERE id = ${recipeID}`;
+    SELECT * FROM recipes WHERE id = ${recipeId}`;
 
     if (recipe.length === 0) {
       throw new NotFoundError("recipe");

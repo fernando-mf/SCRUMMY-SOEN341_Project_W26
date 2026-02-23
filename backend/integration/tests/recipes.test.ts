@@ -164,6 +164,34 @@ describe("RecipesService", () => {
     });
   });
 
+  describe("Delete", () => {
+    beforeEach(async () => {
+      await PurgeDatabase();
+    });
+
+    test("success", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const recipe = await client.RecipesService.Create(user.id, {
+        name: "To delete",
+        ingredients: [{ name: "Flour", amount: 100, unit: Unit.G }],
+        prepTimeMinutes: 10,
+        prepSteps: "Steps",
+        cost: 10,
+        difficulty: Difficulty.EASY,
+        dietaryTags: [],
+        allergens: [],
+        servings: 2,
+      });
+
+      await client.RecipesService.Delete(user.id, recipe.id);
+
+      const promise = client.RecipesService.Get(recipe.id);
+      await expect(promise).rejects.toThrow();
+    });
+  });
+
   describe("List", () => {
     beforeEach(async () => {
       await PurgeDatabase();

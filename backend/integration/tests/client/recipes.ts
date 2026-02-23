@@ -10,13 +10,16 @@ export class RecipesHttpClient implements IRecipesService {
     throw new Error("Method not implemented.");
   }
 
-  Update(userID: number, recipeID: number, request: UpdateRecipeRequest): Promise<void> {
+  Update(userId: number, recipeId: number, request: UpdateRecipeRequest): Promise<void> {
     //TODO
     throw new Error("Method not implemented.");
   }
 
-  Delete(userID: number, recipeID: number): Promise<void> {
-    throw new Error("Method not implemented.");
+  Delete(userId: number, recipeId: number): Promise<void> {
+    return this.client.Request({
+      url: `/api/recipes:${recipeId}`,
+      method: "DELETE",
+    });
   }
 
   List(req: ListRecipesRequest): Promise<PaginatedResponse<Recipe>> {
@@ -32,7 +35,7 @@ export class RecipesHttpClient implements IRecipesService {
     });
   }
 
-  Get(recipeID: number): Promise<Recipe> {
+  Get(recipeId: number): Promise<Recipe> {
     throw new Error("Method not implemented.");
   }
 }

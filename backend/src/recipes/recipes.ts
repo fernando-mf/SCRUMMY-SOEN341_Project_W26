@@ -57,7 +57,18 @@ const createRecipeRequestSchema = z.object({
 
 export type CreateRecipeRequest = z.infer<typeof createRecipeRequestSchema>;
 
-const updateRecipeRequestSchema = createRecipeRequestSchema.partial();
+//const updateRecipeRequestSchema = createRecipeRequestSchema.partial();
+const updateRecipeRequestSchema = z.object({ //should this be limited?
+  name: z.string().min(1),
+  ingredients: z.array(ingredientSchema).min(1),
+  prepTimeMinutes: z.number().int().positive(),
+  prepSteps: z.string().min(1),
+  cost: z.number().nonnegative(),
+  difficulty: z.enum(Difficulty),
+  dietaryTags: z.array(z.string()).default([]),
+  allergens: z.array(z.string()).default([]),
+  servings: z.number().int().positive(),
+});
 
 export type UpdateRecipeRequest = z.infer<typeof updateRecipeRequestSchema>;
 
@@ -104,18 +115,28 @@ export class RecipesService implements IRecipesService {
   }
 
   async Update(userId: number, recipeId: number, request: UpdateRecipeRequest): Promise<void> {
-    //TODO
-    /*
-    Putting this as reference for implementation
-    const recipeId = Number(req.params.recipeId); 
-
-    const existingRecipe = await service.Get(recipeId);
-
-    if (existingRecipe.authorId !== authorId) {
-      throw new ForbiddenError("you cannot delete this recipe");
+    const validation = updateRecipeRequestSchema.safeParse(request);
+    if (validation.error) {
+      throw InvalidParamsError.FromZodError(validation.error);
     }
-    */
-    throw new Error("Method not implemented.");
+
+    const currentRecipe = await this.repository.Get(recipeId);
+
+    const updatedRecipe: Recipe = {
+      id: currentRecipe.id,
+      authorId: currentRecipe.authorId,
+      name: request.name,
+      ingredients: request.ingredients,
+      prepTimeMinutes: request.prepTimeMinutes,
+      prepSteps: request.prepSteps,
+      cost: request.cost,
+      difficulty: request.difficulty,
+      dietaryTags: request.dietaryTags,
+      allergens: request.allergens,
+      servings: request.servings,
+    }
+
+    await this.repository.Update(userId, recipeId, updatedRecipe);
   }
 
   async Delete(userId: number, recipeId: number): Promise<void> {

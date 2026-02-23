@@ -14,13 +14,16 @@ export class RecipesHttpClient implements IRecipesService {
   }
 
   Update(userId: number, recipeId: number, request: UpdateRecipeRequest): Promise<void> {
-    //TODO
-    throw new Error("Method not implemented.");
+    return this.client.Request({
+      url: `/api/recipes/${recipeId}`,
+      method: "PUT",
+      body: request,
+    });
   }
 
   Delete(userId: number, recipeId: number): Promise<void> {
     return this.client.Request({
-      url: `/api/recipes:${recipeId}`,
+      url: `/api/recipes/${recipeId}`,
       method: "DELETE",
     });
   }
@@ -39,6 +42,9 @@ export class RecipesHttpClient implements IRecipesService {
   }
 
   Get(recipeId: number): Promise<Recipe> {
-    throw new Error("Method not implemented.");
+    return this.client.Request({
+       url: `/api/recipes/${recipeId}`,
+       method: "GET",
+    });
   }
 }

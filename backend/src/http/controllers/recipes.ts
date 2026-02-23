@@ -73,6 +73,20 @@ export function HandleListRecipes(service: IRecipesService): RequestHandler {
   };
 }
 
+export function HandleGetRecipe(service: IRecipesService): RequestHandler {
+  return async (req, res) => {
+    const auth = (req as any).auth;
+    const userId = parseInt(auth?.sub);
+    if (isNaN(userId)) {
+      throw new AuthenticationError("invalid token");
+    }
+
+    const recipeId = Number(req.params.id);
+    const recipe = await service.Get(recipeId);
+    res.status(HttpStatus.Ok).json(recipe);
+  };
+}
+
 function parseNumber(value?: string): number | undefined {
   if (value) {
     return Number(value);

@@ -105,6 +105,65 @@ describe("RecipesService", () => {
     });
   });
 
+  describe("Update", () => {
+    beforeEach(async () => {
+      await PurgeDatabase();
+    });
+
+    test("success", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const recipe = await client.RecipesService.Create(user.id, {
+        name: "Original",
+        ingredients: [{ name: "Flour", amount: 100, unit: Unit.G }],
+        prepTimeMinutes: 10,
+        prepSteps: "Steps",
+        cost: 10,
+        difficulty: Difficulty.EASY,
+        dietaryTags: [],
+        allergens: [],
+        servings: 2,
+      });
+
+      await client.RecipesService.Update(user.id, recipe.id, {
+        name: "Updated",
+        ingredients: [{ name: "Sugar", amount: 50, unit: Unit.G }],
+        prepTimeMinutes: 15,
+        prepSteps: "Other Steps",
+        cost: 10,
+        difficulty: Difficulty.EASY,
+        dietaryTags: [],
+        allergens: [],
+        servings: 2,
+      });
+
+      const updated = await client.RecipesService.Get(recipe.id);
+
+      expect(updated.name).toBe("Updated");
+      expect(updated.ingredients[0].name).toBe("Sugar");
+    });
+
+    test("fails if recipe does not exist", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const promise = client.RecipesService.Update(user.id, 9999, {
+        name: "Bad",
+        ingredients: [],
+        prepTimeMinutes: 10,
+        prepSteps: "",
+        cost: 5,
+        difficulty: Difficulty.EASY,
+        dietaryTags: [],
+        allergens: [],
+        servings: 10,
+      });
+
+      await expect(promise).rejects.toThrow();
+    });
+  });
+
   describe("List", () => {
     beforeEach(async () => {
       await PurgeDatabase();

@@ -65,6 +65,7 @@ export function HandleListRecipes(service: IRecipesService): RequestHandler {
       page: parseNumber(rawQuery.page),
       limit: parseNumber(rawQuery.limit),
       authors: rawQuery.authors ? rawQuery.authors.split(",").map(Number) : [],
+      search: rawQuery.search,
     };
 
     const recipes = await service.List(request);

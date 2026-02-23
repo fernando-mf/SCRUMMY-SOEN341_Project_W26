@@ -35,6 +35,7 @@ export class RecipesRepository implements IRecipesRepository {
     const whereClause = this.db`
       WHERE true
         ${this.applyIfSet(req.authors, this.db`AND r."authorId" IN ${this.db(req.authors)}`)}
+        ${this.applyIfSet(req.search, this.db`AND r."name" ILIKE ${"%" + req.search + "%"}`)}
     `;
 
     const countResult = await this.db<{ total: number }[]>`

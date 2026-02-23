@@ -7,8 +7,49 @@ export class RecipesRepository implements IRecipesRepository {
   constructor(private db: postgres.Sql) {}
 
   async Create(recipe: Omit<Recipe, "id">): Promise<Recipe> {
-    //TODO
-    throw new Error("Method not implemented.");
+    const result = await this.db<{ id: number }[]>`
+    INSERT INTO recipes (
+      "authorId",
+      "name",
+      "prepTimeMinutes",
+      "prepSteps",
+      "cost",
+      "difficulty",
+      "dietaryTags",
+      "allergens",
+      "servings"
+    ) VALUES (
+      ${recipe.authorId},
+      ${recipe.name},
+      ${recipe.prepTimeMinutes},
+      ${recipe.prepSteps},
+      ${recipe.cost},
+      ${recipe.difficulty},
+      ${recipe.dietaryTags},
+      ${recipe.allergens},
+      ${recipe.servings}
+    ) RETURNING "id"
+  `;
+
+    const recipeId = result[0].id;
+
+    if (recipe.ingredients.length > 0) {
+      const ingredientRows = recipe.ingredients.map((i) => ({
+        recipeId,
+        name: i.name,
+        amount: i.amount,
+        unit: i.unit,
+      }));
+
+      await this.db`
+      INSERT INTO recipe_ingredients ${this.db(ingredientRows)}
+    `;
+    }
+
+    return {
+      id: recipeId,
+      ...recipe,
+    };
   }
 
   async Update(userId: number, recipeId: number, recipe: Recipe): Promise<void> {

@@ -36,15 +36,28 @@ export type Recipe = {
 };
 
 //Request Schemas
+
+const ingredientSchema = z.object({
+  name: z.string().min(1),
+  amount: z.number().positive(),
+  unit: z.enum(Unit),
+});
+
 const createRecipeRequestSchema = z.object({
-  //TODO
+  name: z.string().min(1),
+  ingredients: z.array(ingredientSchema).min(1),
+  prepTimeMinutes: z.number().int().positive(),
+  prepSteps: z.string().min(1),
+  cost: z.number().nonnegative(),
+  difficulty: z.enum(Difficulty),
+  dietaryTags: z.array(z.string()).default([]),
+  allergens: z.array(z.string()).default([]),
+  servings: z.number().int().positive(),
 });
 
 export type CreateRecipeRequest = z.infer<typeof createRecipeRequestSchema>;
 
-const updateRecipeRequestSchema = z.object({
-  //TODO
-});
+const updateRecipeRequestSchema = createRecipeRequestSchema.partial();
 
 export type UpdateRecipeRequest = z.infer<typeof updateRecipeRequestSchema>;
 
@@ -77,8 +90,17 @@ export class RecipesService implements IRecipesService {
   constructor(private repository: IRecipesRepository) {}
 
   async Create(authorId: number, request: CreateRecipeRequest): Promise<Recipe> {
-    //TODO
-    throw new Error("Method not implemented.");
+    const validation = createRecipeRequestSchema.safeParse(request);
+    if (validation.error) {
+      throw InvalidParamsError.FromZodError(validation.error);
+    }
+
+    const createdRecipe = this.repository.Create({
+      authorId,
+      ...validation.data
+    });
+
+    return createdRecipe;
   }
 
   async Update(userId: number, recipeId: number, request: UpdateRecipeRequest): Promise<void> {

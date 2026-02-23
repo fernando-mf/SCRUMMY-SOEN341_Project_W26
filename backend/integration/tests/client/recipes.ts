@@ -6,8 +6,11 @@ export class RecipesHttpClient implements IRecipesService {
   constructor(private client: ApiClient) {}
 
   Create(authorId: number, request: CreateRecipeRequest): Promise<Recipe> {
-    //TODO
-    throw new Error("Method not implemented.");
+    return this.client.Request({
+      url: "/api/recipes",
+      method: "POST",
+      body: request,
+    });
   }
 
   Update(userID: number, recipeID: number, request: UpdateRecipeRequest): Promise<void> {

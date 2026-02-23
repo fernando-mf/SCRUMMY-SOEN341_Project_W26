@@ -57,8 +57,7 @@ const createRecipeRequestSchema = z.object({
 
 export type CreateRecipeRequest = z.infer<typeof createRecipeRequestSchema>;
 
-//const updateRecipeRequestSchema = createRecipeRequestSchema.partial();
-const updateRecipeRequestSchema = z.object({ //should this be limited?
+const updateRecipeRequestSchema = z.object({
   name: z.string().min(1),
   ingredients: z.array(ingredientSchema).min(1),
   prepTimeMinutes: z.number().int().positive(),

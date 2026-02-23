@@ -70,7 +70,7 @@ export class RecipesRepository implements IRecipesRepository {
     `;
 
     if (result.count === 0) {
-      throw new NotFoundError("error");
+      throw new NotFoundError("recipe");
     }
 
     if (recipe.ingredients !== undefined) {

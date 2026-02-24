@@ -2,7 +2,7 @@ import { Router } from "express";
 import swaggerUi from "swagger-ui-express";
 import type { Core } from "@api/core";
 import { HandleCreateUser, HandleLogin } from "@api/http/controllers/auth";
-import { HandleCreateRecipe, HandleUpdateRecipe, HandleListRecipes, HandleDeleteRecipe } from "@api/http/controllers/recipes";
+import { HandleCreateRecipe, HandleUpdateRecipe, HandleListRecipes, HandleDeleteRecipe, HandleGetRecipe } from "@api/http/controllers/recipes";
 import { HandleGetUser, HandleUpdateUser } from "@api/http/controllers/users";
 import spec from "@api/http/docs/swagger.json"; //  this is generated automatically after running `npm run dev` or `npm run build`
 import { RequireAuth } from "@api/http/middleware";
@@ -36,6 +36,7 @@ export function Routes(core: Core) {
   router.post("/recipes", HandleCreateRecipe(core.RecipesService));
   router.put("/recipes/:id", HandleUpdateRecipe(core.RecipesService));
   router.delete("/recipes/:id", HandleDeleteRecipe(core.RecipesService));
+  router.get("/recipes/:id", HandleGetRecipe(core.RecipesService));
   router.get("/recipes", HandleListRecipes(core.RecipesService));
 
   return router;

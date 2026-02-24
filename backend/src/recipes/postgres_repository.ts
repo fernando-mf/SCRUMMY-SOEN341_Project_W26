@@ -52,24 +52,58 @@ export class RecipesRepository implements IRecipesRepository {
     };
   }
 
-  async Update(userID: number, recipeID: number, recipe: Recipe): Promise<void> {
-    //TODO
-    /*
-    Putting this as reference for implementation
-    UPDATE recipes 
-    SET name = :name, cost = :cost, ... 
-    WHERE userId = :userId
+  async Update(userId: number, recipeId: number, recipe: Recipe): Promise<void> {
+    const result = await this.db`
+      UPDATE recipes
+      SET
+        "name" = ${recipe.name},
+        "prepTimeMinutes" = ${recipe.prepTimeMinutes},
+        "prepSteps" = ${recipe.prepSteps},
+        "cost" = ${recipe.cost},
+        "difficulty" = ${recipe.difficulty},
+        "dietaryTags" = ${recipe.dietaryTags},
+        "allergens" = ${recipe.allergens},
+        "servings" = ${recipe.servings},
+        "updatedAt" = CURRENT_TIMESTAMP
+      WHERE "id" = ${recipeId}
+        AND "authorId" = ${userId}
+    `;
 
-    const result = await db`UPDATE ... WHERE userId = ${userId}`
-    if (result.count == 0) {
-      throw new NotFoundError("recipe")
+    if (result.count === 0) {
+      throw new NotFoundError("recipe");
     }
-    */
-    throw new Error("Method not implemented.");
+
+    if (recipe.ingredients !== undefined) {
+      await this.db`
+        DELETE FROM recipe_ingredients
+        WHERE "recipeId" = ${recipeId}
+      `;
+
+      if (recipe.ingredients.length > 0) {
+        const rows = recipe.ingredients.map(i => ({
+          recipeId: recipeId,
+          name: i.name,
+          amount: i.amount,
+          unit: i.unit,
+        }));
+
+        await this.db`
+          INSERT INTO recipe_ingredients ${this.db(rows)}
+        `;
+      }
+    }
   }
 
-  async Delete(userID: number, recipeID: number): Promise<void> {
-    throw new Error("Method not implemented.");
+  async Delete(userId: number, recipeId: number): Promise<void> {
+    const result = await this.db`
+      DELETE FROM recipes
+      WHERE "id" = ${recipeId}
+        AND "authorId" = ${userId}
+    `;
+
+    if (result.count === 0) {
+      throw new NotFoundError("recipe");
+    }
   }
 
   async List(req: ListRecipesRequest): Promise<ListRecipesResponse> {
@@ -118,6 +152,32 @@ export class RecipesRepository implements IRecipesRepository {
     };
   }
 
+  async Get(recipeId: number): Promise<Recipe> {
+    const rawRecipes = await this.db<Recipe[]>`
+    SELECT
+      r."id",
+      r."authorId",
+      r."name",
+      r."prepTimeMinutes",
+      r."prepSteps",
+      r."cost",
+      r."difficulty",
+      r."dietaryTags",
+      r."allergens",
+      r."servings"
+    FROM recipes r
+    WHERE r."id" = ${recipeId}
+  `;
+
+    if (rawRecipes.length === 0) {
+      throw new NotFoundError("recipe");
+    }
+
+    const recipesWithIngredients = await this.fillIngredients(rawRecipes);
+
+    return recipesWithIngredients[0];
+  }
+
   private async fillIngredients(recipes: Recipe[]): Promise<Recipe[]> {
     if (recipes.length === 0) {
       return [];
@@ -151,17 +211,6 @@ export class RecipesRepository implements IRecipesRepository {
       ...r,
       ingredients: indexedIngredients[r.id] ?? [],
     }));
-  }
-
-  async Get(recipeID: number): Promise<Recipe> {
-    const recipe = await this.db`
-    SELECT * FROM recipes WHERE id = ${recipeID}`;
-
-    if (recipe.length === 0) {
-      throw new NotFoundError("recipe");
-    }
-
-    return recipe[0] as Recipe;
   }
 
   private applyIfSet<T>(val: T[] | T, fragment: any) {

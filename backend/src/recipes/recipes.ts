@@ -57,7 +57,17 @@ const createRecipeRequestSchema = z.object({
 
 export type CreateRecipeRequest = z.infer<typeof createRecipeRequestSchema>;
 
-const updateRecipeRequestSchema = createRecipeRequestSchema.partial();
+const updateRecipeRequestSchema = z.object({
+  name: z.string().min(1),
+  ingredients: z.array(ingredientSchema).min(1),
+  prepTimeMinutes: z.number().int().positive(),
+  prepSteps: z.string().min(1),
+  cost: z.number().nonnegative(),
+  difficulty: z.enum(Difficulty),
+  dietaryTags: z.array(z.string()).default([]),
+  allergens: z.array(z.string()).default([]),
+  servings: z.number().int().positive(),
+});
 
 export type UpdateRecipeRequest = z.infer<typeof updateRecipeRequestSchema>;
 
@@ -71,19 +81,19 @@ export type ListRecipesResponse = PaginatedResponse<Recipe>;
 
 // Interfaces
 export interface IRecipesService {
-  Create(authorID: number, request: CreateRecipeRequest): Promise<Recipe>;
-  Update(userID: number, recipeID: number, request: UpdateRecipeRequest): Promise<void>;
-  Delete(userID: number, recipeID: number): Promise<void>;
+  Create(authorId: number, request: CreateRecipeRequest): Promise<Recipe>;
+  Update(userId: number, recipeId: number, request: UpdateRecipeRequest): Promise<void>;
+  Delete(userId: number, recipeId: number): Promise<void>;
   List(req: Partial<ListRecipesRequest>): Promise<ListRecipesResponse>;
-  Get(recipeID: number): Promise<Recipe>;
+  Get(recipeId: number): Promise<Recipe>;
 }
 
 export interface IRecipesRepository {
   Create(recipe: Omit<Recipe, "id">): Promise<Recipe>;
-  Update(userID: number, recipeID: number, recipe: Recipe): Promise<void>;
-  Delete(userID: number, recipeID: number): Promise<void>;
+  Update(userId: number, recipeId: number, recipe: Recipe): Promise<void>;
+  Delete(userId: number, recipeId: number): Promise<void>;
   List(params: ListRecipesRequest): Promise<ListRecipesResponse>;
-  Get(recipeID: number): Promise<Recipe>;
+  Get(recipeId: number): Promise<Recipe>;
 }
 
 export class RecipesService implements IRecipesService {
@@ -103,24 +113,33 @@ export class RecipesService implements IRecipesService {
     return createdRecipe;
   }
 
-  async Update(userID: number, recipeID: number, request: UpdateRecipeRequest): Promise<void> {
-    //TODO
-    /*
-    Putting this as reference for implementation
-    const recipeID = Number(req.params.recipeID); 
-
-    const existingRecipe = await service.Get(recipeID);
-
-    if (existingRecipe.authorID !== authorID) {
-      throw new ForbiddenError("you cannot delete this recipe");
+  async Update(userId: number, recipeId: number, request: UpdateRecipeRequest): Promise<void> {
+    const validation = updateRecipeRequestSchema.safeParse(request);
+    if (validation.error) {
+      throw InvalidParamsError.FromZodError(validation.error);
     }
-    */
-    throw new Error("Method not implemented.");
+
+    const currentRecipe = await this.repository.Get(recipeId);
+
+    const updatedRecipe: Recipe = {
+      id: currentRecipe.id,
+      authorId: currentRecipe.authorId,
+      name: request.name,
+      ingredients: request.ingredients,
+      prepTimeMinutes: request.prepTimeMinutes,
+      prepSteps: request.prepSteps,
+      cost: request.cost,
+      difficulty: request.difficulty,
+      dietaryTags: request.dietaryTags,
+      allergens: request.allergens,
+      servings: request.servings,
+    }
+
+    await this.repository.Update(userId, recipeId, updatedRecipe);
   }
 
-  async Delete(userID: number, recipeID: number): Promise<void> {
-    //TODO
-    throw new Error("Method not implemented.");
+  async Delete(userId: number, recipeId: number): Promise<void> {
+    await this.repository.Delete(userId, recipeId);
   }
 
   async List(rawQuery: Partial<ListRecipesRequest>): Promise<ListRecipesResponse> {
@@ -132,7 +151,7 @@ export class RecipesService implements IRecipesService {
     return this.repository.List(validation.data);
   }
 
-  async Get(recipeID: number): Promise<Recipe> {
-    return await this.repository.Get(recipeID);
+  async Get(recipeId: number): Promise<Recipe> {
+    return await this.repository.Get(recipeId);
   }
 }

@@ -18,6 +18,7 @@
 - 20-02-2026 - 45 minutes - Task.27: recipe creation backend.
 - 20-02-2026 - 45 minutes - Task.37 & Task.41 : added recipe editing and deletion spec.
 - 22-02-2026 - 1.5 hours - Task.29: recipe creation logic
+- 23-02-2026 - 3 hours - Tasl.39 & Task.43 : recipe editing and deletion logic
 
 ## **Fernando Mamani** (ID: 40169982), Backend/Database
 

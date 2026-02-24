@@ -44,7 +44,7 @@ export class UsersRepository implements IUsersRepository {
     }
   }
 
-  async Update(userID: number, user: User): Promise<void> {
+  async Update(userId: number, user: User): Promise<void> {
     const result = await this.db`
       UPDATE users
       SET
@@ -53,7 +53,7 @@ export class UsersRepository implements IUsersRepository {
         "dietPreferences" = ${user.dietPreferences},
         "allergies" = ${user.allergies},
         "updatedAt" = CURRENT_TIMESTAMP
-      WHERE "id" = ${userID}
+      WHERE "id" = ${userId}
     `;
 
     if (result.count === 0) {
@@ -61,7 +61,7 @@ export class UsersRepository implements IUsersRepository {
     }
   }
 
-  async Get(userID: number): Promise<User> {
+  async Get(userId: number): Promise<User> {
     const user = await this.db`
       SELECT
         "id",
@@ -71,7 +71,7 @@ export class UsersRepository implements IUsersRepository {
         "dietPreferences",
         "allergies"
       FROM users
-      WHERE "id" = ${userID}
+      WHERE "id" = ${userId}
     `;
 
     if (user.length === 0) {
@@ -98,14 +98,14 @@ export class UsersRepository implements IUsersRepository {
     return result[0] as AuthInfo;
   }
 
-  async GetAuthInfo(userID: number): Promise<AuthInfo> {
+  async GetAuthInfo(userId: number): Promise<AuthInfo> {
     const result = await this.db`
       SELECT
         "id",
         "email",
         "passwordHash"
       FROM users
-      WHERE "id" = ${userID}
+      WHERE "id" = ${userId}
     `;
     if (result.length === 0) {
       throw new NotFoundError("user");

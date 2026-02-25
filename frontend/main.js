@@ -3,8 +3,10 @@ const BASE_URL = "http://localhost:3000/api";
 const registerForm = document.getElementById("register-form");
 const loginForm = document.getElementById("login-form");
 const profileForm = document.getElementById("profile-form");
+const searchForm = document.getElementById("search-form");
 
-// Diet preferences and allergies options
+/* ---------------- OPTIONS ---------------- */
+
 const DIET_PREFERENCES = [
   "Vegetarian",
   "Vegan",
@@ -33,13 +35,14 @@ const ALLERGIES = [
   "Sulfites",
 ];
 
+/* ---------------- UTILITIES ---------------- */
+
 function setMessage(target, text, type) {
   if (!target) return;
 
   target.textContent = text || "";
   target.className = "message" + (type ? ` ${type}` : "");
 
-  // If your CSS uses .hidden, this makes it work with both styles
   if (!text) target.classList.add("hidden");
   else target.classList.remove("hidden");
 }
@@ -81,6 +84,7 @@ function getSelectedTags(container) {
 }
 
 /* ---------------- REGISTER ---------------- */
+
 async function registerRequest(firstName, lastName, email, password) {
   const response = await fetch(`${BASE_URL}/auth/register`, {
     method: "POST",
@@ -130,7 +134,7 @@ if (registerForm) {
       setMessage(
         messageBox,
         "Password must be at least 8 characters and include at least 1 letter and 1 number.",
-        "error",
+        "error"
       );
       return;
     }
@@ -141,12 +145,7 @@ if (registerForm) {
     }
 
     try {
-      const result = await registerRequest(
-        firstName,
-        lastName,
-        email,
-        password,
-      );
+      const result = await registerRequest(firstName, lastName, email, password);
 
       if (!result.success) {
         if (result.status === 409) {
@@ -160,7 +159,6 @@ if (registerForm) {
       setMessage(messageBox, "Account created successfully. Redirecting...", "ok");
       localStorage.setItem("token", result.data.token);
 
-      //this is a brute force way to disable inputs when redirecting. Smt better could maybe be used
       Array.from(registerForm.elements).forEach((el) => {
         el.disabled = true;
       });
@@ -168,8 +166,6 @@ if (registerForm) {
       setTimeout(() => {
         window.location.href = "profile.html";
       }, 3000);
-
-      //registerForm.reset();
     } catch {
       setMessage(messageBox, "Something went wrong.", "error");
     }
@@ -177,6 +173,7 @@ if (registerForm) {
 }
 
 /* ---------------- LOGIN ---------------- */
+
 async function loginRequest(email, password) {
   const response = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
@@ -199,7 +196,7 @@ async function loginRequest(email, password) {
 }
 
 if (loginForm) {
-  const messageBox = document.getElementById("form-message");
+  const messageBox = document.getElementById("message");
 
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
@@ -211,8 +208,19 @@ if (loginForm) {
     const email = emailInput ? emailInput.value.trim() : "";
     const password = passwordInput ? passwordInput.value : "";
 
-    if (!email || !password) {
-      setMessage(messageBox, "Please enter your email and password.", "error");
+    if (!email) {
+      setMessage(messageBox, "Email is required.", "error");
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      setMessage(messageBox, "Please enter a valid email address.", "error");
+      return;
+    }
+
+    if (!password) {
+      setMessage(messageBox, "Password is required.", "error");
       return;
     }
 
@@ -221,11 +229,7 @@ if (loginForm) {
 
       if (!result.success) {
         if (result.status === 404 || result.status === 401) {
-          setMessage(
-            messageBox,
-            "Account not found or wrong password.",
-            "error",
-          );
+          setMessage(messageBox, "Account not found or wrong password.", "error");
           return;
         }
         setMessage(messageBox, "Something went wrong.", "error");
@@ -235,6 +239,7 @@ if (loginForm) {
       if (result.data && result.data.token) {
         localStorage.setItem("token", result.data.token);
       }
+
       window.location.href = "profile.html";
     } catch {
       setMessage(messageBox, "Something went wrong.", "error");
@@ -243,6 +248,7 @@ if (loginForm) {
 }
 
 /* ---------------- PROFILE ---------------- */
+
 if (profileForm) {
   const messageBox = document.getElementById("form-message");
   const dietTagsContainer = document.getElementById("diet-tags");
@@ -296,8 +302,22 @@ if (profileForm) {
       const selectedDietPreferences = getSelectedTags(dietTagsContainer);
       const selectedAllergies = getSelectedTags(allergyTagsContainer);
 
-      if (!firstName || !lastName) {
-        setMessage(messageBox, "First name and last name are required.", "error");
+      if (!firstName) {
+        setMessage(messageBox, "First name is required.", "error");
+        return;
+      }
+
+      if (!lastName) {
+        setMessage(messageBox, "Last name is required.", "error");
+        return;
+      }
+
+      if (selectedDietPreferences.length === 0 && selectedAllergies.length === 0) {
+        setMessage(
+          messageBox,
+          "Please select at least one diet preference or allergy.",
+          "error"
+        );
         return;
       }
 
@@ -324,4 +344,53 @@ if (profileForm) {
       }
     });
   }
+}
+
+/* ---------------- SEARCH ---------------- */
+
+if (searchForm) {
+  const messageBox = document.getElementById("search-message");
+  const queryInput = document.getElementById("search-query");
+  const resultsContainer = document.getElementById("search-results");
+
+  searchForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    setMessage(messageBox, "", "");
+    resultsContainer.innerHTML = "";
+
+    const query = queryInput ? queryInput.value.trim() : "";
+
+    if (!query) {
+      setMessage(messageBox, "Please enter a recipe name.", "error");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${BASE_URL}/recipes/search?q=${encodeURIComponent(query)}`
+      );
+
+      if (!response.ok) {
+        setMessage(messageBox, "Failed to search recipes.", "error");
+        return;
+      }
+
+      const recipes = await response.json();
+
+      if (!recipes || recipes.length === 0) {
+        resultsContainer.innerHTML = "<p class='hint'>No recipes found.</p>";
+        return;
+      }
+
+      recipes.forEach((recipe) => {
+        const recipeDiv = document.createElement("div");
+        recipeDiv.style.marginBottom = "10px";
+        recipeDiv.innerHTML = `<strong>${recipe.name}</strong>`;
+        resultsContainer.appendChild(recipeDiv);
+      });
+
+    } catch {
+      setMessage(messageBox, "Something went wrong.", "error");
+    }
+  });
 }

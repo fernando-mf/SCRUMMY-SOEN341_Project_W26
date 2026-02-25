@@ -10,7 +10,8 @@
 
 ## **Tarek Al-Khen** (ID: 40272705), FrontEnd
 
--
+-24-02-2026 - 1 hour - Task.25: fixed error messages for missing email & password.
+
 
 ## **Gianluca Marino** (ID: 40297326), BackEnd/Database 
 

@@ -209,20 +209,20 @@ if (loginForm) {
     const password = passwordInput ? passwordInput.value : "";
 
     if (!email) {
-      setMessage(messageBox, "Email is required.", "error");
-      return;
-    }
+  setMessage(messageBox, "Email is required.", "error");
+  return;
+}
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-      setMessage(messageBox, "Please enter a valid email address.", "error");
-      return;
-    }
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+if (!emailPattern.test(email)) {
+  setMessage(messageBox, "Please enter a valid email address.", "error");
+  return;
+}
 
-    if (!password) {
-      setMessage(messageBox, "Password is required.", "error");
-      return;
-    }
+if (!password) {
+  setMessage(messageBox, "Password is required.", "error");
+  return;
+}
 
     try {
       const result = await loginRequest(email, password);
@@ -302,24 +302,24 @@ if (profileForm) {
       const selectedDietPreferences = getSelectedTags(dietTagsContainer);
       const selectedAllergies = getSelectedTags(allergyTagsContainer);
 
-      if (!firstName) {
-        setMessage(messageBox, "First name is required.", "error");
-        return;
-      }
+     if (!firstName) {
+  setMessage(messageBox, "First name is required.", "error");
+  return;
+}
 
-      if (!lastName) {
-        setMessage(messageBox, "Last name is required.", "error");
-        return;
-      }
+if (!lastName) {
+  setMessage(messageBox, "Last name is required.", "error");
+  return;
+}
 
-      if (selectedDietPreferences.length === 0 && selectedAllergies.length === 0) {
-        setMessage(
-          messageBox,
-          "Please select at least one diet preference or allergy.",
-          "error"
-        );
-        return;
-      }
+if (selectedDietPreferences.length === 0) {
+  setMessage(
+    messageBox,
+    "Please select at least one diet preference or allergy.",
+    "error"
+  );
+  return;
+}
 
       try {
         const response = await fetch(`${BASE_URL}/users`, {

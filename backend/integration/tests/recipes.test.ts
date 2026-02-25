@@ -1,9 +1,197 @@
 import { beforeEach, describe, expect, test } from "vitest";
 import { Difficulty, ListRecipesRequest, Unit } from "@api/recipes";
-import { NewClient } from "./client";
-import { BeginUserSession, InsertRecipe, PurgeDatabase } from "./helpers";
+import { Client, NewClient } from "./client";
+import { BeginUserSession, PurgeDatabase } from "./helpers";
 
 describe("RecipesService", () => {
+  describe("Create", () => {
+    beforeEach(async () => {
+      await PurgeDatabase();
+    });
+
+    test("success", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const recipe = await client.RecipesService.Create(user.id, {
+        name: "Valid Recipe",
+        ingredients: [
+          { name: "Flour", amount: 100, unit: Unit.G },
+        ],
+        prepTimeMinutes: 10,
+        prepSteps: "Steps",
+        cost: 10,
+        difficulty: Difficulty.EASY,
+        dietaryTags: ["vegan"],
+        allergens: [],
+        servings: 2,
+      });
+
+      expect(recipe.id).toBeDefined();
+      expect(recipe.name).toBe("Valid Recipe");
+      expect(recipe.ingredients.length).toBe(1);
+    });
+
+    test("fails with missing required fields", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const promise = client.RecipesService.Create(user.id, {
+        name: "",
+      } as any);
+
+      await expect(promise).rejects.toThrow("invalid_params");
+    });
+
+    test("fails when ingredients array is empty", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const promise = client.RecipesService.Create(user.id, {
+        name: "Recipe",
+        ingredients: [],
+        prepTimeMinutes: 10,
+        prepSteps: "Steps",
+        cost: 10,
+        difficulty: Difficulty.EASY,
+        dietaryTags: [],
+        allergens: [],
+        servings: 2,
+      });
+
+      await expect(promise).rejects.toThrow("invalid_params");
+    });
+
+    test("fails with invalid ingredient structure", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const promise = client.RecipesService.Create(user.id, {
+        name: "Recipe",
+        ingredients: [
+          { name: "", amount: -5, unit: "invalid" as any },
+        ],
+        prepTimeMinutes: 10,
+        prepSteps: "Steps",
+        cost: 10,
+        difficulty: Difficulty.EASY,
+        dietaryTags: [],
+        allergens: [],
+        servings: 2,
+      });
+
+      await expect(promise).rejects.toThrow("invalid_params");
+    });
+
+    test("fails with negative numeric fields", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const promise = client.RecipesService.Create(user.id, {
+        name: "Recipe",
+        ingredients: [
+          { name: "Flour", amount: 100, unit: Unit.G },
+        ],
+        prepTimeMinutes: -1,
+        prepSteps: "Steps",
+        cost: -5,
+        difficulty: Difficulty.EASY,
+        dietaryTags: [],
+        allergens: [],
+        servings: 0,
+      });
+
+      await expect(promise).rejects.toThrow("invalid_params");
+    });
+  });
+
+  describe("Update", () => {
+    beforeEach(async () => {
+      await PurgeDatabase();
+    });
+
+    test("success", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const recipe = await client.RecipesService.Create(user.id, {
+        name: "Original",
+        ingredients: [{ name: "Flour", amount: 100, unit: Unit.G }],
+        prepTimeMinutes: 10,
+        prepSteps: "Steps",
+        cost: 10,
+        difficulty: Difficulty.EASY,
+        dietaryTags: [],
+        allergens: [],
+        servings: 2,
+      });
+
+      await client.RecipesService.Update(user.id, recipe.id, {
+        name: "Updated",
+        ingredients: [{ name: "Sugar", amount: 50, unit: Unit.G }],
+        prepTimeMinutes: 15,
+        prepSteps: "Other Steps",
+        cost: 10,
+        difficulty: Difficulty.EASY,
+        dietaryTags: [],
+        allergens: [],
+        servings: 2,
+      });
+
+      const updated = await client.RecipesService.Get(recipe.id);
+
+      expect(updated.name).toBe("Updated");
+      expect(updated.ingredients[0].name).toBe("Sugar");
+    });
+
+    test("fails if recipe does not exist", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const promise = client.RecipesService.Update(user.id, 9999, {
+        name: "Bad",
+        ingredients: [],
+        prepTimeMinutes: 10,
+        prepSteps: "",
+        cost: 5,
+        difficulty: Difficulty.EASY,
+        dietaryTags: [],
+        allergens: [],
+        servings: 10,
+      });
+
+      await expect(promise).rejects.toThrow();
+    });
+  });
+
+  describe("Delete", () => {
+    beforeEach(async () => {
+      await PurgeDatabase();
+    });
+
+    test("success", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const recipe = await client.RecipesService.Create(user.id, {
+        name: "To delete",
+        ingredients: [{ name: "Flour", amount: 100, unit: Unit.G }],
+        prepTimeMinutes: 10,
+        prepSteps: "Steps",
+        cost: 10,
+        difficulty: Difficulty.EASY,
+        dietaryTags: [],
+        allergens: [],
+        servings: 2,
+      });
+
+      await client.RecipesService.Delete(user.id, recipe.id);
+
+      const promise = client.RecipesService.Get(recipe.id);
+      await expect(promise).rejects.toThrow();
+    });
+  });
+
   describe("List", () => {
     beforeEach(async () => {
       await PurgeDatabase();
@@ -49,7 +237,7 @@ describe("RecipesService", () => {
       const { user } = await BeginUserSession(client);
 
       const recipeCount = 5;
-      await insertTestRecipes(user.id, recipeCount);
+      await insertTestRecipes(client, user.id, recipeCount);
 
       const res = await client.RecipesService.List({});
 
@@ -66,7 +254,7 @@ describe("RecipesService", () => {
       const { user } = await BeginUserSession(client);
 
       const recipeCount = 3;
-      await insertTestRecipes(user.id, recipeCount);
+      await insertTestRecipes(client, user.id, recipeCount);
 
       const params: Partial<ListRecipesRequest> = {
         page: 1,
@@ -110,7 +298,7 @@ describe("RecipesService", () => {
       const userId = user.id;
       const otherUserId = userId + 1;
 
-      await insertTestRecipes(userId, 1);
+      await insertTestRecipes(client, userId, 1);
 
       let res = await client.RecipesService.List({ authors: [userId] });
       expect(res.data.length).toBe(1);
@@ -122,10 +310,9 @@ describe("RecipesService", () => {
   });
 });
 
-async function insertTestRecipes(userId: number, count: number) {
+async function insertTestRecipes(client: Client, userId: number, count: number) {
   for (let i = 0; i < count; i++) {
-    await InsertRecipe({
-      authorId: userId,
+    await client.RecipesService.Create(userId, {
       name: `Recipe ${i + 1}`,
       ingredients: [
         { amount: 100, name: "Ingredient 1", unit: Unit.G },

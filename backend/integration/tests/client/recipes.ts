@@ -6,17 +6,26 @@ export class RecipesHttpClient implements IRecipesService {
   constructor(private client: ApiClient) {}
 
   Create(authorId: number, request: CreateRecipeRequest): Promise<Recipe> {
-    //TODO
-    throw new Error("Method not implemented.");
+    return this.client.Request({
+      url: "/api/recipes",
+      method: "POST",
+      body: request,
+    });
   }
 
-  Update(userID: number, recipeID: number, request: UpdateRecipeRequest): Promise<void> {
-    //TODO
-    throw new Error("Method not implemented.");
+  Update(userId: number, recipeId: number, request: UpdateRecipeRequest): Promise<void> {
+    return this.client.Request({
+      url: `/api/recipes/${recipeId}`,
+      method: "PUT",
+      body: request,
+    });
   }
 
-  Delete(userID: number, recipeID: number): Promise<void> {
-    throw new Error("Method not implemented.");
+  Delete(userId: number, recipeId: number): Promise<void> {
+    return this.client.Request({
+      url: `/api/recipes/${recipeId}`,
+      method: "DELETE",
+    });
   }
 
   List(req: ListRecipesRequest): Promise<PaginatedResponse<Recipe>> {
@@ -32,7 +41,10 @@ export class RecipesHttpClient implements IRecipesService {
     });
   }
 
-  Get(recipeID: number): Promise<Recipe> {
-    throw new Error("Method not implemented.");
+  Get(recipeId: number): Promise<Recipe> {
+    return this.client.Request({
+       url: `/api/recipes/${recipeId}`,
+       method: "GET",
+    });
   }
 }

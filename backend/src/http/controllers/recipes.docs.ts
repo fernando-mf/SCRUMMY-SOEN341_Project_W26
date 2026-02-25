@@ -19,7 +19,7 @@ class RecipesDocs extends Controller {
     return null as any;
   }
 
-  @Put("{recipeID}")
+  @Put("{recipeId}")
   @Security("jwt")
   @SuccessResponse(HttpStatus.Ok, "Recipe Updated")
   @Response(HttpStatus.BadRequest, "Recipe Invalid")
@@ -27,7 +27,7 @@ class RecipesDocs extends Controller {
     return null as any;
   }
 
-  @Delete("{recipeID}")
+  @Delete("{recipeId}")
   @Security("jwt")
   @SuccessResponse(HttpStatus.NoContent, "Recipe Deleted")
   @Response(HttpStatus.BadRequest, "Recipe Invalid")

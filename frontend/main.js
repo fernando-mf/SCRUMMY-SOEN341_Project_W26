@@ -317,7 +317,7 @@ if (!lastName) {
   return;
 }
 
-if (selectedDietPreferences.length === 0 && selectedAllergies.length === 0) {
+if (selectedDietPreferences.length === 0) {
   setMessage(
     messageBox,
     "Please select at least one diet preference or allergy.",

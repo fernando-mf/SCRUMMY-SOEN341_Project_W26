@@ -1,8 +1,12 @@
 # Sprint 2 - Time Tracking
 
 ## **Azmi-Salah Bousedra** (ID: 40316065), FrontEnd
-
--
+- 26-02-2026 - 0.5 hour - Task.24: Fix input spacing and visual bugs in all views.
+- 26-02-2026 - 1 hour - Task.32: Build a basic "Recipes List" page. 
+- 26-02-2026 - 2 hours - Task.28: Build the Recipe Creation UI following the API contract.
+- 26-02-2026 - 1 hour - Task.30: Integrate BE and FE (create recipe flow). 
+- 26-02-2026 - 0.25 hour - Task.33: Implement Own Recipes & All Recipes filter toggle.
+- 26-02-2026 - 1 hour - Task.36: Integrate BE and FE (recipes list). 
 
 ## **Quoc Thien Minh Tran** (ID: 40299089), FrontEnd 
 

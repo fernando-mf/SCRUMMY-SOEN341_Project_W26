@@ -7,6 +7,8 @@ export enum Unit {
   ML = "ml",
   TBSP = "tbsp",
   TSP = "tsp",
+  CUP = "cup",
+  CLOVES = "cloves",
 }
 
 export enum Difficulty {
@@ -18,7 +20,7 @@ export enum Difficulty {
 export type Ingredient = {
   name: string;
   amount: number;
-  unit: Unit;
+  unit: string;
 };
 
 export type Recipe = {
@@ -29,7 +31,7 @@ export type Recipe = {
   prepTimeMinutes: number;
   prepSteps: string;
   cost: number;
-  difficulty: Difficulty;
+  difficulty: string;
   dietaryTags: string[];
   allergens: string[];
   servings: number;
@@ -40,7 +42,7 @@ export type Recipe = {
 const ingredientSchema = z.object({
   name: z.string().min(1),
   amount: z.number().positive(),
-  unit: z.enum(Unit),
+  unit: z.enum(["g", "ml", "tbsp", "tsp", "cup", "cloves"] as const),
 });
 
 const createRecipeRequestSchema = z.object({
@@ -49,7 +51,7 @@ const createRecipeRequestSchema = z.object({
   prepTimeMinutes: z.number().int().positive(),
   prepSteps: z.string().min(1),
   cost: z.number().nonnegative(),
-  difficulty: z.enum(Difficulty),
+  difficulty: z.enum(["easy", "medium", "hard"]),
   dietaryTags: z.array(z.string()).default([]),
   allergens: z.array(z.string()).default([]),
   servings: z.number().int().positive(),
@@ -63,7 +65,7 @@ const updateRecipeRequestSchema = z.object({
   prepTimeMinutes: z.number().int().positive(),
   prepSteps: z.string().min(1),
   cost: z.number().nonnegative(),
-  difficulty: z.enum(Difficulty),
+  difficulty: z.enum(["easy", "medium", "hard"]),
   dietaryTags: z.array(z.string()).default([]),
   allergens: z.array(z.string()).default([]),
   servings: z.number().int().positive(),

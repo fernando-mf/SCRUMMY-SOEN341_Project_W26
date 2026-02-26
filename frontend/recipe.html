@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MealMajor - Recipes</title>
+    <link rel="stylesheet" href="styles.css?v=12" />
+</head>
+<body>
+  <main class="page" id="recipes-page">
+    <header class="page-header">
+      <div class="page-title">
+        <h1 class="brand">MealMajor</h1>
+        <h2 class="title">Recipes</h2>
+        <nav class="nav-actions nav-actions-left">
+          <a class="btn btn-secondary" href="profile.html">Profile</a>
+          <a class="btn btn-secondary" href="recipe.html?mine=1" id="my-recipes-btn">My Recipes</a>
+        </nav>
+      </div>
+      <nav class="nav-actions nav-actions-right">
+        <a class="btn" href="create-recipe.html">Create Recipe</a>
+      </nav>
+    </header>
+
+    <section class="card card-wide">
+
+  <!-- FILTERS SECTION -->
+  <div class="filters-bar">
+
+    <input type="number" id="filter-time" placeholder="Max prep time (min)" />
+
+    <select id="filter-difficulty">
+      <option value="">All difficulty</option>
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+
+    <input type="number" id="filter-cost" placeholder="Max cost ($)" />
+
+    <input type="text" id="filter-tag" placeholder="Dietary tag (vegan etc)" />
+
+    <button class="btn" id="apply-filters-btn">Apply Filters</button>
+    <button class="btn btn-secondary" id="reset-filters-btn">Reset</button>
+
+  </div>
+      <div id="recipes-message" class="message hidden" role="alert" aria-live="polite"></div>
+      <div id="recipes-list" class="recipes-grid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="main.js?v=9"></script>
+</body>
+</html>

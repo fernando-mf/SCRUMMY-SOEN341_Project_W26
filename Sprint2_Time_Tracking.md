@@ -8,10 +8,13 @@
 
 -
 
-## **Tarek Al-Khen** (ID: 40272705), FrontEnd 
+## **Tarek Al-Khen** (ID: 40272705), FrontEnd
 - 24-02-2026 - 1 hour - Task.25: fixed error messages for missing email & password.
 - 24-02-2026 - 1.5 hour - Task.51: implemented recipe search page UI and logic.
 - 24-02-2026 - 40 minutes - Task.54: implemented homepage UI and layout.
+- 24-02-2026 - 45 minutes - Task.55: implemented navigation bar and links.
+- 26-02-2026 - 2 hours - Task.42: implemented recipe deletion button and integration with delete API.
+- 26-02-2026 - 45 minutes - Task.47: implemented reset filters button and filtering UI logic. 
 
 ## **Gianluca Marino** (ID: 40297326), BackEnd/Database 
 

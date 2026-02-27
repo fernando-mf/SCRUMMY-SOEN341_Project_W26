@@ -7,6 +7,8 @@ export enum Unit {
   ML = "ml",
   TBSP = "tbsp",
   TSP = "tsp",
+  CUP = "cup",
+  CLOVES = "cloves",
 }
 
 export enum Difficulty {
@@ -40,7 +42,7 @@ export type Recipe = {
 const ingredientSchema = z.object({
   name: z.string().min(1),
   amount: z.number().positive(),
-  unit: z.enum(Unit),
+  unit: z.enum(Object.values(Unit) as [string, ...string[]]),
 });
 
 const createRecipeRequestSchema = z.object({
@@ -49,7 +51,7 @@ const createRecipeRequestSchema = z.object({
   prepTimeMinutes: z.number().int().positive(),
   prepSteps: z.string().min(1),
   cost: z.number().nonnegative(),
-  difficulty: z.enum(Difficulty),
+  difficulty: z.enum(Object.values(Difficulty) as [string, ...string[]]),
   dietaryTags: z.array(z.string()).default([]),
   allergens: z.array(z.string()).default([]),
   servings: z.number().int().positive(),
@@ -63,7 +65,7 @@ const updateRecipeRequestSchema = z.object({
   prepTimeMinutes: z.number().int().positive(),
   prepSteps: z.string().min(1),
   cost: z.number().nonnegative(),
-  difficulty: z.enum(Difficulty),
+  difficulty: z.enum(Object.values(Difficulty) as [string, ...string[]]),
   dietaryTags: z.array(z.string()).default([]),
   allergens: z.array(z.string()).default([]),
   servings: z.number().int().positive(),
@@ -73,6 +75,11 @@ export type UpdateRecipeRequest = z.infer<typeof updateRecipeRequestSchema>;
 
 const listRecipesRequestSchema = PaginationQuerySchema.extend({
   authors: z.array(z.number()).default([]),
+  search: z.string().trim().min(1).optional(),
+  maxTimeMinutes: z.number().optional(),
+  maxCost: z.number().optional(),
+  difficulty: z.enum(Difficulty).optional(),
+  dietaryTags: z.array(z.string()).default([]),
 });
 
 export type ListRecipesRequest = z.infer<typeof listRecipesRequestSchema>;
@@ -107,7 +114,15 @@ export class RecipesService implements IRecipesService {
 
     const createdRecipe = this.repository.Create({
       authorId,
-      ...validation.data
+      name: validation.data.name,
+      ingredients: validation.data.ingredients as Ingredient[],
+      prepTimeMinutes: validation.data.prepTimeMinutes,
+      prepSteps: validation.data.prepSteps,
+      cost: validation.data.cost,
+      difficulty: validation.data.difficulty as Difficulty,
+      dietaryTags: validation.data.dietaryTags,
+      allergens: validation.data.allergens,
+      servings: validation.data.servings,
     });
 
     return createdRecipe;
@@ -124,15 +139,15 @@ export class RecipesService implements IRecipesService {
     const updatedRecipe: Recipe = {
       id: currentRecipe.id,
       authorId: currentRecipe.authorId,
-      name: request.name,
-      ingredients: request.ingredients,
-      prepTimeMinutes: request.prepTimeMinutes,
-      prepSteps: request.prepSteps,
-      cost: request.cost,
-      difficulty: request.difficulty,
-      dietaryTags: request.dietaryTags,
-      allergens: request.allergens,
-      servings: request.servings,
+      name: validation.data.name,
+      ingredients: validation.data.ingredients as Ingredient[],
+      prepTimeMinutes: validation.data.prepTimeMinutes,
+      prepSteps: validation.data.prepSteps,
+      cost: validation.data.cost,
+      difficulty: validation.data.difficulty as Difficulty,
+      dietaryTags: validation.data.dietaryTags,
+      allergens: validation.data.allergens,
+      servings: validation.data.servings,
     }
 
     await this.repository.Update(userId, recipeId, updatedRecipe);

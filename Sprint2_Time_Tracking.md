@@ -9,8 +9,9 @@
 - 26-02-2026 - 1 hour - Task.36: Integrate BE and FE (recipes list). 
 
 ## **Quoc Thien Minh Tran** (ID: 40299089), FrontEnd 
-
--
+- 26-02-2026 - 0.5 hour - Task.23: Add log for tasks from Sprint 1
+- 26-02-2026 - 1 hour - Task.33: Implement the Own Recipes & All Recipes feature/filter in Recipes List UI
+- 26-02-2026 - 2 hours - Task.46: Implement the recipe filters section in recipe list UI
 
 ## **Tarek Al-Khen** (ID: 40272705), FrontEnd 
 - 24-02-2026 - 1 hour - Task.25: fixed error messages for missing email & password.

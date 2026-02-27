@@ -386,6 +386,62 @@ describe("RecipesService", () => {
       res = await client.RecipesService.List({ dietaryTags: ["invalid", "invalid again"] });
       expect(res.data.length).toBe(0);
     });
+
+    test("filters - search by name", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+
+      await insertTestRecipes(client, userId, 1, { name: "Chicken Pasta" });
+      await insertTestRecipes(client, userId, 1, { name: "Beef Stew" });
+
+      const res = await client.RecipesService.List({ search: "Chicken" });
+
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].name).toContain("Chicken");
+    });
+
+    test("filters - search supports partial match", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+
+      await insertTestRecipes(client, userId, 1, { name: "Spaghetti Bolognese" });
+
+      const res = await client.RecipesService.List({ search: "ghett" });
+
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].name).toContain("Spaghetti");
+    });
+
+    test("filters - search is case insensitive", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+
+      await insertTestRecipes(client, userId, 1, { name: "Chocolate Cake" });
+
+      const res = await client.RecipesService.List({ search: "chocolate" });
+
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].name).toBe("Chocolate Cake 1");
+    });
+
+    test("filters - search returns empty when no match", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+
+      await insertTestRecipes(client, userId, 1, { name: "Pizza" });
+
+      const res = await client.RecipesService.List({ search: "Sushi" });
+
+      expect(res.data.length).toBe(0);
+    });
   });
 });
 

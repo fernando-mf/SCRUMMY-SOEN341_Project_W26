@@ -110,6 +110,7 @@ export class RecipesRepository implements IRecipesRepository {
     const whereClause = this.db`
       WHERE true
         ${this.applyIfSet(req.authors, this.db`AND r."authorId" IN ${this.db(req.authors)}`)}
+        ${this.applyIfSet(req.search, this.db`AND r."name" ILIKE ${"%" + req.search + "%"}`)}
         ${this.applyIfSet(req.maxTimeMinutes, this.db`AND r."prepTimeMinutes" <= ${req.maxTimeMinutes!}`)}
         ${this.applyIfSet(req.maxCost, this.db`AND r."cost" <= ${req.maxCost!}`)}
         ${this.applyIfSet(req.difficulty, this.db`AND r."difficulty" = ${req.difficulty!}`)}

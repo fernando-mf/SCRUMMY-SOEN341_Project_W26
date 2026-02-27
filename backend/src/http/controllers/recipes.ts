@@ -66,6 +66,7 @@ export function HandleListRecipes(service: IRecipesService): RequestHandler {
       page: parseNumber(rawQuery.page),
       limit: parseNumber(rawQuery.limit),
       authors: rawQuery.authors ? rawQuery.authors.split(",").map(Number) : [],
+      search: rawQuery.search,
       maxTimeMinutes: parseNumber(rawQuery.maxTimeMinutes),
       maxCost: parseNumber(rawQuery.maxCost),
       dietaryTags: rawQuery.dietaryTags ? rawQuery.dietaryTags.split(",") : [],

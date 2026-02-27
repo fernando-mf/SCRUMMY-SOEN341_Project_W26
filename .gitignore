@@ -21,3 +21,5 @@ npm-debug.log*
 
 # swagger docs
 swagger.json
+
+.vercel/

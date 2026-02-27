@@ -1,8 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "cd backend && npm ci && npm run build",
-  "public": "frontend",
+  "outputDirectory": "frontend",
   "cleanUrls": true,
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api/[[...path]]" }],
   "functions": {
     "api/[[...path]].js": {
       "includeFiles": "backend/{dist,node_modules}/**"

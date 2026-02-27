@@ -206,6 +206,101 @@ button{
   gap: 18px;
 }
 
+.filters-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.btn-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #e6d7d4;
+  background: #fff;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(53, 26, 19, 0.06);
+  font-family: inherit;
+}
+
+.btn-filter-toggle:hover {
+  background: #fff5f2;
+  box-shadow: 0 4px 10px rgba(53, 26, 19, 0.1);
+  transform: translateY(-1px);
+}
+
+.filters-panel {
+  width: 100%;
+  border: 1px solid #eadcdc;
+  border-radius: 12px;
+  padding: 0;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(53, 26, 19, 0.08);
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  max-height: 500px;
+  opacity: 1;
+}
+
+.filters-panel.hidden {
+  max-height: 0;
+  opacity: 0;
+  margin-bottom: 0;
+  padding: 0;
+  border: none;
+}
+
+.filters-content {
+  padding: 20px 24px;
+}
+
+.filters-content .form-row {
+  margin-bottom: 8px;
+}
+
+.filters-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.filters-actions .btn {
+  margin-top: 0;
+  padding: 10px 18px;
+  font-size: 14px;
+}
+
+@media (max-width: 820px) {
+  .filters-content .form-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .filters-content .form-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .filters-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  
+  .filters-actions .btn {
+    flex: 1;
+  }
+}
+
 .recipe-card {
   border: 1px solid #eadcdc;
   border-radius: 12px;

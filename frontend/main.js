@@ -269,6 +269,38 @@ const recipesPage = document.getElementById("recipes-page");
 if (recipesPage) {
   const recipesMessage = document.getElementById("recipes-message");
   const recipesList = document.getElementById("recipes-list");
+  const filtersPanel = document.getElementById("recipe-filters");
+  const filtersToggle = document.getElementById("filters-toggle");
+  const filterMaxTime = document.getElementById("filter-max-time");
+  const filterDifficulty = document.getElementById("filter-difficulty");
+  const filterMaxCost = document.getElementById("filter-max-cost");
+  const filterTag = document.getElementById("filter-tag");
+  const filterApplyBtn = document.getElementById("filters-apply");
+  const filterResetBtn = document.getElementById("filters-reset");
+  const filterInputs = [filterMaxTime, filterDifficulty, filterMaxCost, filterTag].filter(Boolean);
+
+  if (filtersToggle && filtersPanel) {
+    filtersToggle.addEventListener("click", () => {
+      filtersPanel.classList.toggle("hidden");
+    });
+  }
+
+  if (filterTag && DIET_PREFERENCES && DIET_PREFERENCES.length) {
+    DIET_PREFERENCES.forEach((tag) => {
+      const option = document.createElement("option");
+      option.value = tag;
+      option.textContent = tag;
+      filterTag.appendChild(option);
+    });
+  }
+
+  let allRecipes = [];
+  let baseMessage = { text: "", type: "" };
+
+  function setBaseMessage(text, type) {
+    baseMessage = { text, type };
+    setMessage(recipesMessage, text, type);
+  }
 
   const token = localStorage.getItem("token");
   if (!token) {
@@ -314,7 +346,7 @@ if (recipesPage) {
         { name: "Garlic", amount: 3, unit: "cloves" },
         { name: "Olive oil", amount: 3, unit: "tbsp" },
       ],
-      prepSteps: "Roast tomatoes with garlic and olive oil at 200°C for 15 min.\nCook pasta until al dente, reserve pasta water.\nToss pasta with roasted tomatoes and sauce.\nFinish with basil, parmesan, and lemon zest.",
+      prepSteps: "Roast tomatoes with garlic and olive oil at 200Â°C for 15 min.\nCook pasta until al dente, reserve pasta water.\nToss pasta with roasted tomatoes and sauce.\nFinish with basil, parmesan, and lemon zest.",
       imageAlt: "Roasted tomato pasta",
       isSample: true,
     };
@@ -370,10 +402,10 @@ if (recipesPage) {
         : "";
 
       const difficultyEmoji = {
-        easy: "🟢",
-        medium: "🟡",
-        hard: "🔴",
-      }[recipe.difficulty] || "🟡";
+        easy: "ðŸŸ¢",
+        medium: "ðŸŸ¡",
+        hard: "ðŸ”´",
+      }[recipe.difficulty] || "ðŸŸ¡";
 
       card.innerHTML = `
         <div class="recipe-media">
@@ -388,12 +420,12 @@ if (recipesPage) {
           </div>
           <div class="recipe-meta-row">
             <span class="recipe-meta-item">
-              <span>🕒</span>
+              <span>ðŸ•’</span>
               <span>${recipe.prepTimeMinutes} min prep</span>
             </span>
             ${recipe.cookTimeMinutes ? `
             <span class="recipe-meta-item">
-              <span>🍳</span>
+              <span>ðŸ³</span>
               <span>${recipe.cookTimeMinutes} min cook</span>
             </span>
             ` : ""}
@@ -435,16 +467,100 @@ if (recipesPage) {
       return card;
     }
 
-    function renderRecipes(recipes, includeSample) {
+    function renderRecipesList(list) {
       if (!recipesList) return;
 
       recipesList.innerHTML = "";
-      const list = includeSample ? [SAMPLE_RECIPE, ...recipes] : recipes;
-
       list.forEach((recipe) => {
         recipesList.appendChild(renderRecipeCard(recipe));
       });
     }
+
+    function renderRecipes(recipes, includeSample) {
+      const list = includeSample ? [SAMPLE_RECIPE, ...recipes] : recipes;
+      renderRecipesList(list);
+    }
+
+    function applyFilters() {
+      let filtered = [...allRecipes];
+
+      const maxTimeValue = filterMaxTime && filterMaxTime.value !== ""
+        ? Number(filterMaxTime.value)
+        : null;
+      const maxCostValue = filterMaxCost && filterMaxCost.value !== ""
+        ? Number(filterMaxCost.value)
+        : null;
+      const difficultyValue = filterDifficulty ? filterDifficulty.value.trim().toLowerCase() : "";
+      const tagValue = filterTag ? filterTag.value.trim().toLowerCase() : "";
+
+      if (maxTimeValue !== null && !Number.isNaN(maxTimeValue)) {
+        filtered = filtered.filter((recipe) => {
+          const prepMinutes = Number(recipe.prepTimeMinutes);
+          return !Number.isNaN(prepMinutes) && prepMinutes <= maxTimeValue;
+        });
+      }
+
+      if (maxCostValue !== null && !Number.isNaN(maxCostValue)) {
+        filtered = filtered.filter((recipe) => {
+          const costValue = Number(recipe.cost);
+          return !Number.isNaN(costValue) && costValue <= maxCostValue;
+        });
+      }
+
+      if (difficultyValue) {
+        filtered = filtered.filter((recipe) => {
+          return String(recipe.difficulty || "").toLowerCase() === difficultyValue;
+        });
+      }
+
+      if (tagValue) {
+        filtered = filtered.filter((recipe) => {
+          const tags = recipe.dietaryTags || [];
+          return tags.some((tag) => String(tag).toLowerCase() === tagValue);
+        });
+      }
+
+      const filtersActive =
+        (filterMaxTime && filterMaxTime.value !== "") ||
+        (filterMaxCost && filterMaxCost.value !== "") ||
+        (filterDifficulty && filterDifficulty.value !== "") ||
+        (filterTag && filterTag.value !== "");
+
+      if (filtersActive) {
+        setMessage(
+          recipesMessage,
+          filtered.length ? "" : "No recipes match your filters.",
+          "",
+        );
+      } else {
+        setMessage(recipesMessage, baseMessage.text, baseMessage.type);
+      }
+
+      renderRecipesList(filtered);
+    }
+
+    if (filterApplyBtn) {
+      filterApplyBtn.addEventListener("click", applyFilters);
+    }
+
+    if (filterResetBtn) {
+      filterResetBtn.addEventListener("click", () => {
+        if (filterMaxTime) filterMaxTime.value = "";
+        if (filterMaxCost) filterMaxCost.value = "";
+        if (filterDifficulty) filterDifficulty.value = "";
+        if (filterTag) filterTag.value = "";
+        applyFilters();
+      });
+    }
+
+    filterInputs.forEach((input) => {
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          applyFilters();
+        }
+      });
+    });
 
     async function loadRecipes() {
       if (!recipesList) return;
@@ -466,11 +582,14 @@ if (recipesPage) {
         });
 
         if (!response.ok) {
+          allRecipes = [];
           if (mine) {
-            setMessage(recipesMessage, "Failed to load recipes.", "error");
+            setBaseMessage("Failed to load recipes.", "error");
+            renderRecipesList([]);
           } else {
-            setMessage(recipesMessage, "Showing a sample recipe.", "");
-            renderRecipes([], true);
+            allRecipes = [SAMPLE_RECIPE];
+            setBaseMessage("Showing a sample recipe.", "");
+            renderRecipesList(allRecipes);
           }
           return;
         }
@@ -479,23 +598,28 @@ if (recipesPage) {
         const recipes = data && data.data ? data.data : [];
         const includeSample = !mine;
 
+        allRecipes = includeSample ? [SAMPLE_RECIPE, ...recipes] : recipes;
+
         if (!recipes.length && !includeSample) {
-          setMessage(
-            recipesMessage,
+          setBaseMessage(
             "You have not created any recipes yet.",
             "",
           );
+          renderRecipesList([]);
           return;
         }
 
-        setMessage(recipesMessage, recipes.length ? "" : "Showing a sample recipe.", "");
-        renderRecipes(recipes, includeSample);
+        setBaseMessage(recipes.length ? "" : "Showing a sample recipe.", "");
+        applyFilters();
       } catch {
+        allRecipes = [];
         if (mine) {
-          setMessage(recipesMessage, "Failed to load recipes.", "error");
+          setBaseMessage("Failed to load recipes.", "error");
+          renderRecipesList([]);
         } else {
-          setMessage(recipesMessage, "Showing a sample recipe.", "");
-          renderRecipes([], true);
+          allRecipes = [SAMPLE_RECIPE];
+          setBaseMessage("Showing a sample recipe.", "");
+          renderRecipesList(allRecipes);
         }
       }
     }

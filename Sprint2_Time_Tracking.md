@@ -24,7 +24,8 @@
 - 20-02-2026 - 45 minutes - Task.27: recipe creation backend.
 - 20-02-2026 - 45 minutes - Task.37 & Task.41 : added recipe editing and deletion spec.
 - 22-02-2026 - 1.5 hours - Task.29: recipe creation logic
-- 23-02-2026 - 3 hours - Tasl.39 & Task.43 : recipe editing and deletion logic
+- 23-02-2026 - 3 hours - Task.39 & Task.43 : recipe editing and deletion logic
+- 26-02-2026 - 1 hour - Task.50 & Task.52 : recipe search logic
 
 ## **Fernando Mamani** (ID: 40169982), Backend/Database
 
@@ -32,3 +33,5 @@
 - 21-02-2026 - 30 minutes - Task.31: added swagger spec for list recipes endpoint
 - 21-02-2026 - 4 hours - Task.34: implemented recipes list feature
 - 22-02-2026 - 1.5 hours - Task.35: implemented authors filter
+- 22-02-2026 - 2 hours - Task.45, Task.48: implemented recipes filters
+- 27-02-2026 - 3 hours - Task.56: enable vercel deployments

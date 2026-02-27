@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from "vitest";
-import { Difficulty, ListRecipesRequest, Unit } from "@api/recipes";
+import { Difficulty, ListRecipesRequest, Recipe, Unit } from "@api/recipes";
 import { Client, NewClient } from "./client";
 import { BeginUserSession, PurgeDatabase } from "./helpers";
 
@@ -15,9 +15,7 @@ describe("RecipesService", () => {
 
       const recipe = await client.RecipesService.Create(user.id, {
         name: "Valid Recipe",
-        ingredients: [
-          { name: "Flour", amount: 100, unit: Unit.G },
-        ],
+        ingredients: [{ name: "Flour", amount: 100, unit: Unit.G }],
         prepTimeMinutes: 10,
         prepSteps: "Steps",
         cost: 10,
@@ -68,9 +66,7 @@ describe("RecipesService", () => {
 
       const promise = client.RecipesService.Create(user.id, {
         name: "Recipe",
-        ingredients: [
-          { name: "", amount: -5, unit: "invalid" as any },
-        ],
+        ingredients: [{ name: "", amount: -5, unit: "invalid" as any }],
         prepTimeMinutes: 10,
         prepSteps: "Steps",
         cost: 10,
@@ -89,9 +85,7 @@ describe("RecipesService", () => {
 
       const promise = client.RecipesService.Create(user.id, {
         name: "Recipe",
-        ingredients: [
-          { name: "Flour", amount: 100, unit: Unit.G },
-        ],
+        ingredients: [{ name: "Flour", amount: 100, unit: Unit.G }],
         prepTimeMinutes: -1,
         prepSteps: "Steps",
         cost: -5,
@@ -307,26 +301,175 @@ describe("RecipesService", () => {
       res = await client.RecipesService.List({ authors: [otherUserId] });
       expect(res.data.length).toBe(0);
     });
+
+    test("filters - maxTimeMinutes", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+
+      await insertTestRecipes(client, userId, 1, { prepTimeMinutes: 30 });
+      await insertTestRecipes(client, userId, 1, { prepTimeMinutes: 60 });
+
+      let maxMinutes = 10;
+      let res = await client.RecipesService.List({ maxTimeMinutes: maxMinutes });
+      expect(res.data.length).toBe(0);
+
+      maxMinutes = 40;
+      res = await client.RecipesService.List({ maxTimeMinutes: maxMinutes });
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].prepTimeMinutes).toBe(30);
+
+      maxMinutes = 60;
+      res = await client.RecipesService.List({ maxTimeMinutes: maxMinutes });
+      expect(res.data.length).toBe(2);
+      expect(res.data[0].prepTimeMinutes).toBe(30);
+      expect(res.data[1].prepTimeMinutes).toBe(60);
+    });
+
+    test("filters - maxCost", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+      await insertTestRecipes(client, userId, 1, { cost: 100 });
+      await insertTestRecipes(client, userId, 1, { cost: 200 });
+
+      let maxCost = 10;
+      let res = await client.RecipesService.List({ maxCost: maxCost });
+      expect(res.data.length).toBe(0);
+
+      maxCost = 150;
+      res = await client.RecipesService.List({ maxCost: maxCost });
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].cost).toMatchInlineSnapshot(`"100.00"`);
+
+      maxCost = 250;
+      res = await client.RecipesService.List({ maxCost: maxCost });
+      expect(res.data.length).toBe(2);
+      expect(res.data[0].cost).toMatchInlineSnapshot(`"100.00"`);
+      expect(res.data[1].cost).toMatchInlineSnapshot(`"200.00"`);
+    });
+
+    test("filters - difficulty", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+
+      await insertTestRecipes(client, userId, 1, { difficulty: Difficulty.EASY });
+
+      let res = await client.RecipesService.List({ difficulty: Difficulty.EASY });
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].difficulty).toBe(Difficulty.EASY);
+
+      res = await client.RecipesService.List({ difficulty: Difficulty.HARD });
+      expect(res.data.length).toBe(0);
+    });
+
+    test("filters - dietaryTags", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+
+      await insertTestRecipes(client, userId, 1, { dietaryTags: ["vegan", "vegetarian"] });
+
+      let res = await client.RecipesService.List({ dietaryTags: ["vegan"] });
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].dietaryTags).toEqual(["vegan", "vegetarian"]);
+
+      res = await client.RecipesService.List({ dietaryTags: ["keto", "vegetarian"] });
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].dietaryTags).toEqual(["vegan", "vegetarian"]);
+
+      res = await client.RecipesService.List({ dietaryTags: ["invalid", "invalid again"] });
+      expect(res.data.length).toBe(0);
+    });
+
+    test("filters - search by name", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+
+      await insertTestRecipes(client, userId, 1, { name: "Chicken Pasta" });
+      await insertTestRecipes(client, userId, 1, { name: "Beef Stew" });
+
+      const res = await client.RecipesService.List({ search: "Chicken" });
+
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].name).toContain("Chicken");
+    });
+
+    test("filters - search supports partial match", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+
+      await insertTestRecipes(client, userId, 1, { name: "Spaghetti Bolognese" });
+
+      const res = await client.RecipesService.List({ search: "ghett" });
+
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].name).toContain("Spaghetti");
+    });
+
+    test("filters - search is case insensitive", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+
+      await insertTestRecipes(client, userId, 1, { name: "Chocolate Cake" });
+
+      const res = await client.RecipesService.List({ search: "chocolate" });
+
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].name).toBe("Chocolate Cake 1");
+    });
+
+    test("filters - search returns empty when no match", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const userId = user.id;
+
+      await insertTestRecipes(client, userId, 1, { name: "Pizza" });
+
+      const res = await client.RecipesService.List({ search: "Sushi" });
+
+      expect(res.data.length).toBe(0);
+    });
   });
 });
 
-async function insertTestRecipes(client: Client, userId: number, count: number) {
+async function insertTestRecipes(client: Client, userId: number, count: number, modifier?: Partial<Recipe>) {
+  let recipe = {
+    authorId: userId,
+    name: `Recipe`,
+    ingredients: [
+      { amount: 100, name: "Ingredient 1", unit: Unit.G },
+      { amount: 200, name: "Ingredient 2", unit: Unit.ML },
+      { amount: 300, name: "Ingredient 3", unit: Unit.TBSP },
+      { amount: 400, name: "Ingredient 4", unit: Unit.TSP },
+    ],
+    prepTimeMinutes: 10,
+    prepSteps: "Test steps",
+    cost: 10,
+    difficulty: Difficulty.EASY,
+    dietaryTags: ["vegan", "vegetarian"],
+    allergens: ["gluten", "dairy"],
+    servings: 4,
+
+    ...modifier,
+  };
+
+  const name = recipe.name;
+
   for (let i = 0; i < count; i++) {
-    await client.RecipesService.Create(userId, {
-      name: `Recipe ${i + 1}`,
-      ingredients: [
-        { amount: 100, name: "Ingredient 1", unit: Unit.G },
-        { amount: 200, name: "Ingredient 2", unit: Unit.ML },
-        { amount: 300, name: "Ingredient 3", unit: Unit.TBSP },
-        { amount: 400, name: "Ingredient 4", unit: Unit.TSP },
-      ],
-      prepTimeMinutes: 10,
-      prepSteps: "Test steps",
-      cost: 10,
-      difficulty: Difficulty.EASY,
-      dietaryTags: ["vegan", "vegetarian"],
-      allergens: ["gluten", "dairy"],
-      servings: 4,
-    });
+    recipe.name = `${name} ${i + 1}`;
+    await client.RecipesService.Create(userId, recipe);
   }
 }

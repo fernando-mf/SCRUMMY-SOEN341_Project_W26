@@ -1,8 +1,9 @@
 import type { RequestHandler } from "express";
-import { AuthenticationError, ForbiddenError } from "@api/helpers/errors";
+import { AuthenticationError } from "@api/helpers/errors";
 import { HttpStatus } from "@api/helpers/http";
 import type {
   CreateRecipeRequest,
+  Difficulty,
   IRecipesService,
   ListRecipesRequest,
   UpdateRecipeRequest,
@@ -65,6 +66,11 @@ export function HandleListRecipes(service: IRecipesService): RequestHandler {
       page: parseNumber(rawQuery.page),
       limit: parseNumber(rawQuery.limit),
       authors: rawQuery.authors ? rawQuery.authors.split(",").map(Number) : [],
+      search: rawQuery.search,
+      maxTimeMinutes: parseNumber(rawQuery.maxTimeMinutes),
+      maxCost: parseNumber(rawQuery.maxCost),
+      dietaryTags: rawQuery.dietaryTags ? rawQuery.dietaryTags.split(",") : [],
+      difficulty: rawQuery.difficulty as Difficulty,
     };
 
     const recipes = await service.List(request);

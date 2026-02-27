@@ -75,6 +75,11 @@ export type UpdateRecipeRequest = z.infer<typeof updateRecipeRequestSchema>;
 
 const listRecipesRequestSchema = PaginationQuerySchema.extend({
   authors: z.array(z.number()).default([]),
+  search: z.string().trim().min(1).optional(),
+  maxTimeMinutes: z.number().optional(),
+  maxCost: z.number().optional(),
+  difficulty: z.enum(Difficulty).optional(),
+  dietaryTags: z.array(z.string()).default([]),
 });
 
 export type ListRecipesRequest = z.infer<typeof listRecipesRequestSchema>;

@@ -23,9 +23,12 @@ app.use("/api", Routes(core));
 // Error handling middleware
 app.use(ErrorMiddleware);
 
-// Start server
-const PORT = process.env.PORT || 3000;
+// Only start HTTP server when not running on Vercel (serverless uses the exported app)
+if (process.env.VERCEL !== "1") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+export { app };

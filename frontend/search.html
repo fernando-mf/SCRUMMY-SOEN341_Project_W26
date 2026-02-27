@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MealMajor - Search Recipes</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page">
+    <h1 class="brand">MealMajor</h1>
+    <h2 class="title">Search Recipes</h2>
+
+    <section class="card">
+      <form id="search-form" class="form" novalidate>
+        <div id="search-message" class="message hidden" role="alert" aria-live="polite"></div>
+
+        <div class="field">
+          <label for="search-query">Recipe Name</label>
+          <input
+            type="text"
+            id="search-query"
+            name="searchQuery"
+            placeholder="Enter recipe name..."
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn">Search</button>
+      </form>
+
+      <div id="search-results" style="margin-top:20px;"></div>
+
+      <p class="hint helper">
+        <a class="link" href="index.html">Back to Home</a>
+      </p>
+    </section>
+  </main>
+
+  <script src="main.js?v=2"></script>
+</body>
+</html>

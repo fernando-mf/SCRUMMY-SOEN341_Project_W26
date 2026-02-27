@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>MealMajor - Create Recipe</title>
+  <link rel="stylesheet" href="styles.css?v=13" />
+</head>
+<body>
+  <main class="page">
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <a href="recipe.html" class="modal-close" title="Back to recipes">←</a>
+          <h2>Create New Recipe</h2>
+        </div>
+
+        <form id="create-recipe-form" class="create-recipe-form">
+          <div id="form-message" class="message hidden" role="alert" aria-live="polite"></div>
+
+          <!-- Recipe Name -->
+          <div class="form-group">
+            <label for="recipe-name">Recipe Name</label>
+            <input type="text" id="recipe-name" name="name" placeholder="Enter recipe name" required />
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label for="recipe-description">Description</label>
+            <textarea id="recipe-description" name="description" placeholder="Brief description of your recipe" rows="3"></textarea>
+          </div>
+
+          <!-- Time & Servings Row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prep-time">Prep Time (min)</label>
+              <input type="number" id="prep-time" name="prepTimeMinutes" min="0" value="0" required />
+            </div>
+            <div class="form-group">
+              <label for="cook-time">Cook Time (min)</label>
+              <input type="number" id="cook-time" name="cookTimeMinutes" min="0" value="0" required />
+            </div>
+            <div class="form-group">
+              <label for="servings">Servings</label>
+              <input type="number" id="servings" name="servings" min="1" value="4" required />
+            </div>
+            <div class="form-group">
+              <label for="difficulty">Difficulty</label>
+              <select id="difficulty" name="difficulty" required>
+                <option value="easy">Easy</option>
+                <option value="medium" selected>Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Cost -->
+          <div class="form-group">
+            <label>Cost</label>
+            <div class="cost-options">
+              <input type="radio" id="cost-budget" name="cost" value="budget" />
+              <label for="cost-budget" class="cost-label">Budget</label>
+
+              <input type="radio" id="cost-moderate" name="cost" value="moderate" checked />
+              <label for="cost-moderate" class="cost-label">Moderate</label>
+
+              <input type="radio" id="cost-expensive" name="cost" value="expensive" />
+              <label for="cost-expensive" class="cost-label">Expensive</label>
+            </div>
+          </div>
+
+          <!-- Dietary Tags -->
+          <div class="form-group">
+            <label>Dietary Tags</label>
+            <div class="tags-options" id="dietary-tags-options"></div>
+          </div>
+
+          <!-- Ingredients -->
+          <div class="form-group">
+            <label>Ingredients</label>
+            <div class="ingredients-list" id="ingredients-list"></div>
+            <div class="ingredient-input-group">
+              <input
+                type="text"
+                id="ingredient-name"
+                placeholder="Ingredient name (press Enter)"
+                class="ingredient-field"
+              />
+              <input
+                type="number"
+                id="ingredient-amount"
+                placeholder="Amount"
+                step="0.1"
+                min="0"
+                class="ingredient-field"
+              />
+              <select id="ingredient-unit" class="ingredient-field">
+                <option value="g">g</option>
+                <option value="ml">ml</option>
+                <option value="tbsp">tbsp</option>
+                <option value="tsp">tsp</option>
+                <option value="cup">cup</option>
+                <option value="cloves">cloves</option>
+              </select>
+              <button type="button" class="btn-add" id="add-ingredient-btn" aria-label="Add ingredient">+</button>
+            </div>
+            <p class="form-hint">Tip: Press Enter to move between fields, Tab after unit to add ingredient</p>
+          </div>
+
+          <!-- Preparation Steps -->
+          <div class="form-group">
+            <label>Preparation Steps</label>
+            <div class="steps-list" id="steps-list"></div>
+            <button type="button" class="btn-add-step" id="add-step-btn">+ Add Step</button>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <a href="recipe.html" class="btn btn-secondary">Cancel & Discard</a>
+            <button type="submit" class="btn">Create Recipe</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="main.js?v=9"></script>
+  <script>
+    // Ensure modal is visible on page load for create-recipe page
+    window.addEventListener("load", function () {
+      const modal = document.getElementById("modal-overlay");
+      if (modal) {
+        modal.style.display = "flex";
+      }
+    });
+  </script>
+</body>
+</html>

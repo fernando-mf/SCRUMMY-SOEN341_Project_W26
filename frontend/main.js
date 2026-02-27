@@ -367,7 +367,7 @@ if (searchForm) {
 
     try {
       const response = await fetch(
-        `${BASE_URL}/recipes/search?q=${encodeURIComponent(query)}`
+        `${BASE_URL}/recipes?search=${encodeURIComponent(query)}`
       );
 
       if (!response.ok) {

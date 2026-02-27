@@ -28,3 +28,4 @@
 - 21-02-2026 - 4 hours - Task.34: implemented recipes list feature
 - 22-02-2026 - 1.5 hours - Task.35: implemented authors filter
 - 22-02-2026 - 2 hours - Task.45, Task.48: implemented recipes filters
+- 27-02-2026 - 3 hours - Task.56: enable vercel deployments

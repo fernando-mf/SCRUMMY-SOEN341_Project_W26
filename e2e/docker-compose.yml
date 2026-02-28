@@ -1,0 +1,79 @@
+services:
+  db:
+    image: postgres:17.7-alpine
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: mealmajor
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d mealmajor"]
+      interval: 2s
+      timeout: 3s
+      retries: 10
+
+  migrations:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+      target: migrations
+    environment:
+      DATABASE_NAME: mealmajor
+      DATABASE_USER: dev
+      DATABASE_PASSWORD: dev
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+      target: api
+    environment:
+      DATABASE_URL: postgres://dev:dev@db:5432/mealmajor
+      NODE_ENV: development
+      JWT_SECRET: test-secret
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test:
+        ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/status"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      db:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+
+  frontend:
+    image: node:alpine
+    working_dir: /app
+    volumes:
+      - ../frontend:/app
+    command: sh -c "echo '{\"cleanUrls\":false}' > /app/serve.json && npx serve -l 8080 -c /app/serve.json"
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  e2e:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      FRONTEND_URL: http://frontend:8080
+      API_URL: http://api:3000/api
+      CI: "true"
+    depends_on:
+      api:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy

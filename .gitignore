@@ -23,3 +23,7 @@ npm-debug.log*
 swagger.json
 
 .vercel/
+
+playwright-report/
+test-results/
+blob-report/

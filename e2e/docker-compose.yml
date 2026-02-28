@@ -36,6 +36,8 @@ services:
       NODE_ENV: development
       JWT_SECRET: test-secret
       PORT: 3000
+    ports:
+      - "3000:3000"
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/status"]
       interval: 2s
@@ -52,7 +54,7 @@ services:
     working_dir: /app
     volumes:
       - ../frontend:/app
-    command: npx serve -l 8080
+    command: npx http-server /app -p 8080 --cors -c-1 -s
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080"]
       interval: 2s

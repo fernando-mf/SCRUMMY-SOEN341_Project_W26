@@ -4,10 +4,12 @@
   "scripts": {
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "test:docker": "docker compose up --build --abort-on-container-exit e2e"
+    "test:docker": "scripts/run-tests.sh",
+    "dev:docker": "docker compose -f docker-compose.yml down && docker compose -f docker-compose.yml up api --build --abort-on-container-exit --attach api"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
-    "serve": "^14.2.4"
+    "@types/node": "^25.3.2",
+    "http-server": "^14.1.1"
   }
 }

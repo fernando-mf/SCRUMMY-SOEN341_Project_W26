@@ -19,7 +19,7 @@ export default defineConfig({
   webServer: isDocker
     ? undefined
     : {
-        command: "npx serve ../frontend -l 8080",
+        command: "npx http-server ../frontend -p 8080 --cors -c-1 -s",
         port: 8080,
         reuseExistingServer: !process.env.CI,
       },

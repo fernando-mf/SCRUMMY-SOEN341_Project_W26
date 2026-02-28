@@ -1,21 +1,18 @@
-import { test as base, request as baseRequest } from "@playwright/test";
+import { test as base, request } from "@playwright/test";
 
-const API_URL = process.env.API_URL || "http://localhost:3000/api";
-
-export { expect } from "@playwright/test";
+const API_URL = (process.env.API_URL || "http://127.0.0.1:3000/api").replace(
+  /\/$/,
+  "",
+);
 
 export const test = base.extend({
   page: async ({ page }, use) => {
     await page.addInitScript((url) => {
-      (window as unknown as Record<string, unknown>).__BASE_URL__ = url;
+      (window as any).__BASE_URL__ = url;
     }, API_URL);
     await use(page);
   },
 });
-
-export async function createApiContext() {
-  return baseRequest.newContext({ baseURL: API_URL });
-}
 
 export interface UserCredentials {
   firstName: string;
@@ -26,10 +23,9 @@ export interface UserCredentials {
 }
 
 export async function registerUser(
-  apiContext: Awaited<ReturnType<typeof createApiContext>>,
-  overrides: Partial<Omit<UserCredentials, "token">> = {}
+  overrides: Partial<Omit<UserCredentials, "token">> = {},
 ): Promise<UserCredentials> {
-  const suffix = Date.now();
+  const suffix = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const creds = {
     firstName: overrides.firstName ?? "Test",
     lastName: overrides.lastName ?? "User",
@@ -37,7 +33,10 @@ export async function registerUser(
     password: overrides.password ?? "Password123!",
   };
 
-  const res = await apiContext.post("/auth/register", { data: creds });
+  const apiContext = await request.newContext();
+  const res = await apiContext.post(`${API_URL}/auth/register`, {
+    data: creds,
+  });
   if (!res.ok()) {
     throw new Error(`Failed to register user: ${await res.text()}`);
   }
@@ -46,11 +45,11 @@ export async function registerUser(
 }
 
 export async function loginUser(
-  apiContext: Awaited<ReturnType<typeof createApiContext>>,
   email: string,
-  password: string
+  password: string,
 ): Promise<string> {
-  const res = await apiContext.post("/auth/login", {
+  const apiContext = await request.newContext();
+  const res = await apiContext.post(`${API_URL}/auth/login`, {
     data: { email, password },
   });
   if (!res.ok()) {

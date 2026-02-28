@@ -1,21 +1,14 @@
-import { Page } from "@playwright/test";
-import {
-  createApiContext,
-  expect,
-  loginUser,
-  registerUser,
-  test,
-} from "./fixtures";
+import { expect, Page } from "@playwright/test";
+import { loginUser, registerUser, test } from "./helpers";
 
 async function setupAuthenticatedPage(page: Page) {
-  const api = await createApiContext();
-  const user = await registerUser(api);
-  const token = await loginUser(api, user.email, user.password);
-  await api.dispose();
+  const user = await registerUser();
+  const token = await loginUser(user.email, user.password);
 
-  await page.goto("/profile.html");
+  await page.goto("/login.html");
   await page.evaluate((t) => localStorage.setItem("token", t), token);
-  await page.reload();
+  await page.goto("/profile.html");
+  await page.waitForSelector("#firstName");
 
   return user;
 }
@@ -47,14 +40,13 @@ test.describe("Edit Profile", () => {
   });
 
   test("profile changes persist after reload", async ({ page }) => {
-    const api = await createApiContext();
-    const user = await registerUser(api);
-    const token = await loginUser(api, user.email, user.password);
-    await api.dispose();
+    const user = await registerUser();
+    const token = await loginUser(user.email, user.password);
 
-    await page.goto("/profile.html");
+    await page.goto("/login.html");
     await page.evaluate((t) => localStorage.setItem("token", t), token);
-    await page.reload();
+    await page.goto("/profile.html");
+    await page.waitForSelector("#firstName");
 
     await page.fill("#firstName", "Persisted");
     await page.fill("#lastName", "Change");

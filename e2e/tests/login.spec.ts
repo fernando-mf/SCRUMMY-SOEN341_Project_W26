@@ -1,12 +1,11 @@
-import { createApiContext, expect, registerUser, test } from "./fixtures";
+import { expect } from "@playwright/test";
+import { registerUser, test } from "./helpers";
 
 test.describe("Login", () => {
   test("successful login redirects to recipe page and stores token", async ({
     page,
   }) => {
-    const api = await createApiContext();
-    const user = await registerUser(api);
-    await api.dispose();
+    const user = await registerUser();
 
     await page.goto("/login.html");
     await page.fill("#email", user.email);
@@ -19,9 +18,7 @@ test.describe("Login", () => {
   });
 
   test("wrong password shows error message", async ({ page }) => {
-    const api = await createApiContext();
-    const user = await registerUser(api);
-    await api.dispose();
+    const user = await registerUser();
 
     await page.goto("/login.html");
     await page.fill("#email", user.email);
@@ -29,7 +26,7 @@ test.describe("Login", () => {
     await page.click('button[type="submit"]');
 
     await expect(page.locator("#form-message")).toContainText(
-      "Account not found or wrong password."
+      "Account not found or wrong password.",
     );
   });
 
@@ -40,7 +37,7 @@ test.describe("Login", () => {
     await page.click('button[type="submit"]');
 
     await expect(page.locator("#form-message")).toContainText(
-      "Account not found or wrong password."
+      "Account not found or wrong password.",
     );
   });
 });

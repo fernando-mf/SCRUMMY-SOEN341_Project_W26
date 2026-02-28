@@ -1,0 +1,13 @@
+{
+  "name": "mealmajor-e2e",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:docker": "docker compose up --build --abort-on-container-exit e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "serve": "^14.2.4"
+  }
+}

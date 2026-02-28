@@ -379,6 +379,13 @@ button{
   font-size: 18px;
 }
 
+.recipe-delete-btn {
+  margin-top: 0;
+  padding: 6px 12px;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
 .recipe-meta-row {
   display: flex;
   flex-wrap: wrap;
@@ -521,6 +528,10 @@ button{
   .recipe-card.expanded {
     grid-column: span 1;
   }
+
+  .recipe-delete-btn {
+    width: auto;
+  }
 }
 
 .tags-container {
@@ -528,6 +539,47 @@ button{
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 0.5rem;
+}
+
+.profile-recipes-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--card-border);
+}
+
+.profile-recipes-section h3 {
+  margin: 0 0 6px;
+}
+
+.profile-recipes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.profile-recipe-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: var(--chip-bg);
+}
+
+.profile-recipe-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.profile-recipe-delete {
+  margin-top: 0;
+  padding: 6px 12px;
+  font-size: 12px;
+  line-height: 1.2;
+  flex-shrink: 0;
 }
 
 .tag {

@@ -374,6 +374,31 @@ if (recipesPage) {
         .join("");
     }
 
+    async function deleteRecipe(recipeId) {
+      try {
+        const response = await fetch(`${BASE_URL}/recipes/${recipeId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          setMessage(recipesMessage, "Failed to delete recipe.", "error");
+          return;
+        }
+
+        allRecipes = allRecipes.filter((recipe) => Number(recipe.id) !== Number(recipeId));
+
+        const hasRecipes = allRecipes.length > 0;
+        setBaseMessage(hasRecipes ? "Recipe deleted successfully." : "You have not created any recipes yet.", hasRecipes ? "ok" : "");
+        applyFilters();
+      } catch {
+        setMessage(recipesMessage, "Failed to delete recipe.", "error");
+      }
+    }
+
     function renderRecipeCard(recipe) {
       const card = document.createElement("article");
       card.className = "recipe-card";
@@ -404,6 +429,8 @@ if (recipesPage) {
         hard: "🔴",
       }[recipe.difficulty] || "🟡";
 
+      const showDeleteAction = mine && !recipe.isSample;
+
       card.innerHTML = `
         <div class="recipe-media">
           <div class="recipe-image" role="img" aria-label="${recipe.imageAlt || recipe.name}">
@@ -414,6 +441,7 @@ if (recipesPage) {
         <div class="recipe-body">
           <div class="recipe-header">
             <h3>${recipe.name}</h3>
+            ${showDeleteAction ? '<button type="button" class="btn btn-secondary recipe-delete-btn" data-delete-recipe-id="' + recipe.id + '">Delete</button>' : ""}
           </div>
           <div class="recipe-meta-row">
             <span class="recipe-meta-item">
@@ -460,6 +488,26 @@ if (recipesPage) {
       card.addEventListener("click", () => {
         card.classList.toggle("expanded");
       });
+
+      const deleteButton = card.querySelector("[data-delete-recipe-id]");
+      if (deleteButton) {
+        deleteButton.addEventListener("click", async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          const recipeId = Number(deleteButton.getAttribute("data-delete-recipe-id"));
+          if (Number.isNaN(recipeId)) {
+            return;
+          }
+
+          const confirmed = window.confirm("Delete this recipe permanently?");
+          if (!confirmed) {
+            return;
+          }
+
+          await deleteRecipe(recipeId);
+        });
+      }
 
       return card;
     }
@@ -540,14 +588,18 @@ if (recipesPage) {
       filterApplyBtn.addEventListener("click", applyFilters);
     }
 
+    function resetFilters() {
+      if (filterMaxTime) filterMaxTime.value = "";
+      if (filterMaxCost) filterMaxCost.value = "";
+      if (filterDifficulty) filterDifficulty.value = "";
+      if (filterTag) filterTag.value = "";
+
+      setMessage(recipesMessage, baseMessage.text, baseMessage.type);
+      applyFilters();
+    }
+
     if (filterResetBtn) {
-      filterResetBtn.addEventListener("click", () => {
-        if (filterMaxTime) filterMaxTime.value = "";
-        if (filterMaxCost) filterMaxCost.value = "";
-        if (filterDifficulty) filterDifficulty.value = "";
-        if (filterTag) filterTag.value = "";
-        applyFilters();
-      });
+      filterResetBtn.addEventListener("click", resetFilters);
     }
 
     filterInputs.forEach((input) => {
@@ -916,11 +968,15 @@ if (profileForm) {
   const messageBox = document.getElementById("form-message");
   const dietTagsContainer = document.getElementById("diet-tags");
   const allergyTagsContainer = document.getElementById("allergy-tags");
+  const profileRecipesMessage = document.getElementById("profile-recipes-message");
+  const profileRecipesList = document.getElementById("profile-recipes-list");
 
   const token = localStorage.getItem("token");
   if (!token) {
     window.location.href = "login.html";
   } else {
+    const payload = decodeJwtPayload(token);
+    const userId = payload && payload.sub ? Number(payload.sub) : null;
     const emailInput = document.getElementById("email");
     const firstNameInput = document.getElementById("firstName");
     const lastNameInput = document.getElementById("lastName");
@@ -929,6 +985,84 @@ if (profileForm) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     };
+
+    function renderProfileRecipes(recipes) {
+      if (!profileRecipesList) return;
+
+      if (!recipes.length) {
+        profileRecipesList.innerHTML = "<p class='hint'>No recipes yet.</p>";
+        return;
+      }
+
+      profileRecipesList.innerHTML = recipes
+        .map((recipe) => `
+          <div class="profile-recipe-item">
+            <span class="profile-recipe-name">${recipe.name}</span>
+            <button type="button" class="btn btn-secondary profile-recipe-delete" data-profile-delete-id="${recipe.id}">Delete</button>
+          </div>
+        `)
+        .join("");
+
+      profileRecipesList.querySelectorAll("[data-profile-delete-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const recipeId = Number(button.getAttribute("data-profile-delete-id"));
+          if (Number.isNaN(recipeId)) {
+            return;
+          }
+
+          const confirmed = window.confirm("Delete this recipe permanently?");
+          if (!confirmed) {
+            return;
+          }
+
+          try {
+            const response = await fetch(`${BASE_URL}/recipes/${recipeId}`, {
+              method: "DELETE",
+              headers: authHeaders,
+            });
+
+            if (!response.ok) {
+              setMessage(profileRecipesMessage, "Failed to delete recipe.", "error");
+              return;
+            }
+
+            setMessage(profileRecipesMessage, "Recipe deleted successfully.", "ok");
+            await loadMyRecipes();
+          } catch {
+            setMessage(profileRecipesMessage, "Failed to delete recipe.", "error");
+          }
+        });
+      });
+    }
+
+    async function loadMyRecipes() {
+      if (!profileRecipesList || !userId) return;
+
+      profileRecipesList.innerHTML = "<p class='hint'>Loading recipes...</p>";
+      setMessage(profileRecipesMessage, "", "");
+
+      try {
+        const requestUrl = new URL(`${BASE_URL}/recipes`);
+        requestUrl.searchParams.set("authors", String(userId));
+
+        const response = await fetch(requestUrl.toString(), {
+          headers: authHeaders,
+        });
+
+        if (!response.ok) {
+          setMessage(profileRecipesMessage, "Failed to load your recipes.", "error");
+          profileRecipesList.innerHTML = "";
+          return;
+        }
+
+        const result = await response.json();
+        const recipes = result && result.data ? result.data : [];
+        renderProfileRecipes(recipes);
+      } catch {
+        setMessage(profileRecipesMessage, "Failed to load your recipes.", "error");
+        profileRecipesList.innerHTML = "";
+      }
+    }
 
     async function loadProfile() {
       try {
@@ -955,6 +1089,7 @@ if (profileForm) {
     }
 
     loadProfile();
+    loadMyRecipes();
 
     profileForm.addEventListener("submit", async (e) => {
       e.preventDefault();

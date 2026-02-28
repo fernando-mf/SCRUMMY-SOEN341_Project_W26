@@ -39,7 +39,8 @@ services:
     ports:
       - "3000:3000"
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/status"]
+      test:
+        ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/status"]
       interval: 2s
       timeout: 5s
       retries: 10
@@ -50,16 +51,18 @@ services:
         condition: service_completed_successfully
 
   frontend:
-    image: node:20-alpine
+    image: node:alpine
     working_dir: /app
     volumes:
       - ../frontend:/app
-    command: npx http-server /app -p 8080 --cors -c-1 -s
+    command: sh -c "echo '{\"cleanUrls\":false}' > /app/serve.json && npx serve -l 8080 -c /app/serve.json"
+    ports:
+      - "8080:8080"
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080"]
-      interval: 2s
-      timeout: 5s
-      retries: 10
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
 
   e2e:
     build:

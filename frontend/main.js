@@ -1,4 +1,7 @@
-const BASE_URL = "http://localhost:3000/api";
+const BASE_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:3000/api"
+    : "/api";
 
 const registerForm = document.getElementById("register-form");
 const loginForm = document.getElementById("login-form");

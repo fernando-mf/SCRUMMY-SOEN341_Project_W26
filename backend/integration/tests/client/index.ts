@@ -2,6 +2,7 @@ import { Core } from "@api/core";
 import { ApiClient } from "./internal";
 import { RecipesHttpClient } from "./recipes";
 import { UsersHttpClient } from "./users";
+import { MealPlansHttpClient } from "./meal-plans";
 
 export interface Client extends Core {
   SetAccessToken(token: string): void;
@@ -22,5 +23,6 @@ export function NewClient(): Client {
 
     UsersService: new UsersHttpClient(client),
     RecipesService: new RecipesHttpClient(client),
+    MealPlansService: new MealPlansHttpClient(client),
   };
 }

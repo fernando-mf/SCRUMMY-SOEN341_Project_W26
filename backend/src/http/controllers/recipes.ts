@@ -71,6 +71,7 @@ export function HandleListRecipes(service: IRecipesService): RequestHandler {
       maxTimeMinutes: parseNumber(rawQuery.maxTimeMinutes),
       maxCost: parseNumber(rawQuery.maxCost),
       dietaryTags: rawQuery.dietaryTags ? rawQuery.dietaryTags.split(",") : [],
+      ingredients: rawQuery.ingredients ? rawQuery.ingredients.split(",") : [],
       difficulty: rawQuery.difficulty as Difficulty,
     };
 

@@ -4,6 +4,7 @@ import { HttpStatus } from "@api/helpers/http";
 import type {
   CreateRecipeRequest,
   Difficulty,
+  GenerateRecipeRequest,
   IRecipesService,
   ListRecipesRequest,
   UpdateRecipeRequest,
@@ -70,6 +71,7 @@ export function HandleListRecipes(service: IRecipesService): RequestHandler {
       maxTimeMinutes: parseNumber(rawQuery.maxTimeMinutes),
       maxCost: parseNumber(rawQuery.maxCost),
       dietaryTags: rawQuery.dietaryTags ? rawQuery.dietaryTags.split(",") : [],
+      ingredients: rawQuery.ingredients ? rawQuery.ingredients.split(",") : [],
       difficulty: rawQuery.difficulty as Difficulty,
     };
 
@@ -90,6 +92,22 @@ export function HandleGetRecipe(service: IRecipesService): RequestHandler {
     const recipeId = Number(req.params.id);
     const recipe = await service.Get(recipeId);
     res.status(HttpStatus.Ok).json(recipe);
+  };
+}
+
+export function HandleGenerateRecipe(service: IRecipesService): RequestHandler {
+  return async (req, res) => {
+    const auth = (req as any).auth;
+    const userId = parseInt(auth?.sub);
+    if (isNaN(userId)) {
+      throw new AuthenticationError("invalid token");
+    }
+
+    const generationRequest = req.body as GenerateRecipeRequest;
+
+    const results = await service.Generate(userId, generationRequest);
+
+    res.status(HttpStatus.Ok).json(results);
   };
 }
 

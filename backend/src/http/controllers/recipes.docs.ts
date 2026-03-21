@@ -1,4 +1,17 @@
-import { Body, Controller, Post, Put, Route, SuccessResponse, Response, Tags, Get, Security, Queries, Delete } from "tsoa";
+import {
+  Body,
+  Controller,
+  Post,
+  Put,
+  Route,
+  SuccessResponse,
+  Response,
+  Tags,
+  Get,
+  Security,
+  Queries,
+  Delete,
+} from "tsoa";
 import { HttpStatus } from "@api/helpers/http";
 import {
   CreateRecipeRequest,
@@ -6,6 +19,7 @@ import {
   UpdateRecipeRequest,
   ListRecipesRequest,
   ListRecipesResponse,
+  GenerateRecipeRequest,
 } from "@api/recipes";
 
 @Route("api/recipes")
@@ -40,6 +54,14 @@ class RecipesDocs extends Controller {
   @SuccessResponse(HttpStatus.Ok, "Recipes List")
   @Response(HttpStatus.BadRequest, "Recipes query Invalid")
   async listRecipes(@Queries() query: ListRecipesRequest): Promise<ListRecipesResponse> {
+    return null as any;
+  }
+
+  @Post("generate")
+  @Security("jwt")
+  @SuccessResponse(HttpStatus.Ok, "Recipes Generated")
+  @Response(HttpStatus.BadRequest, "Recipes Generation Invalid")
+  async generateRecipes(@Body() body: GenerateRecipeRequest): Promise<Recipe[]> {
     return null as any;
   }
 }

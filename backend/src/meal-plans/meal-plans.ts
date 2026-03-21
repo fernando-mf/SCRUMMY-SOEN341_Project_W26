@@ -45,10 +45,10 @@ const mealPlanEntrySchema = z.object({
 const createMealPlanSchema = z.object({
   name: z.string().min(1),
   weekNumber: z.number().int().min(1).max(52),
-  startDate: z.coerce.date,
-  endDate: z.coerce.date,
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
   entries: z.array(mealPlanEntrySchema).min(1),
-});
+}).refine((data) => data.endDate >= data.startDate);
 
 export type CreateMealPlanRequest = z.infer<typeof createMealPlanSchema>;
 
@@ -65,7 +65,20 @@ export class MealPlansService implements IMealPlansService {
   constructor(private repository: IMealPlansRepository) {}
 
   async Create(authorId: number, request: CreateMealPlanRequest): Promise<MealPlan> {
-    throw new Error("Method not implemented.");
+    const validation = createMealPlanSchema.safeParse(request);
+    if (validation.error) {
+      throw InvalidParamsError.FromZodError(validation.error);
+    }
+
+    const createdMealPlan = this.repository.Create({
+      authorId,
+      name: validation.data.name,
+      weekNumber: validation.data.weekNumber,
+      startDate: validation.data.startDate,
+      endDate: validation.data.endDate,
+      entries: validation.data.entries as MealPlanEntry[],
+    });
+
+    return createdMealPlan;
   }
-  
 }

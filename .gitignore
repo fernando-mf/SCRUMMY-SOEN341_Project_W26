@@ -11,6 +11,8 @@ dist/
 # IDE
 .idea/
 .vscode/
+.cursor/
+.claude/
 
 # OS
 .DS_Store

@@ -1145,6 +1145,19 @@ if (profileForm) {
   }
 }
 
+/* ---------------- LOGOUT ---------------- */
+const logoutBtn = document.getElementById("logout-btn");
+
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    localStorage.removeItem("token");
+
+    window.location.href = "home.html"; 
+  });
+}
+
 /* ---------------- SEARCH ---------------- */
 
 if (searchForm) {

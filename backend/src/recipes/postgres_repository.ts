@@ -115,6 +115,11 @@ export class RecipesRepository implements IRecipesRepository {
         ${this.applyIfSet(req.maxCost, this.db`AND r."cost" <= ${req.maxCost!}`)}
         ${this.applyIfSet(req.difficulty, this.db`AND r."difficulty" = ${req.difficulty!}`)}
         ${this.applyIfSet(req.dietaryTags, this.db`AND r."dietaryTags" && ${req.dietaryTags}`)}
+        ${this.applyIfSet(req.ingredients, this.db`AND NOT EXISTS (
+          SELECT 1 FROM recipe_ingredients ri
+          WHERE ri."recipeId" = r."id"
+            AND LOWER(ri."name") != ALL(${req.ingredients.map((i) => i.toLowerCase())})
+        )`)}
     `;
 
     const countResult = await this.db<{ total: number }[]>`

@@ -387,6 +387,97 @@ describe("RecipesService", () => {
       expect(res.data.length).toBe(0);
     });
 
+    test("filters - ingredients exact match", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      await insertTestRecipes(client, user.id, 1, {
+        name: "Pancakes",
+        ingredients: [
+          { name: "Flour", amount: 200, unit: Unit.G },
+          { name: "Eggs", amount: 2, unit: Unit.G },
+          { name: "Milk", amount: 250, unit: Unit.ML },
+        ],
+      });
+
+      const res = await client.RecipesService.List({ ingredients: ["Flour", "Eggs", "Milk"] });
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].name).toContain("Pancakes");
+    });
+
+    test("filters - ingredients superset (extra inputs match)", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      await insertTestRecipes(client, user.id, 1, {
+        name: "Pancakes",
+        ingredients: [
+          { name: "Flour", amount: 200, unit: Unit.G },
+          { name: "Eggs", amount: 2, unit: Unit.G },
+          { name: "Milk", amount: 250, unit: Unit.ML },
+        ],
+      });
+
+      const res = await client.RecipesService.List({ ingredients: ["Flour", "Eggs", "Milk", "Butter"] });
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].name).toContain("Pancakes");
+    });
+
+    test("filters - ingredients subset (missing ingredient, no match)", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      await insertTestRecipes(client, user.id, 1, {
+        name: "Pancakes",
+        ingredients: [
+          { name: "Flour", amount: 200, unit: Unit.G },
+          { name: "Eggs", amount: 2, unit: Unit.G },
+          { name: "Milk", amount: 250, unit: Unit.ML },
+        ],
+      });
+
+      let res = await client.RecipesService.List({ ingredients: ["Flour"] });
+      expect(res.data.length).toBe(0);
+
+      res = await client.RecipesService.List({ ingredients: ["Flour", "Eggs"] });
+      expect(res.data.length).toBe(0);
+    });
+
+    test("filters - ingredients case insensitive", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      await insertTestRecipes(client, user.id, 1, {
+        name: "Pancakes",
+        ingredients: [
+          { name: "Flour", amount: 200, unit: Unit.G },
+          { name: "Eggs", amount: 2, unit: Unit.G },
+          { name: "Milk", amount: 250, unit: Unit.ML },
+        ],
+      });
+
+      const res = await client.RecipesService.List({ ingredients: ["FLOUR", "eggs", "mIlK"] });
+      expect(res.data.length).toBe(1);
+      expect(res.data[0].name).toContain("Pancakes");
+    });
+
+    test("filters - ingredients no match", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      await insertTestRecipes(client, user.id, 1, {
+        name: "Pancakes",
+        ingredients: [
+          { name: "Flour", amount: 200, unit: Unit.G },
+          { name: "Eggs", amount: 2, unit: Unit.G },
+          { name: "Milk", amount: 250, unit: Unit.ML },
+        ],
+      });
+
+      const res = await client.RecipesService.List({ ingredients: ["Chicken", "Rice"] });
+      expect(res.data.length).toBe(0);
+    });
+
     test("filters - search by name", async () => {
       const client = NewClient();
       const { user } = await BeginUserSession(client);

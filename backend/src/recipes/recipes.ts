@@ -80,11 +80,19 @@ const listRecipesRequestSchema = PaginationQuerySchema.extend({
   maxCost: z.number().optional(),
   difficulty: z.enum(Difficulty).optional(),
   dietaryTags: z.array(z.string()).default([]),
+  ingredients: z.array(z.string()).default([]),
 });
 
 export type ListRecipesRequest = z.infer<typeof listRecipesRequestSchema>;
 
 export type ListRecipesResponse = PaginatedResponse<Recipe>;
+
+const generateRecipeRequestSchema = z.object({
+  ingredients: z.array(z.string()).default([]),
+  count: z.number().int().min(1).max(10).default(1),
+});
+
+export type GenerateRecipeRequest = z.infer<typeof generateRecipeRequestSchema>;
 
 // Interfaces
 export interface IRecipesService {
@@ -93,6 +101,7 @@ export interface IRecipesService {
   Delete(userId: number, recipeId: number): Promise<void>;
   List(req: Partial<ListRecipesRequest>): Promise<ListRecipesResponse>;
   Get(recipeId: number): Promise<Recipe>;
+  Generate(userId: number, request: GenerateRecipeRequest): Promise<Recipe[]>;
 }
 
 export interface IRecipesRepository {
@@ -148,7 +157,7 @@ export class RecipesService implements IRecipesService {
       dietaryTags: validation.data.dietaryTags,
       allergens: validation.data.allergens,
       servings: validation.data.servings,
-    }
+    };
 
     await this.repository.Update(userId, recipeId, updatedRecipe);
   }
@@ -168,5 +177,9 @@ export class RecipesService implements IRecipesService {
 
   async Get(recipeId: number): Promise<Recipe> {
     return await this.repository.Get(recipeId);
+  }
+
+  async Generate(userId: number, request: GenerateRecipeRequest): Promise<Recipe[]> {
+    throw new Error("Method not implemented.");
   }
 }

@@ -1,5 +1,12 @@
 import { PaginatedResponse } from "@api/helpers/pagination";
-import { CreateRecipeRequest, IRecipesService, ListRecipesRequest, Recipe, UpdateRecipeRequest } from "@api/recipes";
+import {
+  CreateRecipeRequest,
+  GenerateRecipeRequest,
+  IRecipesService,
+  ListRecipesRequest,
+  Recipe,
+  UpdateRecipeRequest,
+} from "@api/recipes";
 import { ApiClient } from "./internal";
 
 export class RecipesHttpClient implements IRecipesService {
@@ -43,8 +50,16 @@ export class RecipesHttpClient implements IRecipesService {
 
   Get(recipeId: number): Promise<Recipe> {
     return this.client.Request({
-       url: `/api/recipes/${recipeId}`,
-       method: "GET",
+      url: `/api/recipes/${recipeId}`,
+      method: "GET",
+    });
+  }
+
+  Generate(userId: number, request: GenerateRecipeRequest): Promise<Recipe[]> {
+    return this.client.Request({
+      url: `/api/recipes/generate`,
+      method: "POST",
+      body: request,
     });
   }
 }

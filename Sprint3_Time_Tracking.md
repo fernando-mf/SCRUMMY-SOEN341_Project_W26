@@ -1,4 +1,4 @@
-# Sprint 2 - Time Tracking
+# Sprint 3 - Time Tracking
 
 ## **Azmi-Salah Bousedra** (ID: 40316065), FrontEnd
 - 

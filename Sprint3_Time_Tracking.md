@@ -14,3 +14,4 @@
 
 ## **Fernando Mamani** (ID: 40169982), Backend/Database
 - 21-03-2026 - 3 hours - Task.101, Task.102, Task.105: implemented search by ingredients, added specs for recipe generation/
+- 21-03-2026 - 4 hours - US.25: implemented LLM provider and recipe generation endpoint

@@ -10,6 +10,10 @@
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.3.2",
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "prettier": "^3.8.1"
+  },
+  "prettier": {
+    "printWidth": 120
   }
 }

@@ -38,6 +38,7 @@ export type MealPlan = {
 //Request Schemas
 
 const mealPlanEntrySchema = z.object({
+  recipeId: z.number().int().positive(),
   dayOfWeek: z.enum(Object.values(DayOfWeek) as [string, ...string[]]),
   mealType: z.enum(Object.values(MealType) as [string, ...string[]]),
 });

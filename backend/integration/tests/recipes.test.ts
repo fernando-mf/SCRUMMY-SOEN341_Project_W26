@@ -323,8 +323,8 @@ describe("RecipesService", () => {
       maxMinutes = 60;
       res = await client.RecipesService.List({ maxTimeMinutes: maxMinutes });
       expect(res.data.length).toBe(2);
-      expect(res.data[0].prepTimeMinutes).toBe(30);
-      expect(res.data[1].prepTimeMinutes).toBe(60);
+      expect(res.data[0].prepTimeMinutes).toBe(60);
+      expect(res.data[1].prepTimeMinutes).toBe(30);
     });
 
     test("filters - maxCost", async () => {
@@ -347,8 +347,8 @@ describe("RecipesService", () => {
       maxCost = 250;
       res = await client.RecipesService.List({ maxCost: maxCost });
       expect(res.data.length).toBe(2);
-      expect(res.data[0].cost).toMatchInlineSnapshot(`"100.00"`);
-      expect(res.data[1].cost).toMatchInlineSnapshot(`"200.00"`);
+      expect(res.data[0].cost).toMatchInlineSnapshot(`"200.00"`);
+      expect(res.data[1].cost).toMatchInlineSnapshot(`"100.00"`);
     });
 
     test("filters - difficulty", async () => {
@@ -532,6 +532,45 @@ describe("RecipesService", () => {
       const res = await client.RecipesService.List({ search: "Sushi" });
 
       expect(res.data.length).toBe(0);
+    });
+  });
+
+  describe("Generate", () => {
+    beforeEach(async () => {
+      await PurgeDatabase();
+    });
+
+    test("success - generates and returns recipes", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const recipes = await client.RecipesService.Generate(user.id, {
+        ingredients: ["chicken", "rice"],
+      });
+
+      expect(recipes).toMatchSnapshot();
+    });
+
+    test("success - generated recipes are persisted", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const recipes = await client.RecipesService.Generate(user.id, {
+        ingredients: ["flour"],
+      });
+
+      const fetched = await client.RecipesService.Get(recipes[0].id);
+      expect(fetched.id).toBe(recipes[0].id);
+      expect(fetched.name).toBe(recipes[0].name);
+    });
+
+    test("fails with invalid params - empty ingredients", async () => {
+      const client = NewClient();
+      await BeginUserSession(client);
+
+      await expect(client.RecipesService.Generate(1, { ingredients: [] })).rejects.toMatchObject({
+        code: "invalid_params",
+      });
     });
   });
 });

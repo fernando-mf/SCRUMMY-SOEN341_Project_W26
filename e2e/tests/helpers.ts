@@ -1,9 +1,6 @@
-import { test as base, request } from "@playwright/test";
+import { test as base, Page, request } from "@playwright/test";
 
-const API_URL = (process.env.API_URL || "http://127.0.0.1:3000/api").replace(
-  /\/$/,
-  "",
-);
+const API_URL = (process.env.API_URL || "http://127.0.0.1:3000/api").replace(/\/$/, "");
 
 export const test = base.extend({
   page: async ({ page }, use) => {
@@ -22,9 +19,7 @@ export interface UserCredentials {
   token: string;
 }
 
-export async function registerUser(
-  overrides: Partial<Omit<UserCredentials, "token">> = {},
-): Promise<UserCredentials> {
+export async function registerUser(overrides: Partial<Omit<UserCredentials, "token">> = {}): Promise<UserCredentials> {
   const suffix = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const creds = {
     firstName: overrides.firstName ?? "Test",
@@ -44,10 +39,7 @@ export async function registerUser(
   return { ...creds, token: body.token };
 }
 
-export async function loginUser(
-  email: string,
-  password: string,
-): Promise<string> {
+export async function loginUser(email: string, password: string): Promise<string> {
   const apiContext = await request.newContext();
   const res = await apiContext.post(`${API_URL}/auth/login`, {
     data: { email, password },
@@ -57,4 +49,16 @@ export async function loginUser(
   }
   const body = await res.json();
   return body.token;
+}
+
+export async function setupAuthenticatedPage(page: Page, targetPath = "/profile.html", waitSelector = "#firstName") {
+  const user = await registerUser();
+  const token = await loginUser(user.email, user.password);
+
+  await page.goto("/login.html");
+  await page.evaluate((t) => localStorage.setItem("token", t), token);
+  await page.goto(targetPath);
+  await page.waitForSelector(waitSelector);
+
+  return user;
 }

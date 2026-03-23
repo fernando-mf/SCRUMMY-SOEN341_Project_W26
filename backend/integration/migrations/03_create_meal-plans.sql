@@ -12,7 +12,7 @@ CREATE TABLE meal_plans (
 CREATE TABLE meal_plan_entries (
     "mealPlanId" INT NOT NULL REFERENCES meal_plans ("id") ON DELETE CASCADE,
     "recipeId" INT NOT NULL REFERENCES recipes ("id"),
-    "dayOfWeek" VARCHAR(10) NOT NULL,
-    "mealType" VARCHAR(10) NOT NULL,
+    "dayOfWeek" VARCHAR(10) NOT NULL UNIQUE,
+    "mealType" VARCHAR(10) NOT NULL UNIQUE,
     PRIMARY KEY ("mealPlanId", "recipeId")
 );

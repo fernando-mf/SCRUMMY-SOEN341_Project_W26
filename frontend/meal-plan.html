@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MealMajor - Create Meal Plan</title>
+  <link rel="stylesheet" href="styles.css?v=13" />
+</head>
+<body>
+  <main class="page">
+    
+    <header class="page-header">
+      <div class="page-title">
+        <h1 class="brand">MealMajor</h1>
+        <h2 class="title">Create Meal Plan</h2>
+      </div>
+      <nav class="nav-actions">
+        <a class="btn btn-secondary" href="recipe.html">Back</a>
+      </nav>
+    </header>
+
+    <section class="card">
+      <form id="meal-plan-form" class="form">
+
+        <!-- Optional Name -->
+        <div class="form-group">
+          <label for="plan-name">Plan Name (optional)</label>
+          <input type="text" id="plan-name" placeholder="e.g. My Weekly Plan" />
+        </div>
+
+        <!-- Week Number -->
+        <div class="form-group">
+          <label for="week-number">Week Number</label>
+          <input type="number" id="week-number" min="1" max="52" />
+        </div>
+
+        <!-- Start Date -->
+        <div class="form-group">
+          <label for="start-date">Start Date</label>
+          <input type="date" id="start-date" />
+        </div>
+
+        <!-- End Date -->
+        <div class="form-group">
+          <label for="end-date">End Date (optional)</label>
+          <input type="date" id="end-date" />
+        </div>
+
+        <!-- Recipe Linking (UI only) -->
+        <div class="form-group">
+          <label>Assign Recipes (optional)</label>
+          <select>
+            <option>Select recipe...</option>
+          </select>
+        </div>
+
+        <!-- Partial Submit -->
+        <div class="form-actions">
+          <button type="submit" class="btn">Save Plan</button>
+          <button type="button" class="btn btn-secondary">Save Partial</button>
+        </div>
+
+      </form>
+    </section>
+
+  </main>
+</body>
+</html>

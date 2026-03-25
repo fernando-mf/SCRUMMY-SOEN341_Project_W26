@@ -1187,7 +1187,8 @@ if (searchForm) {
         return;
       }
 
-      const recipes = await response.json();
+      const result = await response.json();
+      const recipes = result && result.data ? result.data : [];
 
       if (!recipes || recipes.length === 0) {
         resultsContainer.innerHTML = "<p class='hint'>No recipes found.</p>";

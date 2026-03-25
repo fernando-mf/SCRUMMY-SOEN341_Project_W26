@@ -70,8 +70,8 @@ test.describe("Delete Recipe", () => {
   test("canceling the confirm dialog does not delete the recipe", async ({ page }) => {
     await setupAuthenticatedPage(page, "/create-recipe.html", "#create-recipe-form");
     
-    const recipeName = `Listed Recipe ${Date.now()}`;
-    await fillRecipeForm(page, recipeName);
+    const recipeNameCancel = `Listed Recipe ${Date.now()}`;
+    await fillRecipeForm(page, recipeNameCancel);
 
     await page.click('button[type="submit"]');
     await page.waitForURL(/recipe\.html/, { timeout: 5000 });    
@@ -85,9 +85,9 @@ test.describe("Delete Recipe", () => {
       await dialog.dismiss();
     });
 
-    const recipeCard = page.locator(".recipe-card", { hasText: recipeName});
+    const recipeCard = page.locator(".recipe-card", { hasText: recipeNameCancel});
     await recipeCard.locator(".recipe-delete-btn").click();
 
-    await expect(page.locator("h3", { hasText: recipeName })).toBeVisible();
+    await expect(page.locator("h3", { hasText: recipeNameCancel })).toBeVisible();
   });
 });

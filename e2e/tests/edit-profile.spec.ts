@@ -1,17 +1,10 @@
 import { expect, Page } from "@playwright/test";
-import { loginUser, registerUser, test } from "./helpers";
-
-async function setupAuthenticatedPage(page: Page) {
-  const user = await registerUser();
-  const token = await loginUser(user.email, user.password);
-
-  await page.goto("/login.html");
-  await page.evaluate((t) => localStorage.setItem("token", t), token);
-  await page.goto("/profile.html");
-  await page.waitForSelector("#firstName");
-
-  return user;
-}
+import {
+  loginUser,
+  registerUser,
+  test,
+  setupAuthenticatedPage,
+} from "./helpers";
 
 test.describe("Edit Profile", () => {
   test("profile page loads with registered user data", async ({ page }) => {

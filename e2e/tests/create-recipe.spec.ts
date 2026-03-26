@@ -3,12 +3,9 @@ import { test, setupAuthenticatedPage } from "./helpers";
 
 async function fillRecipeForm(page: Page, recipeName: string) {
   await page.fill("#recipe-name", recipeName);
-  await page.fill("#recipe-description", "A test recipe description");
-  await page.fill("#prep-time", "10");
   await page.fill("#cook-time", "20");
   await page.fill("#servings", "2");
   await page.selectOption("#difficulty", "easy");
-  await page.check("#cost-budget");
 
   // Add one ingredient
   await page.fill("#ingredient-name", "Flour");
@@ -35,7 +32,7 @@ test.describe("Create Recipe", () => {
 
     await expect(page.locator("#form-message")).toContainText("Recipe created successfully");
 
-    await page.waitForURL(/recipe\.html/, { timeout: 5000 });
+    await page.waitForURL(/recipe\.html/, { timeout: 2000 });
   });
 
   test("created recipe appears in the recipe list", async ({ page }) => {
@@ -45,13 +42,12 @@ test.describe("Create Recipe", () => {
     await fillRecipeForm(page, recipeName);
 
     await page.click('button[type="submit"]');
-    await page.waitForURL(/recipe\.html/, { timeout: 5000 });
+    await page.waitForURL(/recipe\.html/, { timeout: 2000 });
 
     // Navigate to My Recipes to avoid sample recipe noise
     await page.goto("/recipe.html?mine=1");
-    await page.waitForSelector("#recipes-list");
 
     const recipeCard = page.locator(".recipe-card h3", { hasText: recipeName });
-    await expect(recipeCard).toBeVisible({ timeout: 10000 });
+    await expect(recipeCard).toBeVisible();
   });
 });

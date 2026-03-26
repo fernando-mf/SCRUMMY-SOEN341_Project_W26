@@ -48,7 +48,7 @@ export function Routes(core: Core) {
   router.get("/recipes", HandleListRecipes(core.RecipesService));
   router.post("/recipes/generate", HandleGenerateRecipe(core.RecipesService));
 
-  //Meal Plan routes
+  // Meal Plan routes
   router.post("/meal-plans", HandleCreateMealPlan(core.MealPlansService));
 
   return router;

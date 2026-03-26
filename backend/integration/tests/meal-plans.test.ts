@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, test } from "vitest";
 import { DayOfWeek, MealPlan, MealType } from "@api/meal-plans";
-import { Difficulty, Recipe, Unit } from "@api/recipes";
 import { Client, NewClient } from "./client";
-import { BeginUserSession, PurgeDatabase } from "./helpers";
+import { BeginUserSession, insertTestRecipes, PurgeDatabase } from "./helpers";
 
 describe("MealPlansService", () => {
   describe("Create", () => {
@@ -14,39 +13,35 @@ describe("MealPlansService", () => {
       const client = NewClient();
       const { user } = await BeginUserSession(client);
 
-      const recipe = await client.RecipesService.Create(user.id, {
-        name: "Test Recipe",
-        ingredients: [{ name: "Test", amount: 1, unit: Unit.G }],
-        prepTimeMinutes: 10,
-        prepSteps: "Steps",
-        cost: 10,
-        difficulty: Difficulty.EASY,
-        dietaryTags: [],
-        allergens: [],
-        servings: 1,
-      });
+      const userId = user.id;
 
-      const startDate = new Date("2026-04-01");
-      const endDate = new Date("2026-04-07");
+      await insertTestRecipes(client, userId, 3, { name: "Test Recipe" });
+
+      const res = await client.RecipesService.List({ authors: [userId] });
+      const recipes = res.data;
+
+      expect(recipes.length).toBe(3);
+
+      const days = [DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY];
 
       const mealPlan = await client.MealPlansService.Create(user.id, {
         name: "My Healthy Week",
         weekNumber: 14,
-        startDate: startDate,
-        endDate: endDate,
-        entries: [
-          {
-            recipeId: recipe.id,
-            dayOfWeek: DayOfWeek.MONDAY,
-            mealType: MealType.LUNCH,
-          },
-        ],
+        startDate: new Date("2026-03-30"),
+        entries: recipes.slice(0, 3).map((recipe, i) => ({
+          recipeId: recipe.id,
+          dayOfWeek: days[i],
+          mealType: MealType.LUNCH,
+        })),
       });
 
       expect(mealPlan.id).toBeDefined();
       expect(mealPlan.name).toBe("My Healthy Week");
-      expect(mealPlan.entries.length).toBe(1);
-      expect(mealPlan.entries[0].recipeId).toBe(recipe.id);
+      expect(mealPlan.entries.length).toBe(3);
+
+      for (let i = 0; i < 3; i++) {
+        expect(mealPlan.entries[i].recipeId).toBe(recipes[i].id);
+      }
     });
 
     test("fails when entries array is empty", async () => {
@@ -57,27 +52,25 @@ describe("MealPlansService", () => {
         name: "Empty Plan",
         weekNumber: 1,
         startDate: new Date(),
-        endDate: new Date(),
-        entries: [], // Zod requires .min(1)
+        entries: [],
       });
 
       await expect(promise).rejects.toThrow("invalid_params");
     });
 
-    test("fails when endDate is before startDate", async () => {
+    test("fails when startDate is not Sunday or Monday", async () => {
       const client = NewClient();
       const { user } = await BeginUserSession(client);
 
       const promise = client.MealPlansService.Create(user.id, {
-        name: "Time Travel Plan",
-        weekNumber: 1,
-        startDate: new Date("2026-05-01"),
-        endDate: new Date("2026-04-01"), // Before start
+        name: "Bad Start Date",
+        weekNumber: 10,
+        startDate: new Date("2026-04-01"),
         entries: [
           {
             recipeId: 1,
             dayOfWeek: DayOfWeek.MONDAY,
-            mealType: MealType.DINNER,
+            mealType: MealType.LUNCH,
           },
         ],
       });
@@ -91,9 +84,8 @@ describe("MealPlansService", () => {
 
       const promise = client.MealPlansService.Create(user.id, {
         name: "Invalid Week",
-        weekNumber: 53, // Max 52
+        weekNumber: 53,
         startDate: new Date(),
-        endDate: new Date(),
         entries: [
           {
             recipeId: 1,
@@ -114,7 +106,6 @@ describe("MealPlansService", () => {
         name: "Invalid Enum",
         weekNumber: 1,
         startDate: new Date(),
-        endDate: new Date(),
         entries: [
           {
             recipeId: 1,

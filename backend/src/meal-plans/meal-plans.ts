@@ -35,21 +35,18 @@ export type MealPlan = {
   entries: MealPlanEntry[];
 };
 
-//Request Schemas
-
 const mealPlanEntrySchema = z.object({
   recipeId: z.number().int().positive(),
-  dayOfWeek: z.enum(Object.values(DayOfWeek) as [string, ...string[]]),
-  mealType: z.enum(Object.values(MealType) as [string, ...string[]]),
+  dayOfWeek: z.enum(DayOfWeek),
+  mealType: z.enum(MealType),
 });
 
 const createMealPlanSchema = z.object({
   name: z.string().min(1),
   weekNumber: z.number().int().min(1).max(52),
   startDate: z.coerce.date(),
-  endDate: z.coerce.date(),
   entries: z.array(mealPlanEntrySchema).min(1),
-}).refine((data) => data.endDate >= data.startDate);
+});
 
 export type CreateMealPlanRequest = z.infer<typeof createMealPlanSchema>;
 
@@ -71,15 +68,35 @@ export class MealPlansService implements IMealPlansService {
       throw InvalidParamsError.FromZodError(validation.error);
     }
 
+    const { startDate } = validation.data;
+
+    if (!isValidWeekStart(startDate)) {
+      throw new InvalidParamsError();
+    }
+
+    const endDate = computeEndDate(startDate);
+
     const createdMealPlan = this.repository.Create({
       authorId,
       name: validation.data.name,
       weekNumber: validation.data.weekNumber,
-      startDate: validation.data.startDate,
-      endDate: validation.data.endDate,
+      startDate: startDate,
+      endDate: endDate,
       entries: validation.data.entries as MealPlanEntry[],
     });
 
     return createdMealPlan;
   }
+}
+
+function isValidWeekStart(date: Date): boolean {
+  const day = date.getDay();
+  return day === 0 || day === 1;
+}
+
+function computeEndDate(startDate: Date): Date {
+  const endDate = new Date(startDate);
+
+  endDate.setDate(endDate.getDate() + 6);
+  return endDate;
 }

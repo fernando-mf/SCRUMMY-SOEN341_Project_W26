@@ -14,8 +14,8 @@
     <div class="modal-overlay" id="modal-overlay">
       <div class="modal">
         <div class="modal-header">
-          <a href="recipe.html" class="modal-close" title="Back to recipes">←</a>
-          <h2>Create New Recipe</h2>
+          <a href="meal-plan.html" class="modal-close" title="Back to meal plan">←</a>
+          <h2>Quick Create Recipe</h2>
         </div>
 
         <form id="create-recipe-form" class="create-recipe-form">
@@ -27,18 +27,9 @@
             <input type="text" id="recipe-name" name="name" placeholder="Enter recipe name" required />
           </div>
 
-          <!-- Description -->
-          <div class="form-group">
-            <label for="recipe-description">Description</label>
-            <textarea id="recipe-description" name="description" placeholder="Brief description of your recipe" rows="3"></textarea>
-          </div>
+    
 
-          <!-- Time & Servings Row -->
-          <div class="form-row">
-            <div class="form-group">
-              <label for="prep-time">Prep Time (min)</label>
-              <input type="number" id="prep-time" name="prepTimeMinutes" min="0" value="0" required />
-            </div>
+         
             <div class="form-group">
               <label for="cook-time">Cook Time (min)</label>
               <input type="number" id="cook-time" name="cookTimeMinutes" min="0" value="0" required />
@@ -57,26 +48,7 @@
             </div>
           </div>
 
-          <!-- Cost -->
-          <div class="form-group">
-            <label>Cost</label>
-            <div class="cost-options">
-              <input type="radio" id="cost-budget" name="cost" value="budget" />
-              <label for="cost-budget" class="cost-label">Budget</label>
-
-              <input type="radio" id="cost-moderate" name="cost" value="moderate" checked />
-              <label for="cost-moderate" class="cost-label">Moderate</label>
-
-              <input type="radio" id="cost-expensive" name="cost" value="expensive" />
-              <label for="cost-expensive" class="cost-label">Expensive</label>
-            </div>
-          </div>
-
-          <!-- Dietary Tags -->
-          <div class="form-group">
-            <label>Dietary Tags</label>
-            <div class="tags-options" id="dietary-tags-options"></div>
-          </div>
+          
 
           <!-- Ingredients -->
           <div class="form-group">
@@ -119,7 +91,7 @@
 
           <!-- Form Actions -->
           <div class="form-actions">
-            <a href="recipe.html" class="btn btn-secondary">Cancel & Discard</a>
+            <a href="meal-plan.html" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn">Create Recipe</button>
           </div>
         </form>

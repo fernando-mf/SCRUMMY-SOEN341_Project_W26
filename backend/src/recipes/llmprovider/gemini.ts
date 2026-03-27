@@ -7,8 +7,8 @@ import { createRecipeRequestSchema, Difficulty, Unit } from "@api/recipes/recipe
 const generatedRecipesSchema = z.array(createRecipeRequestSchema);
 const unitValues = new Set<string>(Object.values(Unit));
 const difficultyValues = new Set<string>(Object.values(Difficulty));
-const GENERATION_TIMEOUT_MS = 15000;
-const MAX_RETRY_ATTEMPTS = 2;
+const GENERATION_TIMEOUT_MS = 9000;
+const MAX_RETRY_ATTEMPTS = 0;
 const RETRY_BASE_DELAY_MS = 600;
 
 const sweetSpreadTerms = [

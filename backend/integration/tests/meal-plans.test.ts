@@ -118,4 +118,135 @@ describe("MealPlansService", () => {
       await expect(promise).rejects.toThrow("invalid_params");
     });
   });
+
+  describe("Update", () => {
+    beforeEach(async () => {
+      await PurgeDatabase();
+    });
+
+    test("success", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+      const userId = user.id;
+
+      await insertTestRecipes(client, user.id, 1, { name: "Test Recipe" });
+
+      const res = await client.RecipesService.List({ authors: [userId] });
+      const recipes = res.data;
+
+      const mealPlan = await client.MealPlansService.Create(user.id, {
+        name: "My Healthy Week",
+        weekNumber: 14,
+        startDate: new Date("2026-03-30"),
+        entries: recipes.slice(0, 3).map((recipe, i) => ({
+          recipeId: recipe.id,
+          dayOfWeek: DayOfWeek.TUESDAY,
+          mealType: MealType.LUNCH,
+        })),
+      });
+
+      await client.MealPlansService.Update(user.id, mealPlan.id, {
+        name: "Updated Healthy Week",
+        weekNumber: 15,
+        startDate: new Date("2026-04-06"),
+        entries: recipes.slice(0, 3).map((recipe, i) => ({
+          recipeId: recipe.id,
+          dayOfWeek: DayOfWeek.WEDNESDAY,
+          mealType: MealType.DINNER,
+        })),
+      });
+
+      const updatedMealPlan = await client.MealPlansService.Get(mealPlan.id);
+
+      expect(updatedMealPlan.name).toBe("Updated Healthy Week");
+      expect(updatedMealPlan.weekNumber).toBe(15);
+      expect(new Date(updatedMealPlan.startDate)).toEqual(new Date("2026-04-06"));
+      expect(new Date(updatedMealPlan.endDate)).toEqual(new Date("2026-04-12"));
+      expect(updatedMealPlan.entries.length).toBe(1);
+      expect(updatedMealPlan.entries[0].dayOfWeek).toBe(DayOfWeek.WEDNESDAY);
+      expect(updatedMealPlan.entries[0].mealType).toBe(MealType.DINNER);
+    });
+
+    test("fails when meal plan does not exist", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const promise = client.MealPlansService.Update(user.id, 99999, {
+        name: "Non-Existing Plan",
+        weekNumber: 15,
+        startDate: new Date("2026-04-05"),
+        entries: [],
+      });
+
+      await expect(promise).rejects.toThrow();
+    });
+
+    test("fails when validation fails", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+      const userId = user.id;
+
+      await insertTestRecipes(client, user.id, 1, { name: "Test Recipe" });
+
+      const res = await client.RecipesService.List({ authors: [userId] });
+      const recipes = res.data;
+
+      const mealPlan = await client.MealPlansService.Create(user.id, {
+        name: "Valid Plan",
+        weekNumber: 14,
+        startDate: new Date("2026-03-30"),
+        entries: recipes.slice(0, 3).map((recipe, i) => ({
+          recipeId: recipe.id,
+          dayOfWeek: DayOfWeek.TUESDAY,
+          mealType: MealType.LUNCH,
+        })),
+      });
+
+      const promise = client.MealPlansService.Update(user.id, mealPlan.id, {
+        name: "Invalid Plan",
+        weekNumber: 15,
+        startDate: new Date("2026-04-04"),
+        entries: recipes.slice(0, 3).map((recipe, i) => ({
+          recipeId: recipe.id,
+          dayOfWeek: DayOfWeek.WEDNESDAY,
+          mealType: MealType.DINNER,
+        })),
+      });
+
+      await expect(promise).rejects.toThrow();
+    });
+  });
+});
+
+describe("Delete", () => {
+  beforeEach(async () => {
+    await PurgeDatabase();
+  });
+
+  test("success", async () => {
+    const client = NewClient();
+    const { user } = await BeginUserSession(client);
+    const userId = user.id;
+
+    await insertTestRecipes(client, user.id, 1, { name: "Test Recipe" });
+
+    const res = await client.RecipesService.List({ authors: [userId] });
+    const recipes = res.data;
+
+    const mealPlan = await client.MealPlansService.Create(user.id, {
+      name: "My Healthy Week",
+      weekNumber: 14,
+      startDate: new Date("2026-03-30"),
+      entries: recipes.slice(0, 3).map((recipe, i) => ({
+          recipeId: recipe.id,
+          dayOfWeek: DayOfWeek.TUESDAY,
+          mealType: MealType.LUNCH,
+        })),
+    });
+
+    await client.MealPlansService.Delete(user.id, mealPlan.id);
+
+    const promise = client.MealPlansService.Get(mealPlan.id);
+    await expect(promise).rejects.toThrow();
+  });
 });

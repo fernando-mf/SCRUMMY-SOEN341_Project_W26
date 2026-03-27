@@ -71,7 +71,7 @@ export class MealPlansService implements IMealPlansService {
     const { startDate } = validation.data;
 
     if (!isValidWeekStart(startDate)) {
-      throw new InvalidParamsError();
+      throw new InvalidParamsError({ param: "startDate", description: "Start date must be Monday"});
     }
 
     const endDate = computeEndDate(startDate);
@@ -90,8 +90,7 @@ export class MealPlansService implements IMealPlansService {
 }
 
 function isValidWeekStart(date: Date): boolean {
-  const day = date.getDay();
-  return day === 0 || day === 1;
+  return date.getDay() === 1;
 }
 
 function computeEndDate(startDate: Date): Date {

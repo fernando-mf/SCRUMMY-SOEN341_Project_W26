@@ -1,7 +1,6 @@
 import postgres from "postgres";
 import { GeminiLLMProvider, IRecipesService, MockLLMProvider, RecipesRepository, RecipesService } from "@api/recipes";
 import { IUsersService, UsersRepository, UsersService } from "@api/users";
-import { IRecipesService, RecipesRepository, RecipesService } from "@api/recipes";
 import { IMealPlansService, MealPlansRepository, MealPlansService } from "@api/meal-plans";
 
 // Core is our main entry point. It defines the services and features our application provides.

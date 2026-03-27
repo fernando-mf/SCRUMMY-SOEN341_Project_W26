@@ -65,12 +65,9 @@ export async function setupAuthenticatedPage(page: Page, targetPath = "/profile.
 
 export async function fillRecipeForm(page: Page, recipeName: string) {
   await page.fill("#recipe-name", recipeName);
-  await page.fill("#recipe-description", "A test recipe description");
-  await page.fill("#prep-time", "10");
   await page.fill("#cook-time", "20");
   await page.fill("#servings", "2");
   await page.selectOption("#difficulty", "easy");
-  await page.check("#cost-budget");
 
   // Add one ingredient
   await page.fill("#ingredient-name", "Flour");

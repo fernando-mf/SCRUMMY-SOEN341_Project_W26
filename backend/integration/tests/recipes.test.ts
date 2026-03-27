@@ -551,17 +551,20 @@ describe("RecipesService", () => {
       expect(recipes).toMatchSnapshot();
     });
 
-    test("success - generated recipes are persisted", async () => {
+    test("success - generated recipes are not persisted", async () => {
       const client = NewClient();
       const { user } = await BeginUserSession(client);
 
-      const recipes = await client.RecipesService.Generate(user.id, {
+      await client.RecipesService.Generate(user.id, {
         ingredients: ["flour"],
       });
 
-      const fetched = await client.RecipesService.Get(recipes[0].id);
-      expect(fetched.id).toBe(recipes[0].id);
-      expect(fetched.name).toBe(recipes[0].name);
+      const listed = await client.RecipesService.List({
+        authors: [user.id],
+        ingredients: [],
+      });
+
+      expect(listed.data).toHaveLength(0);
     });
 
     test("fails with invalid params - empty ingredients", async () => {

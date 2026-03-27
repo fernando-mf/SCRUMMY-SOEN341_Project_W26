@@ -55,7 +55,7 @@ export class RecipesHttpClient implements IRecipesService {
     });
   }
 
-  Generate(userId: number, request: GenerateRecipeRequest): Promise<Recipe[]> {
+  Generate(userId: number, request: GenerateRecipeRequest): Promise<CreateRecipeRequest[]> {
     return this.client.Request({
       url: `/api/recipes/generate`,
       method: "POST",

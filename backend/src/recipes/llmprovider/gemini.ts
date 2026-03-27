@@ -8,6 +8,8 @@ const generatedRecipesSchema = z.array(createRecipeRequestSchema);
 const unitValues = new Set<string>(Object.values(Unit));
 const difficultyValues = new Set<string>(Object.values(Difficulty));
 const GENERATION_TIMEOUT_MS = 15000;
+const MAX_RETRY_ATTEMPTS = 2;
+const RETRY_BASE_DELAY_MS = 600;
 
 const sweetSpreadTerms = [
   "nutella",
@@ -222,6 +224,78 @@ function getRecipeCandidates(raw: unknown): unknown[] {
   return [];
 }
 
+function getErrorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  return String(err);
+}
+
+function isRetryableProviderError(err: unknown): boolean {
+  const maybeError = err as { status?: unknown; statusCode?: unknown; code?: unknown };
+  const numericStatus = Number(maybeError?.status ?? maybeError?.statusCode);
+
+  if (numericStatus === 503 || numericStatus === 429) {
+    return true;
+  }
+
+  const codeText = String(maybeError?.code ?? "").toLowerCase();
+  if (codeText === "unavailable" || codeText === "resource_exhausted") {
+    return true;
+  }
+
+  const message = getErrorMessage(err).toLowerCase();
+  return (
+    message.includes("503") ||
+    message.includes("429") ||
+    message.includes("unavailable") ||
+    message.includes("high demand") ||
+    message.includes("resource_exhausted") ||
+    message.includes("rate limit")
+  );
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function toTitleCase(value: string): string {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
+function buildFallbackDrafts(rawIngredients: string[], count: number): CreateRecipeRequest[] {
+  const normalized = [...new Set(rawIngredients.map((item) => item.trim().toLowerCase()).filter(Boolean))];
+  const safeIngredients = normalized.length ? normalized : ["tomato", "onion"];
+  const limitedCount = Math.max(1, Math.min(count, 3));
+
+  return Array.from({ length: limitedCount }, (_, index) => {
+    const rotated = safeIngredients.map((_, i) => safeIngredients[(i + index) % safeIngredients.length]);
+    const core = rotated.slice(0, Math.min(5, rotated.length));
+    const primary = toTitleCase(core[0] || "Pantry");
+
+    return {
+      name: `${primary} Quick Skillet ${index + 1}`,
+      ingredients: core.map((name) => ({
+        name: toTitleCase(name),
+        amount: 1,
+        unit: Unit.CUP,
+      })),
+      prepTimeMinutes: 20,
+      prepSteps:
+        "1. Prep all ingredients and season lightly with salt and pepper.\n" +
+        "2. Cook ingredients in a pan with oil until tender and aromatic.\n" +
+        "3. Adjust seasoning, serve warm, and customize toppings as desired.",
+      cost: 8,
+      difficulty: Difficulty.EASY,
+      dietaryTags: ["customizable"],
+      allergens: [],
+      servings: 2,
+    };
+  });
+}
+
 function coerceRecipe(rawRecipe: unknown, index: number): CreateRecipeRequest {
   const recipe = (rawRecipe || {}) as Record<string, unknown>;
 
@@ -291,40 +365,54 @@ For each recipe:
 Additional common pantry ingredients needed to complete the recipe should be included in the recipe steps, but do not need to be listed in the ingredients.
 ${exclusionLine}`;
 
-    try {
-      const response = await Promise.race([
-        this.ai.models.generateContent({
-          model: "gemini-3.1-flash-lite-preview",
-          contents: prompt,
-          config: {
-            responseMimeType: "application/json",
-          },
-        }),
-        new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error("LLM generation timed out")), GENERATION_TIMEOUT_MS);
-        }),
-      ]);
+    for (let attempt = 0; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
+      try {
+        const response = await Promise.race([
+          this.ai.models.generateContent({
+            model: "gemini-3.1-flash-lite-preview",
+            contents: prompt,
+            config: {
+              responseMimeType: "application/json",
+            },
+          }),
+          new Promise<never>((_, reject) => {
+            setTimeout(() => reject(new Error("LLM generation timed out")), GENERATION_TIMEOUT_MS);
+          }),
+        ]);
 
-      const text = response.text;
-      if (!text) {
-        throw new InternalError("LLM provider returned empty response");
+        const text = response.text;
+        if (!text) {
+          throw new InternalError("LLM provider returned empty response");
+        }
+
+        const rawJson = extractJsonValue(text);
+        const candidates = getRecipeCandidates(rawJson).slice(0, count);
+        const normalized = candidates.map((recipe, index) => coerceRecipe(recipe, index));
+
+        const parsed = generatedRecipesSchema.safeParse(normalized);
+        if (parsed.error) {
+          throw new InternalError(`LLM provider returned invalid response: ${parsed.error.message}`);
+        }
+
+        return parsed.data;
+      } catch (err) {
+        if (err instanceof Error && err.message === "LLM generation timed out") {
+          return buildFallbackDrafts(ingredients, count);
+        }
+
+        if (isRetryableProviderError(err)) {
+          if (attempt < MAX_RETRY_ATTEMPTS) {
+            await sleep(RETRY_BASE_DELAY_MS * (attempt + 1));
+            continue;
+          }
+
+          return buildFallbackDrafts(ingredients, count);
+        }
+
+        throw new InternalError(`Failed to generate recipes from LLM provider: ${err}`);
       }
-
-      const rawJson = extractJsonValue(text);
-      const candidates = getRecipeCandidates(rawJson).slice(0, count);
-      const normalized = candidates.map((recipe, index) => coerceRecipe(recipe, index));
-
-      const parsed = generatedRecipesSchema.safeParse(normalized);
-      if (parsed.error) {
-        throw new InternalError(`LLM provider returned invalid response: ${parsed.error.message}`);
-      }
-
-      return parsed.data;
-    } catch (err) {
-      if (err instanceof Error && err.message === "LLM generation timed out") {
-        return [];
-      }
-      throw new InternalError(`Failed to generate recipes from LLM provider: ${err}`);
     }
+
+    return [];
   }
 }

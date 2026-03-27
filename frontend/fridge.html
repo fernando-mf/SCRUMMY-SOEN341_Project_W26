@@ -999,16 +999,25 @@
         const payload = await parseApiError(response, "Failed to generate recipes");
 
         const generated = Array.isArray(payload) ? payload : [];
-        currentGeneratedRecipes = generated.filter((recipe) =>
+        const strictlyRelevant = generated.filter((recipe) =>
           isGeneratedRecipeRelevant(recipe, availableIngredients),
         );
+
+        // If strict relevance removes everything, still show generated ideas
+        // so users can choose/edit a reasonable draft instead of seeing no results.
+        const usingFallbackIdeas = strictlyRelevant.length === 0 && generated.length > 0;
+        currentGeneratedRecipes = usingFallbackIdeas ? generated : strictlyRelevant;
 
         if (currentGeneratedRecipes.length === 0) {
           generatedRecipesList.innerHTML = '<p style="color: var(--text-muted);">No coherent recipe ideas with the current ingredients and essentials. Try adding one more core ingredient or adjust essentials.</p>';
           return;
         }
 
-        generatedRecipesList.innerHTML = currentGeneratedRecipes
+        generatedRecipesList.innerHTML = `${
+          usingFallbackIdeas
+            ? '<p style="color: var(--text-muted); margin: 0 0 10px;">Showing broader ideas based on your ingredients and essentials. You can refine after opening a draft.</p>'
+            : ""
+        }` + currentGeneratedRecipes
           .map(
             (recipe, idx) => `
               <div class="recipe-item" data-generated-index="${idx}">

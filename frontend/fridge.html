@@ -574,6 +574,13 @@
     let selectedEssentials = [...DEFAULT_ESSENTIALS];
     let currentGeneratedRecipes = [];
 
+    // Avoid stale runtime when this page is restored from the browser back/forward cache.
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted) {
+        window.location.reload();
+      }
+    });
+
     function getAuthToken() {
       return localStorage.getItem("token");
     }
@@ -723,6 +730,7 @@
         }
 
         const response = await fetch(requestUrl.toString(), {
+          cache: "no-store",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -1015,6 +1023,7 @@
 
         const response = await fetch(`${BASE_URL}/recipes/generate`, {
           method: "POST",
+          cache: "no-store",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

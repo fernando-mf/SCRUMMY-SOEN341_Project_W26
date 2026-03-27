@@ -696,16 +696,18 @@ if (createRecipeForm) {
   let steps = [];
 
   // Populate dietary tags
-  DIET_PREFERENCES.forEach((preference) => {
-    const tag = document.createElement("span");
-    tag.className = "tag";
-    tag.textContent = preference;
-    tag.dataset.value = preference;
-    tag.addEventListener("click", () => {
-      tag.classList.toggle("selected");
+  if (dietaryTagsOptions) {
+    DIET_PREFERENCES.forEach((preference) => {
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = preference;
+      tag.dataset.value = preference;
+      tag.addEventListener("click", () => {
+        tag.classList.toggle("selected");
+      });
+      dietaryTagsOptions.appendChild(tag);
     });
-    dietaryTagsOptions.appendChild(tag);
-  });
+  }
 
   // Add ingredient
   function addIngredient() {
@@ -866,11 +868,11 @@ if (createRecipeForm) {
     }
 
     const name = document.getElementById("recipe-name").value.trim();
-    const prepTimeMinutes = parseInt(document.getElementById("prep-time").value) || 0;
+    const prepTimeMinutes = parseInt(document.getElementById("prep-time")?.value) || 1;
     const cookTimeMinutes = parseInt(document.getElementById("cook-time").value) || 0;
     const servings = parseInt(document.getElementById("servings").value) || 1;
     const difficulty = document.getElementById("difficulty").value;
-    const cost = document.querySelector('input[name="cost"]:checked').value;
+    const cost = document.querySelector('input[name="cost"]:checked')?.value || "budget";
     const dietaryTags = Array.from(
       document.querySelectorAll("#dietary-tags-options .tag.selected"),
     ).map((tag) => tag.dataset.value);
@@ -924,7 +926,7 @@ if (createRecipeForm) {
       setMessage(formMessage, "Recipe created successfully! Redirecting...", "ok");
       setTimeout(() => {
         window.location.href = "recipe.html";
-      }, 2000);
+      }, 500);
     } catch (error) {
       setMessage(formMessage, "Failed to create recipe.", "error");
     }

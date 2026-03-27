@@ -7,7 +7,14 @@
 - 
 
 ## **Tarek Al-Khen** (ID: 40272705), FrontEnd
-- 
+- 22-03-2026 - 1.5 hours - Task.64: fixed recipe creation styling
+- 22-03-2026 - 1.5 hours - Task.65: added recipe search textbox
+- 23-03-2026 - 2 hours - Task.68: implemented "Create Plan" button in dashboard
+- 23-03-2026 - 3 hours - Task.69: built meal plan creation form
+- 24-03-2026 - 1 hours - Task.72: added "Quick Create Recipe" option in meal plan form
+- 24-03-2026 - 1.5 hours - Task.73: simplified recipe creation form for quick creation flow
+- 24-03-2026 - 1 hours - Task.79: added "Meal Planner" button in profile navigation
+- 24-03-2026 - 1 hours - Task.99: added "Quick Recipe Creation" button in recipe page
 
 ## **Gianluca Marino** (ID: 40297326), BackEnd/Database 
 - 19-03-2026 - 1 hour - Task.66: created basic backend implementation for meal plan creation

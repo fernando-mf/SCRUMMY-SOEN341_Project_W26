@@ -19,16 +19,26 @@
       </div>
       <nav class="nav-actions nav-actions-right">
         <a class="btn" href="create-recipe.html">Create Recipe</a>
+        <a class="btn btn-secondary" href="create-recipe.html">Quick Recipe Creation</a>
       </nav>
     </header>
 
     <section class="card card-wide">
       <div class="filters-bar">
-        <button class="btn-filter-toggle" id="filters-toggle" type="button">
-          <span>🔍</span>
-          <span>Filters</span>
-        </button>
-      </div>
+  <input 
+    type="text" 
+    id="search-input" 
+    placeholder="Search recipes..." 
+    class="search-input"
+  />
+  
+  <button id="search-btn" class="btn">Search</button>
+
+  <button class="btn-filter-toggle" id="filters-toggle" type="button">
+    <span>🔍</span>
+    <span>Filters</span>
+  </button>
+</div>
       
       <div class="filters-panel hidden" id="recipe-filters">
         <div class="filters-content">

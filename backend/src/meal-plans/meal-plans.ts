@@ -61,11 +61,20 @@ const updateMealPlanRequestSchema = z.object({
 
 export type UpdateMealPlanRequest = z.infer<typeof updateMealPlanRequestSchema>;
 
+const listMealPlansRequestSchema = PaginationQuerySchema.extend({
+  startDate: z.coerce.date().optional(),
+});
+
+export type ListMealPlansRequest = z.infer<typeof listMealPlansRequestSchema>;
+
+export type ListMealPlansResponse = PaginatedResponse<MealPlan>;
+
 // Interfaces
 export interface IMealPlansService {
   Create(authorId: number, request: CreateMealPlanRequest): Promise<MealPlan>;
   Update(userId: number, mealPlanId: number, request: UpdateMealPlanRequest): Promise<void>;
   Delete(userId: number, mealPlanId: number): Promise<void>;
+  List(userId: number, req: Partial<ListMealPlansRequest>): Promise<ListMealPlansResponse>;
   Get(mealPlanId: number): Promise<MealPlan>;
 }
 
@@ -73,6 +82,7 @@ export interface IMealPlansRepository {
   Create(mealPlan: Omit<MealPlan, "id">): Promise<MealPlan>;
   Update(userId: number, mealPlanId: number, mealPlan: MealPlan): Promise<void>;
   Delete(userId: number, mealPlanId: number): Promise<void>;
+  List(userId: number, req: ListMealPlansRequest): Promise<ListMealPlansResponse>;
   Get(mealPlanId: number): Promise<MealPlan>;
 }
 
@@ -136,6 +146,15 @@ export class MealPlansService implements IMealPlansService {
 
   async Delete(userId: number, mealPlanId: number): Promise<void> {
     await this.repository.Delete(userId, mealPlanId);
+  }
+
+  async List(userId: number, rawQuery: Partial<ListMealPlansRequest>): Promise<ListMealPlansResponse> {
+    const validation = listMealPlansRequestSchema.safeParse(rawQuery);
+    if (validation.error) {
+      throw InvalidParamsError.FromZodError(validation.error);
+    }
+
+    return this.repository.List(userId, validation.data);
   }
 
   async Get(mealPlanId: number): Promise<MealPlan> {

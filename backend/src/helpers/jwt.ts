@@ -6,7 +6,8 @@ export function signToken(payload: object) {
     process.exit(1);
   }
 
-  return jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: "1h" });
+  // Use a longer token lifetime to avoid demo interruptions from mid-session expiry.
+  return jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: "12h" });
 }
 
 export function verifyToken(token: string) {

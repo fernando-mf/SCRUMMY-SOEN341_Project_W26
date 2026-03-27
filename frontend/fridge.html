@@ -598,7 +598,34 @@
         window.location.href = "login.html";
         return null;
       }
+
+      const payload = decodeJwtPayload(token);
+      const expiresAtSeconds = Number(payload?.exp || 0);
+      const nowSeconds = Math.floor(Date.now() / 1000);
+      if (expiresAtSeconds && expiresAtSeconds <= nowSeconds) {
+        localStorage.removeItem("token");
+        alert("Your session expired. Please log in again.");
+        window.location.href = "login.html";
+        return null;
+      }
+
       return token;
+    }
+
+    function handleAuthError(message) {
+      const normalized = String(message || "").toLowerCase();
+      const isAuthFailure =
+        normalized.includes("token expired") ||
+        normalized.includes("invalid token") ||
+        normalized.includes("missing token") ||
+        normalized.includes("unauthorized");
+
+      if (!isAuthFailure) return false;
+
+      localStorage.removeItem("token");
+      alert("Your session expired. Please log in again.");
+      window.location.href = "login.html";
+      return true;
     }
 
     function decodeJwtPayload(token) {
@@ -627,6 +654,9 @@
 
       if (!response.ok) {
         const message = payload?.error || payload?.message || fallbackMessage;
+        if (response.status === 401 && handleAuthError(message)) {
+          throw new Error("Session expired");
+        }
         throw new Error(String(message));
       }
 

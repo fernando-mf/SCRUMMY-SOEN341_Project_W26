@@ -1,5 +1,82 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`RecipesService > Generate > success - generates and returns recipes 1`] = `
+[
+  {
+    "allergens": [
+      "gluten",
+    ],
+    "authorId": 1,
+    "cost": 5,
+    "dietaryTags": [
+      "vegan",
+    ],
+    "difficulty": "easy",
+    "id": 1,
+    "ingredients": [
+      {
+        "amount": 200,
+        "name": "Flour",
+        "unit": "g",
+      },
+    ],
+    "name": "Generated Recipe 1",
+    "prepSteps": "1. Mix ingredients
+2. Cook until done",
+    "prepTimeMinutes": 15,
+    "servings": 2,
+  },
+  {
+    "allergens": [
+      "gluten",
+    ],
+    "authorId": 1,
+    "cost": 5,
+    "dietaryTags": [
+      "vegan",
+    ],
+    "difficulty": "easy",
+    "id": 2,
+    "ingredients": [
+      {
+        "amount": 200,
+        "name": "Flour",
+        "unit": "g",
+      },
+    ],
+    "name": "Generated Recipe 2",
+    "prepSteps": "1. Mix ingredients
+2. Cook until done",
+    "prepTimeMinutes": 15,
+    "servings": 2,
+  },
+  {
+    "allergens": [
+      "gluten",
+    ],
+    "authorId": 1,
+    "cost": 5,
+    "dietaryTags": [
+      "vegan",
+    ],
+    "difficulty": "easy",
+    "id": 3,
+    "ingredients": [
+      {
+        "amount": 200,
+        "name": "Flour",
+        "unit": "g",
+      },
+    ],
+    "name": "Generated Recipe 3",
+    "prepSteps": "1. Mix ingredients
+2. Cook until done",
+    "prepTimeMinutes": 15,
+    "servings": 2,
+  },
+]
+`;
+
 exports[`RecipesService > List > success - with results and default params 1`] = `
 {
   "currentPage": 1,
@@ -16,7 +93,7 @@ exports[`RecipesService > List > success - with results and default params 1`] =
         "vegetarian",
       ],
       "difficulty": "easy",
-      "id": 1,
+      "id": 5,
       "ingredients": [
         {
           "amount": "100.00",
@@ -39,87 +116,7 @@ exports[`RecipesService > List > success - with results and default params 1`] =
           "unit": "tsp",
         },
       ],
-      "name": "Recipe 1",
-      "prepSteps": "Test steps",
-      "prepTimeMinutes": 10,
-      "servings": 4,
-    },
-    {
-      "allergens": [
-        "gluten",
-        "dairy",
-      ],
-      "authorId": 1,
-      "cost": "10.00",
-      "dietaryTags": [
-        "vegan",
-        "vegetarian",
-      ],
-      "difficulty": "easy",
-      "id": 2,
-      "ingredients": [
-        {
-          "amount": "100.00",
-          "name": "Ingredient 1",
-          "unit": "g",
-        },
-        {
-          "amount": "200.00",
-          "name": "Ingredient 2",
-          "unit": "ml",
-        },
-        {
-          "amount": "300.00",
-          "name": "Ingredient 3",
-          "unit": "tbsp",
-        },
-        {
-          "amount": "400.00",
-          "name": "Ingredient 4",
-          "unit": "tsp",
-        },
-      ],
-      "name": "Recipe 2",
-      "prepSteps": "Test steps",
-      "prepTimeMinutes": 10,
-      "servings": 4,
-    },
-    {
-      "allergens": [
-        "gluten",
-        "dairy",
-      ],
-      "authorId": 1,
-      "cost": "10.00",
-      "dietaryTags": [
-        "vegan",
-        "vegetarian",
-      ],
-      "difficulty": "easy",
-      "id": 3,
-      "ingredients": [
-        {
-          "amount": "100.00",
-          "name": "Ingredient 1",
-          "unit": "g",
-        },
-        {
-          "amount": "200.00",
-          "name": "Ingredient 2",
-          "unit": "ml",
-        },
-        {
-          "amount": "300.00",
-          "name": "Ingredient 3",
-          "unit": "tbsp",
-        },
-        {
-          "amount": "400.00",
-          "name": "Ingredient 4",
-          "unit": "tsp",
-        },
-      ],
-      "name": "Recipe 3",
+      "name": "Recipe 5",
       "prepSteps": "Test steps",
       "prepTimeMinutes": 10,
       "servings": 4,
@@ -176,7 +173,7 @@ exports[`RecipesService > List > success - with results and default params 1`] =
         "vegetarian",
       ],
       "difficulty": "easy",
-      "id": 5,
+      "id": 3,
       "ingredients": [
         {
           "amount": "100.00",
@@ -199,7 +196,87 @@ exports[`RecipesService > List > success - with results and default params 1`] =
           "unit": "tsp",
         },
       ],
-      "name": "Recipe 5",
+      "name": "Recipe 3",
+      "prepSteps": "Test steps",
+      "prepTimeMinutes": 10,
+      "servings": 4,
+    },
+    {
+      "allergens": [
+        "gluten",
+        "dairy",
+      ],
+      "authorId": 1,
+      "cost": "10.00",
+      "dietaryTags": [
+        "vegan",
+        "vegetarian",
+      ],
+      "difficulty": "easy",
+      "id": 2,
+      "ingredients": [
+        {
+          "amount": "100.00",
+          "name": "Ingredient 1",
+          "unit": "g",
+        },
+        {
+          "amount": "200.00",
+          "name": "Ingredient 2",
+          "unit": "ml",
+        },
+        {
+          "amount": "300.00",
+          "name": "Ingredient 3",
+          "unit": "tbsp",
+        },
+        {
+          "amount": "400.00",
+          "name": "Ingredient 4",
+          "unit": "tsp",
+        },
+      ],
+      "name": "Recipe 2",
+      "prepSteps": "Test steps",
+      "prepTimeMinutes": 10,
+      "servings": 4,
+    },
+    {
+      "allergens": [
+        "gluten",
+        "dairy",
+      ],
+      "authorId": 1,
+      "cost": "10.00",
+      "dietaryTags": [
+        "vegan",
+        "vegetarian",
+      ],
+      "difficulty": "easy",
+      "id": 1,
+      "ingredients": [
+        {
+          "amount": "100.00",
+          "name": "Ingredient 1",
+          "unit": "g",
+        },
+        {
+          "amount": "200.00",
+          "name": "Ingredient 2",
+          "unit": "ml",
+        },
+        {
+          "amount": "300.00",
+          "name": "Ingredient 3",
+          "unit": "tbsp",
+        },
+        {
+          "amount": "400.00",
+          "name": "Ingredient 4",
+          "unit": "tsp",
+        },
+      ],
+      "name": "Recipe 1",
       "prepSteps": "Test steps",
       "prepTimeMinutes": 10,
       "servings": 4,

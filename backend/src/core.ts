@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { GeminiLLMProvider, IRecipesService, MockLLMProvider, RecipesRepository, RecipesService } from "@api/recipes";
 import { IUsersService, UsersRepository, UsersService } from "@api/users";
 import { IRecipesService, RecipesRepository, RecipesService } from "@api/recipes";
 import { IMealPlansService, MealPlansRepository, MealPlansService } from "@api/meal-plans";
@@ -17,9 +18,12 @@ export function NewCore(): Core {
   const recipesRepository = new RecipesRepository(db);
   const mealPlansRepository = new MealPlansRepository(db);
 
+  const llmProvider =
+    process.env.USE_MOCK_LLM === "true" ? new MockLLMProvider() : new GeminiLLMProvider(process.env.GEMINI_API_KEY!);
+
   return {
     UsersService: new UsersService(usersRepository),
-    RecipesService: new RecipesService(recipesRepository),
+    RecipesService: new RecipesService(recipesRepository, llmProvider),
     MealPlansService: new MealPlansService(mealPlansRepository),
   };
 }

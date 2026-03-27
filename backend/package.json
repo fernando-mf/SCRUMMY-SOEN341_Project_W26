@@ -16,7 +16,7 @@
     "test:unit": "vitest run --config vitest.config.ts",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:integration:docker": "scripts/run-tests.sh",
-    "test:integration:docker:Windows": "scripts\\run-tests.bat"
+    "test:integration:docker:windows": "scripts\\run-tests.bat"
   },
   "dependencies": {
     "@google/genai": "^1.46.0",

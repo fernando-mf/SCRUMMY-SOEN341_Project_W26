@@ -330,9 +330,8 @@ describe("List", () => {
     const client = NewClient();
     const { user } = await BeginUserSession(client);
 
-    const promise = client.MealPlansService.List(user.id, {
-      limit: "invalid" as any,
-      page: "invalid" as any,
+    const promise = client.MealPlansService.GetMealPlanByStartDate(user.id, {
+      startDate: undefined as any,
     });
 
     await expect(promise).rejects.toThrow("invalid_params");
@@ -354,35 +353,36 @@ describe("List", () => {
     await createMealPlanForWeek(client, user.id, "Week B", 15, "2026-04-06");
     await createMealPlanForWeek(otherClient, otherUser.id, "Other User Week", 14, "2026-03-30");
 
-    const res = await client.MealPlansService.List(user.id, {});
+    const res = await client.MealPlansService.GetMealPlanByStartDate(user.id, {
+      startDate: new Date("2026-03-30"),
+    });
 
-    expect(res.totalCount).toBe(2);
-    expect(res.data.length).toBe(2);
-    expect(res.data.map((m) => m.name)).toEqual(["Week A", "Week B"]);
-    expect(res.data.every((m) => m.authorId === user.id)).toBe(true);
+    expect(res.length).toBe(2);
+    expect(res.map((m) => m.name)).toEqual(["Week A", "Week B"]);
+    expect(res.every((m) => m.authorId === user.id)).toBe(true);
   });
 
-  test("success - supports previous and next week filters", async () => {
+  test("success - supports filtering from a week onward", async () => {
     const client = NewClient();
     const { user } = await BeginUserSession(client);
 
     await createMealPlanForWeek(client, user.id, "Week A", 14, "2026-03-30");
     await createMealPlanForWeek(client, user.id, "Week B", 15, "2026-04-06");
 
-    const currentWeek = await client.MealPlansService.List(user.id, {
+    const currentWeek = await client.MealPlansService.GetMealPlanByStartDate(user.id, {
       startDate: new Date("2026-03-30"),
     });
-    expect(currentWeek.totalCount).toBe(1);
-    expect(currentWeek.data[0].name).toBe("Week A");
+    expect(currentWeek.length).toBe(2);
+    expect(currentWeek.map((m) => m.name)).toEqual(["Week A", "Week B"]);
 
-    const nextWeek = await client.MealPlansService.List(user.id, {
+    const nextWeek = await client.MealPlansService.GetMealPlanByStartDate(user.id, {
       startDate: new Date("2026-04-06"),
     });
-    expect(nextWeek.totalCount).toBe(1);
-    expect(nextWeek.data[0].name).toBe("Week B");
+    expect(nextWeek.length).toBe(1);
+    expect(nextWeek[0].name).toBe("Week B");
   });
 
-  test("success - pagination", async () => {
+  test("success - returns all plans on or after start date", async () => {
     const client = NewClient();
     const { user } = await BeginUserSession(client);
 
@@ -390,14 +390,12 @@ describe("List", () => {
     await createMealPlanForWeek(client, user.id, "Beta Plan", 15, "2026-04-06");
     await createMealPlanForWeek(client, user.id, "Gamma Plan", 16, "2026-04-13");
 
-    const firstPage = await client.MealPlansService.List(user.id, { page: 1, limit: 2 });
-    expect(firstPage.totalCount).toBe(3);
-    expect(firstPage.totalPages).toBe(2);
-    expect(firstPage.data.length).toBe(2);
+    const plans = await client.MealPlansService.GetMealPlanByStartDate(user.id, {
+      startDate: new Date("2026-04-06"),
+    });
 
-    const secondPage = await client.MealPlansService.List(user.id, { page: 2, limit: 2 });
-    expect(secondPage.data.length).toBe(1);
-    expect(secondPage.currentPage).toBe(2);
+    expect(plans.length).toBe(2);
+    expect(plans.map((i) => i.name)).toEqual(["Beta Plan", "Gamma Plan"]);
   });
 });
 

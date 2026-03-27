@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { InvalidParamsError } from "@api/helpers/errors";
-import { PaginatedResponse, PaginationQuerySchema } from "@api/helpers/pagination";
 
 export enum MealType {
   BREAKFAST = "breakfast",
@@ -75,20 +74,20 @@ const updateMealPlanRequestSchema = z.object({
 
 export type UpdateMealPlanRequest = z.infer<typeof updateMealPlanRequestSchema>;
 
-const listMealPlansRequestSchema = PaginationQuerySchema.extend({
-  startDate: z.coerce.date().optional(),
+const getMealPlanByStartDateRequestSchema = z.object({
+  startDate: z.coerce.date(),
 });
 
-export type ListMealPlansRequest = z.infer<typeof listMealPlansRequestSchema>;
+export type GetMealPlanByStartDateRequest = z.infer<typeof getMealPlanByStartDateRequestSchema>;
 
-export type ListMealPlansResponse = PaginatedResponse<MealPlan>;
+export type GetMealPlanByStartDateResponse = MealPlan[];
 
 // Interfaces
 export interface IMealPlansService {
   Create(authorId: number, request: CreateMealPlanRequest): Promise<MealPlan>;
   Update(userId: number, mealPlanId: number, request: UpdateMealPlanRequest): Promise<void>;
   Delete(userId: number, mealPlanId: number): Promise<void>;
-  List(userId: number, req: Partial<ListMealPlansRequest>): Promise<ListMealPlansResponse>;
+  GetMealPlanByStartDate(userId: number, req: Partial<GetMealPlanByStartDateRequest>): Promise<GetMealPlanByStartDateResponse>;
   Get(mealPlanId: number): Promise<MealPlan>;
 }
 
@@ -96,7 +95,7 @@ export interface IMealPlansRepository {
   Create(mealPlan: Omit<MealPlan, "id">): Promise<MealPlan>;
   Update(userId: number, mealPlanId: number, mealPlan: MealPlan): Promise<void>;
   Delete(userId: number, mealPlanId: number): Promise<void>;
-  List(userId: number, req: ListMealPlansRequest): Promise<ListMealPlansResponse>;
+  GetMealPlanByStartDate(userId: number, req: GetMealPlanByStartDateRequest): Promise<GetMealPlanByStartDateResponse>;
   Get(mealPlanId: number): Promise<MealPlan>;
 }
 
@@ -162,13 +161,13 @@ export class MealPlansService implements IMealPlansService {
     await this.repository.Delete(userId, mealPlanId);
   }
 
-  async List(userId: number, rawQuery: Partial<ListMealPlansRequest>): Promise<ListMealPlansResponse> {
-    const validation = listMealPlansRequestSchema.safeParse(rawQuery);
+  async GetMealPlanByStartDate(userId: number, rawQuery: Partial<GetMealPlanByStartDateRequest>): Promise<GetMealPlanByStartDateResponse> {
+    const validation = getMealPlanByStartDateRequestSchema.safeParse(rawQuery);
     if (validation.error) {
       throw InvalidParamsError.FromZodError(validation.error);
     }
 
-    return this.repository.List(userId, validation.data);
+    return this.repository.GetMealPlanByStartDate(userId, validation.data);
   }
 
   async Get(mealPlanId: number): Promise<MealPlan> {

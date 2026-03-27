@@ -1,7 +1,12 @@
 import postgres from "postgres";
 import { InternalError, NotFoundError } from "@api/helpers/errors";
-import { GetPaginationParams } from "@api/helpers/pagination";
-import { IMealPlansRepository, ListMealPlansRequest, ListMealPlansResponse, MealPlan, MealPlanEntry } from "./meal-plans";
+import {
+  GetMealPlanByStartDateRequest,
+  GetMealPlanByStartDateResponse,
+  IMealPlansRepository,
+  MealPlan,
+  MealPlanEntry,
+} from "./meal-plans";
 
 export class MealPlansRepository implements IMealPlansRepository {
   constructor(private db: postgres.Sql) {}
@@ -92,11 +97,11 @@ export class MealPlansRepository implements IMealPlansRepository {
     }
   }
 
-  async List(userId: number, req: ListMealPlansRequest): Promise<ListMealPlansResponse> {
+  async GetMealPlanByStartDate(userId: number, req: GetMealPlanByStartDateRequest): Promise<GetMealPlanByStartDateResponse> {
     const whereClause = this.db`
       WHERE true
         AND m."authorId" = ${userId}
-        ${this.applyIfSet(req.startDate, this.db`AND m."startDate" = ${req.startDate!}`)}
+        AND m."startDate" >= ${req.startDate}
     `;
 
     const countResult = await this.db<{ total: number }[]>`
@@ -109,8 +114,6 @@ export class MealPlansRepository implements IMealPlansRepository {
       throw new InternalError("Failed to count meal plans");
     }
 
-    const { offset, totalPages } = GetPaginationParams(total, req);
-
     const rawMealPlans = await this.db<MealPlan[]>`
       SELECT
         m."id",
@@ -122,18 +125,11 @@ export class MealPlansRepository implements IMealPlansRepository {
       FROM meal_plans m
       ${whereClause}
       ORDER BY m."startDate" ASC, m."updatedAt" DESC
-      LIMIT ${req.limit}
-      OFFSET ${offset}
     `;
 
     const mealPlans = await this.fillEntries(rawMealPlans);
 
-    return {
-      currentPage: req.page,
-      totalCount: total,
-      totalPages,
-      data: mealPlans,
-    };
+    return mealPlans;
   }
 
   async Get(mealPlanId: number): Promise<MealPlan> {

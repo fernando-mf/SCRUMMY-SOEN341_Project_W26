@@ -13,8 +13,8 @@ import {
 import {
   HandleCreateMealPlan,
   HandleDeleteMealPlan,
+  HandleGetMealPlanByStartDate,
   HandleGetMealPlan,
-  HandleListMealPlans,
   HandleUpdateMealPlan,
 } from "@api/http/controllers/meal-plans";
 import { HandleGetUser, HandleUpdateUser } from "@api/http/controllers/users";
@@ -56,7 +56,7 @@ export function Routes(core: Core) {
 
   // Meal Plan routes
   router.post("/meal-plans", HandleCreateMealPlan(core.MealPlansService));
-  router.get("/meal-plans", HandleListMealPlans(core.MealPlansService));
+  router.get("/meal-plans", HandleGetMealPlanByStartDate(core.MealPlansService));
   router.put("/meal-plans/:id", HandleUpdateMealPlan(core.MealPlansService));
   router.delete("/meal-plans/:id", HandleDeleteMealPlan(core.MealPlansService));
   router.get("/meal-plans/:id", HandleGetMealPlan(core.MealPlansService));

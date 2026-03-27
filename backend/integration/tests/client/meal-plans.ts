@@ -1,4 +1,11 @@
-import { CreateMealPlanRequest, IMealPlansService, ListMealPlansRequest, ListMealPlansResponse, MealPlan, UpdateMealPlanRequest } from "@api/meal-plans";
+import {
+  CreateMealPlanRequest,
+  GetMealPlanByStartDateRequest,
+  GetMealPlanByStartDateResponse,
+  IMealPlansService,
+  MealPlan,
+  UpdateMealPlanRequest,
+} from "@api/meal-plans";
 import { ApiClient } from "./internal";
 
 export class MealPlansHttpClient implements IMealPlansService {
@@ -27,16 +34,11 @@ export class MealPlansHttpClient implements IMealPlansService {
     });
   }
 
-  List(userId: number, req: Partial<ListMealPlansRequest>): Promise<ListMealPlansResponse> {
+  GetMealPlanByStartDate(userId: number, req: Partial<GetMealPlanByStartDateRequest>): Promise<GetMealPlanByStartDateResponse> {
     const params = new URLSearchParams();
 
-    for (const [key, value] of Object.entries(req)) {
-      if (value === undefined || value === null) {
-        continue;
-      }
-
-      const serialized = value instanceof Date ? value.toISOString() : value.toString();
-      params.append(key, serialized);
+    if (req.startDate !== undefined && req.startDate !== null) {
+      params.set("startDate", req.startDate.toISOString());
     }
 
     return this.client.Request({

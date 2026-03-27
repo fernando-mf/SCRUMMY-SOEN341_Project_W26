@@ -22,17 +22,27 @@ describe("MealPlansService", () => {
 
       expect(recipes.length).toBe(3);
 
-      const days = [DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY];
-
       const mealPlan = await client.MealPlansService.Create(user.id, {
         name: "My Healthy Week",
         weekNumber: 14,
         startDate: new Date("2026-03-30"),
-        entries: recipes.slice(0, 3).map((recipe, i) => ({
-          recipeId: recipe.id,
-          dayOfWeek: days[i],
-          mealType: MealType.LUNCH,
-        })),
+        entries: [
+          {
+            recipeId: recipes[0].id,
+            dayOfWeek: DayOfWeek.MONDAY,
+            mealType: MealType.LUNCH,
+          },
+          {
+            recipeId: recipes[1].id,
+            dayOfWeek: DayOfWeek.TUESDAY,
+            mealType: MealType.LUNCH,
+          },
+          {
+            recipeId: recipes[2].id,
+            dayOfWeek: DayOfWeek.WEDNESDAY,
+            mealType: MealType.LUNCH,
+          },
+        ],
       });
 
       expect(mealPlan.id).toBeDefined();
@@ -117,6 +127,56 @@ describe("MealPlansService", () => {
 
       await expect(promise).rejects.toThrow("invalid_params");
     });
+
+    test("fails with duplicate dayOfWeek and mealType", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const promise = client.MealPlansService.Create(user.id, {
+        name: "Duplicate Meal Entries",
+        weekNumber: 1,
+        startDate: new Date("2026-03-30"),
+        entries: [
+          {
+            recipeId: 1,
+            dayOfWeek: DayOfWeek.MONDAY,
+            mealType: MealType.LUNCH,
+          },
+          {
+            recipeId: 2,
+            dayOfWeek: DayOfWeek.MONDAY,
+            mealType: MealType.LUNCH,
+          },
+        ],
+      });
+
+      await expect(promise).rejects.toThrow("invalid_params");
+    });
+
+    test("fails with same recipe inserted multiple times", async () => {
+      const client = NewClient();
+      const { user } = await BeginUserSession(client);
+
+      const promise = client.MealPlansService.Create(user.id, {
+        name: "Duplicate Recipe Plan",
+        weekNumber: 1,
+        startDate: new Date("2026-03-30"),
+        entries: [
+          {
+            recipeId: 1,
+            dayOfWeek: DayOfWeek.MONDAY,
+            mealType: MealType.LUNCH,
+          },
+          {
+            recipeId: 1,
+            dayOfWeek: DayOfWeek.TUESDAY,
+            mealType: MealType.DINNER,
+          },
+        ],
+      });
+
+      await expect(promise).rejects.toThrow();
+    });
   });
 
   describe("Update", () => {
@@ -138,22 +198,26 @@ describe("MealPlansService", () => {
         name: "My Healthy Week",
         weekNumber: 14,
         startDate: new Date("2026-03-30"),
-        entries: recipes.slice(0, 3).map((recipe, i) => ({
-          recipeId: recipe.id,
-          dayOfWeek: DayOfWeek.TUESDAY,
-          mealType: MealType.LUNCH,
-        })),
+        entries: [
+          {
+            recipeId: recipes[0].id,
+            dayOfWeek: DayOfWeek.TUESDAY,
+            mealType: MealType.LUNCH,
+          },
+        ],
       });
 
       await client.MealPlansService.Update(user.id, mealPlan.id, {
         name: "Updated Healthy Week",
         weekNumber: 15,
         startDate: new Date("2026-04-06"),
-        entries: recipes.slice(0, 3).map((recipe, i) => ({
-          recipeId: recipe.id,
-          dayOfWeek: DayOfWeek.WEDNESDAY,
-          mealType: MealType.DINNER,
-        })),
+        entries: [
+          {
+            recipeId: recipes[0].id,
+            dayOfWeek: DayOfWeek.WEDNESDAY,
+            mealType: MealType.DINNER,
+          },
+        ],
       });
 
       const updatedMealPlan = await client.MealPlansService.Get(mealPlan.id);
@@ -195,22 +259,26 @@ describe("MealPlansService", () => {
         name: "Valid Plan",
         weekNumber: 14,
         startDate: new Date("2026-03-30"),
-        entries: recipes.slice(0, 3).map((recipe, i) => ({
-          recipeId: recipe.id,
-          dayOfWeek: DayOfWeek.TUESDAY,
-          mealType: MealType.LUNCH,
-        })),
+        entries: [
+          {
+            recipeId: recipes[0].id,
+            dayOfWeek: DayOfWeek.TUESDAY,
+            mealType: MealType.LUNCH,
+          },
+        ],
       });
 
       const promise = client.MealPlansService.Update(user.id, mealPlan.id, {
         name: "Invalid Plan",
         weekNumber: 15,
         startDate: new Date("2026-04-04"),
-        entries: recipes.slice(0, 3).map((recipe, i) => ({
-          recipeId: recipe.id,
-          dayOfWeek: DayOfWeek.WEDNESDAY,
-          mealType: MealType.DINNER,
-        })),
+        entries: [
+          {
+            recipeId: recipes[0].id,
+            dayOfWeek: DayOfWeek.WEDNESDAY,
+            mealType: MealType.DINNER,
+          },
+        ],
       });
 
       await expect(promise).rejects.toThrow();
@@ -237,11 +305,13 @@ describe("Delete", () => {
       name: "My Healthy Week",
       weekNumber: 14,
       startDate: new Date("2026-03-30"),
-      entries: recipes.slice(0, 3).map((recipe, i) => ({
-          recipeId: recipe.id,
+      entries: [
+        {
+          recipeId: recipes[0].id,
           dayOfWeek: DayOfWeek.TUESDAY,
           mealType: MealType.LUNCH,
-        })),
+        },
+      ],
     });
 
     await client.MealPlansService.Delete(user.id, mealPlan.id);

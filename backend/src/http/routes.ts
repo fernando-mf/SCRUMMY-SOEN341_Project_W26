@@ -10,6 +10,7 @@ import {
   HandleListRecipes,
   HandleUpdateRecipe,
 } from "@api/http/controllers/recipes";
+import { HandleCreateMealPlan } from "@api/http/controllers/meal-plans";
 import { HandleGetUser, HandleUpdateUser } from "@api/http/controllers/users";
 import spec from "@api/http/docs/swagger.json"; //  this is generated automatically after running `npm run dev` or `npm run build`
 import { RequireAuth } from "@api/http/middleware";
@@ -46,6 +47,9 @@ export function Routes(core: Core) {
   router.get("/recipes/:id", HandleGetRecipe(core.RecipesService));
   router.get("/recipes", HandleListRecipes(core.RecipesService));
   router.post("/recipes/generate", HandleGenerateRecipe(core.RecipesService));
+
+  // Meal Plan routes
+  router.post("/meal-plans", HandleCreateMealPlan(core.MealPlansService));
 
   return router;
 }

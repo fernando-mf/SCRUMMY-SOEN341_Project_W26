@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "vitest";
 import { Difficulty, ListRecipesRequest, Recipe, Unit } from "@api/recipes";
 import { Client, NewClient } from "./client";
-import { BeginUserSession, PurgeDatabase } from "./helpers";
+import { BeginUserSession, insertTestRecipes, PurgeDatabase } from "./helpers";
 
 describe("RecipesService", () => {
   describe("Create", () => {
@@ -574,32 +574,3 @@ describe("RecipesService", () => {
     });
   });
 });
-
-async function insertTestRecipes(client: Client, userId: number, count: number, modifier?: Partial<Recipe>) {
-  let recipe = {
-    authorId: userId,
-    name: `Recipe`,
-    ingredients: [
-      { amount: 100, name: "Ingredient 1", unit: Unit.G },
-      { amount: 200, name: "Ingredient 2", unit: Unit.ML },
-      { amount: 300, name: "Ingredient 3", unit: Unit.TBSP },
-      { amount: 400, name: "Ingredient 4", unit: Unit.TSP },
-    ],
-    prepTimeMinutes: 10,
-    prepSteps: "Test steps",
-    cost: 10,
-    difficulty: Difficulty.EASY,
-    dietaryTags: ["vegan", "vegetarian"],
-    allergens: ["gluten", "dairy"],
-    servings: 4,
-
-    ...modifier,
-  };
-
-  const name = recipe.name;
-
-  for (let i = 0; i < count; i++) {
-    recipe.name = `${name} ${i + 1}`;
-    await client.RecipesService.Create(userId, recipe);
-  }
-}

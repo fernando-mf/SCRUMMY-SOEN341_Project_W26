@@ -1,9 +1,8 @@
 import postgres from "postgres";
-import { ConflictError, InternalError, NotFoundError } from "@api/helpers/errors";
+import { ConflictError, NotFoundError } from "@api/helpers/errors";
 import { PostgresErrorCode } from "@api/helpers/postgres";
 import {
   GetMealPlanByStartDateRequest,
-  GetMealPlanByStartDateResponse,
   IMealPlansRepository,
   MealPlan,
   MealPlanEntry,
@@ -114,24 +113,8 @@ export class MealPlansRepository implements IMealPlansRepository {
     }
   }
 
-  async GetMealPlanByStartDate(userId: number, req: GetMealPlanByStartDateRequest): Promise<GetMealPlanByStartDateResponse> {
-    const whereClause = this.db`
-      WHERE true
-        AND m."authorId" = ${userId}
-        AND m."startDate" >= ${req.startDate}
-    `;
-
-    const countResult = await this.db<{ total: number }[]>`
-      SELECT COUNT(*) AS total
-      FROM meal_plans m
-      ${whereClause}
-    `;
-    const total = Number(countResult[0].total);
-    if (isNaN(total)) {
-      throw new InternalError("Failed to count meal plans");
-    }
-
-    const rawMealPlans = await this.db<MealPlan[]>`
+  async GetMealPlanByStartDate(userId: number, req: GetMealPlanByStartDateRequest): Promise<MealPlan> {
+    const rawMealPlan = await this.db<MealPlan[]>`
       SELECT
         m."id",
         m."authorId",
@@ -140,13 +123,17 @@ export class MealPlansRepository implements IMealPlansRepository {
         m."startDate",
         m."endDate"
       FROM meal_plans m
-      ${whereClause}
-      ORDER BY m."startDate" ASC, m."updatedAt" DESC
+      WHERE m."authorId" = ${userId}
+        AND m."startDate" = ${req.startDate}
     `;
 
-    const mealPlans = await this.fillEntries(rawMealPlans);
+    if (rawMealPlan.length === 0) {
+      throw new NotFoundError("meal_plan");
+    }
 
-    return mealPlans;
+    const [mealPlan] = await this.fillEntries(rawMealPlan);
+
+    return mealPlan;
   }
 
   async Get(mealPlanId: number): Promise<MealPlan> {
@@ -225,13 +212,5 @@ export class MealPlansRepository implements IMealPlansRepository {
     }));
   }
 
-  private applyIfSet<T>(val: T[] | T, fragment: any) {
-    let isValid = Boolean(val);
-    if (Array.isArray(val)) {
-      isValid = val.length > 0;
-    }
-
-    return isValid ? fragment : this.db``;
-  }
 }
 

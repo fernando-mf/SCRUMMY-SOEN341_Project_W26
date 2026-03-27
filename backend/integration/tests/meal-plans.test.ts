@@ -417,7 +417,7 @@ describe("Delete", () => {
   });
 });
 
-describe("List", () => {
+describe("GetMealPlanByStartDate", () => {
   beforeEach(async () => {
     await PurgeDatabase();
   });
@@ -433,7 +433,7 @@ describe("List", () => {
     await expect(promise).rejects.toThrow("invalid_params");
   });
 
-  test("success - returns only authenticated user meal plans", async () => {
+  test("success - returns only authenticated user meal plan for a given date", async () => {
     const client = NewClient();
     const { user } = await BeginUserSession(client);
 
@@ -453,12 +453,11 @@ describe("List", () => {
       startDate: new Date("2026-03-30"),
     });
 
-    expect(res.length).toBe(2);
-    expect(res.map((m) => m.name)).toEqual(["Week A", "Week B"]);
-    expect(res.every((m) => m.authorId === user.id)).toBe(true);
+    expect(res.name).toBe("Week A");
+    expect(res.authorId).toBe(user.id);
   });
 
-  test("success - supports filtering from a week onward", async () => {
+  test("success - returns the matching week", async () => {
     const client = NewClient();
     const { user } = await BeginUserSession(client);
 
@@ -468,30 +467,25 @@ describe("List", () => {
     const currentWeek = await client.MealPlansService.GetMealPlanByStartDate(user.id, {
       startDate: new Date("2026-03-30"),
     });
-    expect(currentWeek.length).toBe(2);
-    expect(currentWeek.map((m) => m.name)).toEqual(["Week A", "Week B"]);
+    expect(currentWeek.name).toBe("Week A");
 
     const nextWeek = await client.MealPlansService.GetMealPlanByStartDate(user.id, {
       startDate: new Date("2026-04-06"),
     });
-    expect(nextWeek.length).toBe(1);
-    expect(nextWeek[0].name).toBe("Week B");
+    expect(nextWeek.name).toBe("Week B");
   });
 
-  test("success - returns all plans on or after start date", async () => {
+  test("fails when there is no meal plan for the given startDate", async () => {
     const client = NewClient();
     const { user } = await BeginUserSession(client);
 
     await createMealPlanForWeek(client, user.id, "Alpha Plan", 14, "2026-03-30");
-    await createMealPlanForWeek(client, user.id, "Beta Plan", 15, "2026-04-06");
-    await createMealPlanForWeek(client, user.id, "Gamma Plan", 16, "2026-04-13");
 
-    const plans = await client.MealPlansService.GetMealPlanByStartDate(user.id, {
+    const promise = client.MealPlansService.GetMealPlanByStartDate(user.id, {
       startDate: new Date("2026-04-06"),
     });
 
-    expect(plans.length).toBe(2);
-    expect(plans.map((i) => i.name)).toEqual(["Beta Plan", "Gamma Plan"]);
+    await expect(promise).rejects.toThrow("not_found");
   });
 });
 

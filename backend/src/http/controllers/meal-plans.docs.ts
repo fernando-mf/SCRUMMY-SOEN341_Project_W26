@@ -16,7 +16,6 @@ import { HttpStatus } from "@api/helpers/http";
 import {
   CreateMealPlanRequest,
   GetMealPlanByStartDateRequest,
-  GetMealPlanByStartDateResponse,
   MealPlan,
   UpdateMealPlanRequest,
 } from "@api/meal-plans";
@@ -52,7 +51,7 @@ class MealPlanDocs extends Controller {
   @Security("jwt")
   @SuccessResponse(HttpStatus.Ok, "Meal Plans List")
   @Response(HttpStatus.BadRequest, "Meal Plans query Invalid")
-  async getMealPlanByStartDate(@Queries() query: GetMealPlanByStartDateRequest): Promise<GetMealPlanByStartDateResponse> {
+  async getMealPlanByStartDate(@Queries() query: GetMealPlanByStartDateRequest): Promise<MealPlan> {
     return null as any;
   }
 

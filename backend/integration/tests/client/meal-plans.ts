@@ -1,7 +1,6 @@
 import {
   CreateMealPlanRequest,
   GetMealPlanByStartDateRequest,
-  GetMealPlanByStartDateResponse,
   IMealPlansService,
   MealPlan,
   UpdateMealPlanRequest,
@@ -34,7 +33,7 @@ export class MealPlansHttpClient implements IMealPlansService {
     });
   }
 
-  GetMealPlanByStartDate(userId: number, req: Partial<GetMealPlanByStartDateRequest>): Promise<GetMealPlanByStartDateResponse> {
+  GetMealPlanByStartDate(userId: number, req: Partial<GetMealPlanByStartDateRequest>): Promise<MealPlan> {
     const params = new URLSearchParams();
 
     if (req.startDate !== undefined && req.startDate !== null) {

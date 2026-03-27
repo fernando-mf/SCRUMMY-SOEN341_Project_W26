@@ -14,4 +14,4 @@ Our setup is supported by docker compose.
 While docker engine is running:
 
 - Run (Unix) `npm run test:integration:docker`
-- Run (Windows) `npm run test:integration:docker:Windows`
+- Run (Windows) `npm run test:integration:docker:windows`

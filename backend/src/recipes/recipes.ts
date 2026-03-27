@@ -2,6 +2,8 @@ import { z } from "zod";
 import { InvalidParamsError } from "@api/helpers/errors";
 import { PaginatedResponse, PaginationQuerySchema } from "@api/helpers/pagination";
 
+const GENERATED_RECIPES_COUNT = 3;
+
 export enum Unit {
   G = "g",
   ML = "ml",
@@ -45,7 +47,7 @@ const ingredientSchema = z.object({
   unit: z.enum(Object.values(Unit) as [string, ...string[]]),
 });
 
-const createRecipeRequestSchema = z.object({
+export const createRecipeRequestSchema = z.object({
   name: z.string().min(1),
   ingredients: z.array(ingredientSchema).min(1),
   prepTimeMinutes: z.number().int().positive(),
@@ -88,8 +90,7 @@ export type ListRecipesRequest = z.infer<typeof listRecipesRequestSchema>;
 export type ListRecipesResponse = PaginatedResponse<Recipe>;
 
 const generateRecipeRequestSchema = z.object({
-  ingredients: z.array(z.string()).default([]),
-  count: z.number().int().min(1).max(10).default(1),
+  ingredients: z.array(z.string()).min(1),
 });
 
 export type GenerateRecipeRequest = z.infer<typeof generateRecipeRequestSchema>;
@@ -112,8 +113,15 @@ export interface IRecipesRepository {
   Get(recipeId: number): Promise<Recipe>;
 }
 
+export interface ILLMProvider {
+  GenerateRecipes(ingredients: string[], count: number, exclusions: string[]): Promise<CreateRecipeRequest[]>;
+}
+
 export class RecipesService implements IRecipesService {
-  constructor(private repository: IRecipesRepository) {}
+  constructor(
+    private repository: IRecipesRepository,
+    private llmProvider: ILLMProvider,
+  ) {}
 
   async Create(authorId: number, request: CreateRecipeRequest): Promise<Recipe> {
     const validation = createRecipeRequestSchema.safeParse(request);
@@ -180,6 +188,34 @@ export class RecipesService implements IRecipesService {
   }
 
   async Generate(userId: number, request: GenerateRecipeRequest): Promise<Recipe[]> {
-    throw new Error("Method not implemented.");
+    const validation = generateRecipeRequestSchema.safeParse(request);
+    if (validation.error) {
+      throw InvalidParamsError.FromZodError(validation.error);
+    }
+
+    // to avoid generating duplicate recipes, we fetch the user's existing recipes
+    // and pass their names as exclusions to the LLM provider, only load the 20 most recent recipes.
+    const existing = await this.repository.List({
+      authors: [userId],
+      ingredients: validation.data.ingredients,
+      dietaryTags: [],
+      page: 1,
+      limit: 20,
+    });
+    const exclusions = existing.data.map((r) => r.name);
+
+    const generatedRecipes = await this.llmProvider.GenerateRecipes(
+      validation.data.ingredients,
+      GENERATED_RECIPES_COUNT,
+      exclusions,
+    );
+
+    const createdRecipes: Recipe[] = [];
+    for (const recipeData of generatedRecipes) {
+      const recipe = await this.Create(userId, recipeData);
+      createdRecipes.push(recipe);
+    }
+
+    return createdRecipes;
   }
 }

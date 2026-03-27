@@ -89,7 +89,7 @@ describe("RecipesService", () => {
       const result = await service.Generate(testUserId, { ingredients: ["chicken"] });
 
       expect(result).toHaveLength(3);
-      expect(repository.Create).toHaveBeenCalledTimes(3);
+  expect(repository.Create).not.toHaveBeenCalled();
       expect(llmProvider.GenerateRecipes).toHaveBeenCalledWith(["chicken"], 3, []);
       expect(result).length(3);
       expect(result[0].name).toBe("Recipe 1");

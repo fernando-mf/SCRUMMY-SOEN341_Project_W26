@@ -267,6 +267,8 @@ const recipesPage = document.getElementById("recipes-page");
 if (recipesPage) {
   const recipesMessage = document.getElementById("recipes-message");
   const recipesList = document.getElementById("recipes-list");
+  const searchInput = document.getElementById("search-input");
+  const searchBtn = document.getElementById("search-btn");
   const filtersPanel = document.getElementById("recipe-filters");
   const filtersToggle = document.getElementById("filters-toggle");
   const filterMaxTime = document.getElementById("filter-max-time");
@@ -529,6 +531,7 @@ if (recipesPage) {
 
     function applyFilters() {
       let filtered = [...allRecipes];
+      const searchValue = searchInput ? searchInput.value.trim().toLowerCase() : "";
 
       const maxTimeValue = filterMaxTime && filterMaxTime.value !== ""
         ? Number(filterMaxTime.value)
@@ -566,7 +569,15 @@ if (recipesPage) {
         });
       }
 
+      if (searchValue) {
+        filtered = filtered.filter((recipe) => {
+          const name = String(recipe.name || "").toLowerCase();
+          return name.includes(searchValue);
+        });
+      }
+
       const filtersActive =
+        searchValue !== "" ||
         (filterMaxTime && filterMaxTime.value !== "") ||
         (filterMaxCost && filterMaxCost.value !== "") ||
         (filterDifficulty && filterDifficulty.value !== "") ||
@@ -587,6 +598,19 @@ if (recipesPage) {
 
     if (filterApplyBtn) {
       filterApplyBtn.addEventListener("click", applyFilters);
+    }
+
+    if (searchBtn) {
+      searchBtn.addEventListener("click", applyFilters);
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          applyFilters();
+        }
+      });
     }
 
     function resetFilters() {
@@ -694,6 +718,121 @@ if (createRecipeForm) {
 
   let ingredients = [];
   let steps = [];
+
+  function normalizeTagKey(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  function applyPrefilledDietaryTags(rawTags) {
+    if (!dietaryTagsOptions) return;
+
+    const tags = Array.isArray(rawTags)
+      ? rawTags.map((tag) => String(tag).trim()).filter(Boolean)
+      : [];
+
+    const selectedKeys = new Set(tags.map(normalizeTagKey));
+    if (!selectedKeys.size) return;
+
+    const existingTagMap = new Map();
+    dietaryTagsOptions.querySelectorAll(".tag").forEach((tagEl) => {
+      const tagValue = tagEl.dataset.value || tagEl.textContent || "";
+      existingTagMap.set(normalizeTagKey(tagValue), tagEl);
+      tagEl.classList.remove("selected");
+    });
+
+    for (const originalTag of tags) {
+      const key = normalizeTagKey(originalTag);
+      const existingTag = existingTagMap.get(key);
+
+      if (existingTag) {
+        existingTag.classList.add("selected");
+        continue;
+      }
+
+      const customTag = document.createElement("span");
+      customTag.className = "tag selected";
+      customTag.textContent = originalTag;
+      customTag.dataset.value = originalTag;
+      customTag.addEventListener("click", () => {
+        customTag.classList.toggle("selected");
+      });
+      dietaryTagsOptions.appendChild(customTag);
+      existingTagMap.set(key, customTag);
+    }
+  }
+
+  function hydratePrefilledRecipe() {
+    const url = new URL(window.location.href);
+    const mode = url.searchParams.get("mode");
+    if (mode !== "prefilled") {
+      return;
+    }
+
+    const rawRecipe = sessionStorage.getItem("prefilledRecipe");
+    if (!rawRecipe) {
+      return;
+    }
+
+    try {
+      const prefilled = JSON.parse(rawRecipe);
+
+      const nameInput = document.getElementById("recipe-name");
+      const prepTimeInput = document.getElementById("prep-time");
+      const servingsInput = document.getElementById("servings");
+      const difficultyInput = document.getElementById("difficulty");
+
+      if (nameInput) {
+        nameInput.value = String(prefilled?.name || "").trim();
+      }
+
+      if (prepTimeInput) {
+        const prepValue = Number(prefilled?.prepTimeMinutes) || 1;
+        prepTimeInput.value = String(Math.max(1, prepValue));
+      }
+
+      if (servingsInput) {
+        const servingsValue = Number(prefilled?.servings) || 1;
+        servingsInput.value = String(Math.max(1, servingsValue));
+      }
+
+      if (difficultyInput) {
+        const allowedDifficulty = ["easy", "medium", "hard"];
+        const nextDifficulty = String(prefilled?.difficulty || "").toLowerCase();
+        if (allowedDifficulty.includes(nextDifficulty)) {
+          difficultyInput.value = nextDifficulty;
+        }
+      }
+
+      applyPrefilledDietaryTags(prefilled?.dietaryTags);
+
+      ingredients = Array.isArray(prefilled?.ingredients)
+        ? prefilled.ingredients
+            .map((item) => ({
+              name: String(item?.name || "").trim(),
+              amount: Number(item?.amount) > 0 ? Number(item.amount) : 1,
+              unit: String(item?.unit || "g").trim() || "g",
+            }))
+            .filter((item) => item.name.length > 0)
+        : [];
+
+      const prepStepsText = String(prefilled?.prepSteps || "").trim();
+      if (prepStepsText) {
+        steps = prepStepsText
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean);
+      } else {
+        steps = [];
+      }
+
+      renderIngredients();
+      renderSteps();
+      setMessage(formMessage, "Loaded AI-generated draft. Review and save.", "ok");
+      sessionStorage.removeItem("prefilledRecipe");
+    } catch {
+      setMessage(formMessage, "Could not load generated draft recipe.", "error");
+    }
+  }
 
   // Populate dietary tags
   if (dietaryTagsOptions) {
@@ -856,6 +995,8 @@ if (createRecipeForm) {
     e.preventDefault();
     addStep();
   });
+
+  hydratePrefilledRecipe();
 
   createRecipeForm.addEventListener("submit", async (e) => {
     e.preventDefault();

@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>MealMajor - Fridge Ingredients</title>
+  <link rel="stylesheet" href="styles.css?v=13" />
+  <style>
+    .fridge-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .fridge-section {
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 24px rgba(53, 26, 19, 0.08);
+      margin-bottom: 24px;
+    }
+
+    .fridge-section h3 {
+      margin-top: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 16px;
+    }
+
+    .ingredient-input-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .ingredient-input-group input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #d7c9c6;
+      background: #fff;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .ingredient-input-group input:focus {
+      outline: 2px solid rgba(216, 107, 92, 0.25);
+      border-color: var(--accent);
+    }
+
+    .ingredient-input-group button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .ingredient-input-group button:hover {
+      background: var(--accent-dark);
+    }
+
+    .ingredient-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .ingredient-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--chip-bg);
+      border: 1px solid #e6d7d4;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .ingredient-tag button {
+      background: none;
+      border: none;
+      color: #c62828;
+      cursor: pointer;
+      font-weight: 600;
+      padding: 0;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .ingredient-tag button:hover {
+      color: #7a1a1a;
+    }
+
+    .essentials-container {
+      margin: 18px 0 22px;
+      padding: 14px;
+      border: 1px solid #e6d7d4;
+      border-radius: 12px;
+      background: #fff9f7;
+    }
+
+    .essentials-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .essentials-label {
+      margin: 0;
+      font-weight: 600;
+      color: var(--text-main);
+      font-size: 14px;
+    }
+
+    .essentials-select {
+      min-width: 220px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #d7c9c6;
+      background: #fff;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 13px;
+    }
+
+    .essentials-select:focus {
+      outline: 2px solid rgba(216, 107, 92, 0.25);
+      border-color: var(--accent);
+    }
+
+    .essentials-details {
+      border: 1px solid #e6d7d4;
+      border-radius: 10px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .essentials-details summary {
+      cursor: pointer;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      background: #fff5f2;
+      user-select: none;
+    }
+
+    .essentials-grid {
+      padding: 10px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 8px;
+    }
+
+    .essential-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-main);
+      border: 1px solid #f0e3df;
+      background: #fff;
+    }
+
+    .essential-item input {
+      margin: 0;
+      width: auto;
+    }
+
+    .essentials-hint {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .slider-container {
+      margin: 20px 0;
+    }
+
+    .slider-container label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .slider-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slider-wrapper input[type="range"] {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background: #d7c9c6;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .slider-wrapper input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    .slider-wrapper input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+    }
+
+    .slider-value {
+      min-width: 50px;
+      text-align: center;
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 16px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .action-buttons button,
+    .action-buttons a {
+      flex: 1 1 220px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: var(--text-main);
+      border: 1px solid #d7c9c6;
+    }
+
+    .btn-secondary:hover {
+      background: #e8e8e8;
+    }
+
+    .btn-ghost {
+      background: #fff;
+      color: var(--text-muted);
+      border: 1px dashed #c9b7b2;
+    }
+
+    .btn-ghost:hover {
+      background: #fff7f4;
+      color: var(--text-main);
+    }
+
+    .results-container {
+      display: none;
+    }
+
+    .results-container.active {
+      display: block;
+    }
+
+    .recipe-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .recipe-item {
+      background: #fff5f2;
+      border: 1px solid #e6d7d4;
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .recipe-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(53, 26, 19, 0.1);
+    }
+
+    .recipe-item h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      color: var(--text-main);
+    }
+
+    .recipe-item p {
+      margin: 4px 0;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid #d7c9c6;
+      border-radius: 50%;
+      border-top-color: var(--accent);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state p {
+      font-size: 14px;
+      margin: 8px 0;
+    }
+
+    .match-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .generated-badge {
+      display: inline-block;
+      background: #a8d5ff;
+      color: #0d47a1;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .regenerate-btn {
+      background: rgba(216, 107, 92, 0.1);
+      color: var(--accent);
+      border: 2px solid var(--accent);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      transition: all 0.2s ease;
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    .regenerate-btn:hover {
+      background: var(--accent);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div class="page-title">
+        <h1 class="brand">MealMajor</h1>
+        <h2 class="title">Fridge Ingredients</h2>
+      </div>
+      <nav class="nav-actions">
+        <a class="btn btn-secondary" href="recipe.html">Back</a>
+      </nav>
+    </header>
+
+    <div class="fridge-container">
+      <!-- Fridge Input Section -->
+      <section class="fridge-section">
+        <h3>What's in Your Fridge?</h3>
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">
+          Add ingredients you have available, and we'll find matching recipes or generate ideas for you.
+        </p>
+
+        <div class="ingredient-input-group">
+          <input
+            type="text"
+            id="ingredient-input"
+            placeholder="e.g., tomato, garlic, chicken"
+            autocomplete="off"
+          />
+          <button type="button" id="add-ingredient-btn">Add</button>
+        </div>
+
+        <div id="ingredient-tags-list" class="ingredient-tags"></div>
+
+        <div class="essentials-container">
+          <div class="essentials-header">
+            <p class="essentials-label">Kitchen Essentials for AI generation</p>
+            <select id="essential-preset" class="essentials-select">
+              <option value="default">Use default essentials</option>
+              <option value="all">Assume all essentials</option>
+              <option value="none">No essentials</option>
+              <option value="custom">Custom selection</option>
+            </select>
+          </div>
+
+          <details id="essentials-dropdown" class="essentials-details">
+            <summary>Choose which essentials are available</summary>
+            <div id="essentials-list" class="essentials-grid"></div>
+          </details>
+          <p class="essentials-hint">
+            Uncheck anything missing from your kitchen. These essentials are used for AI-generated ideas.
+          </p>
+        </div>
+
+        <!-- Match Threshold Slider -->
+        <div class="slider-container">
+          <label for="match-threshold">Recipe Match Threshold</label>
+          <div class="slider-wrapper">
+            <input
+              type="range"
+              id="match-threshold"
+              min="50"
+              max="100"
+              value="80"
+              step="5"
+            />
+            <span class="slider-value">80%</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button type="button" class="btn-primary" id="find-recipes-btn">Find Matching Recipes</button>
+          <button type="button" class="btn-secondary" id="generate-recipes-btn">Generate Recipe Ideas</button>
+          <button type="button" class="btn-ghost" id="reset-fridge-btn">Reset Fridge State</button>
+        </div>
+      </section>
+
+      <!-- Results Section -->
+      <section id="results-section" class="results-container">
+        <!-- Matching Recipes -->
+        <div id="matching-section" class="fridge-section" style="display: none;">
+          <h3>Matching Recipes</h3>
+          <div class="section-title">Recipes from your collection</div>
+          <div id="matching-recipes" class="recipe-list"></div>
+        </div>
+
+        <!-- Generated Recipes -->
+        <div id="generated-section" class="fridge-section" style="display: none;">
+          <h3>Generated Recipe Ideas</h3>
+          <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">
+            AI-powered recipe suggestions based on your ingredients
+          </p>
+          <div id="generated-recipes" class="recipe-list"></div>
+          <button type="button" class="regenerate-btn" id="regenerate-btn">🔄 Regenerate Ideas</button>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="fridge-section empty-state">
+          <p>No recipes found with your current ingredients and settings.</p>
+          <p>Try adding more ingredients or lowering the match threshold.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="main.js?v=9"></script>
+  <script>
+    const ingredientInput = document.getElementById("ingredient-input");
+    const addIngredientBtn = document.getElementById("add-ingredient-btn");
+    const ingredientTagsList = document.getElementById("ingredient-tags-list");
+    const essentialPresetSelect = document.getElementById("essential-preset");
+    const essentialsDropdown = document.getElementById("essentials-dropdown");
+    const essentialsList = document.getElementById("essentials-list");
+    const matchThresholdSlider = document.getElementById("match-threshold");
+    const sliderValue = document.querySelector(".slider-value");
+    const findRecipesBtn = document.getElementById("find-recipes-btn");
+    const generateRecipesBtn = document.getElementById("generate-recipes-btn");
+    const resetFridgeBtn = document.getElementById("reset-fridge-btn");
+    const regenerateBtn = document.getElementById("regenerate-btn");
+    const resultsSection = document.getElementById("results-section");
+    const matchingSection = document.getElementById("matching-section");
+    const generatedSection = document.getElementById("generated-section");
+    const matchingRecipesList = document.getElementById("matching-recipes");
+    const generatedRecipesList = document.getElementById("generated-recipes");
+    const emptyState = document.getElementById("empty-state");
+
+    const FRIDGE_STORAGE_KEY = "mealmajor.fridge.v1";
+    const ESSENTIAL_OPTIONS = [
+      "olive oil",
+      "neutral oil",
+      "salt",
+      "black pepper",
+      "garlic powder",
+      "onion powder",
+      "paprika",
+      "vinegar",
+      "sugar",
+      "flour",
+      "butter",
+      "lemon juice",
+    ];
+    const DEFAULT_ESSENTIALS = [
+      "olive oil",
+      "salt",
+      "black pepper",
+      "garlic powder",
+      "paprika",
+      "vinegar",
+    ];
+
+    let availableIngredients = [];
+    let selectedEssentials = [...DEFAULT_ESSENTIALS];
+    let currentGeneratedRecipes = [];
+
+    function getAuthToken() {
+      return localStorage.getItem("token");
+    }
+
+    function normalizeIngredientName(value) {
+      return value.trim().toLowerCase();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function ensureLoggedIn() {
+      const token = getAuthToken();
+      if (!token) {
+        alert("Please log in first.");
+        window.location.href = "login.html";
+        return null;
+      }
+      return token;
+    }
+
+    function decodeJwtPayload(token) {
+      try {
+        const payload = token.split(".")[1];
+        const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+        return JSON.parse(atob(normalized));
+      } catch {
+        return null;
+      }
+    }
+
+    function getCurrentUserId(token) {
+      const payload = decodeJwtPayload(token);
+      const userId = payload && payload.sub ? Number(payload.sub) : NaN;
+      return Number.isFinite(userId) ? userId : null;
+    }
+
+    async function parseApiError(response, fallbackMessage) {
+      let payload = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+
+      if (!response.ok) {
+        const message = payload?.error || payload?.message || fallbackMessage;
+        throw new Error(String(message));
+      }
+
+      return payload;
+    }
+
+    function normalizeRecipeIngredientNames(recipe) {
+      if (!Array.isArray(recipe?.ingredients)) return [];
+      return recipe.ingredients
+        .map((ing) => normalizeIngredientName(String(ing?.name || "")))
+        .filter(Boolean);
+    }
+
+    function isSameIngredient(left, right) {
+      return left === right || left.includes(right) || right.includes(left);
+    }
+
+    function countUserIngredientMatches(recipe, userIngredients) {
+      const recipeIngredients = normalizeRecipeIngredientNames(recipe);
+      if (!recipeIngredients.length || !userIngredients.length) return 0;
+
+      let matches = 0;
+      for (const userIngredient of userIngredients) {
+        if (recipeIngredients.some((recipeIngredient) => isSameIngredient(recipeIngredient, userIngredient))) {
+          matches += 1;
+        }
+      }
+      return matches;
+    }
+
+    function isGeneratedRecipeRelevant(recipe, userIngredients) {
+      const userCount = userIngredients.length;
+      if (!userCount) return true;
+
+      const matches = countUserIngredientMatches(recipe, userIngredients);
+      const requiredMatches = Math.min(2, userCount);
+      return matches >= requiredMatches;
+    }
+
+    function computeIngredientMatch(recipe, selectedIngredients) {
+      const recipeIngredients = normalizeRecipeIngredientNames(recipe);
+      if (!recipeIngredients.length) return 0;
+
+      const selectedSet = new Set(selectedIngredients);
+      const matchedCount = recipeIngredients.filter((name) => selectedSet.has(name)).length;
+      return Math.round((matchedCount / recipeIngredients.length) * 100);
+    }
+
+    async function fetchRecipesForMatching(token, selectedIngredients) {
+      const userId = getCurrentUserId(token);
+      const collected = [];
+      let page = 1;
+      let totalPages = 1;
+
+      while (page <= totalPages) {
+        const requestUrl = new URL(`${BASE_URL}/recipes`);
+        requestUrl.searchParams.set("page", String(page));
+        requestUrl.searchParams.set("limit", "50");
+        if (userId) {
+          requestUrl.searchParams.set("authors", String(userId));
+        }
+        if (selectedIngredients.length) {
+          requestUrl.searchParams.set("ingredients", selectedIngredients.join(","));
+        }
+
+        const response = await fetch(requestUrl.toString(), {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const payload = await parseApiError(response, "Failed to fetch recipes");
+        const pageData = Array.isArray(payload?.data) ? payload.data : [];
+        collected.push(...pageData);
+
+        totalPages = Number(payload?.totalPages) || 1;
+        page += 1;
+      }
+
+      return collected;
+    }
+
+    function areSameSet(left, right) {
+      if (left.length !== right.length) return false;
+      return left.every((item) => right.includes(item));
+    }
+
+    function syncPresetSelection() {
+      if (areSameSet(selectedEssentials, ESSENTIAL_OPTIONS)) {
+        essentialPresetSelect.value = "all";
+        return;
+      }
+      if (areSameSet(selectedEssentials, DEFAULT_ESSENTIALS)) {
+        essentialPresetSelect.value = "default";
+        return;
+      }
+      if (!selectedEssentials.length) {
+        essentialPresetSelect.value = "none";
+        return;
+      }
+      essentialPresetSelect.value = "custom";
+    }
+
+    function saveFridgeState() {
+      const payload = {
+        availableIngredients,
+        selectedEssentials,
+        threshold: Number(matchThresholdSlider.value),
+      };
+      localStorage.setItem(FRIDGE_STORAGE_KEY, JSON.stringify(payload));
+    }
+
+    function loadFridgeState() {
+      const rawState = localStorage.getItem(FRIDGE_STORAGE_KEY);
+      if (!rawState) {
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(rawState);
+        if (Array.isArray(parsed.availableIngredients)) {
+          availableIngredients = parsed.availableIngredients
+            .map((value) => normalizeIngredientName(String(value)))
+            .filter(Boolean);
+        }
+
+        if (Array.isArray(parsed.selectedEssentials)) {
+          selectedEssentials = parsed.selectedEssentials
+            .map((value) => normalizeIngredientName(String(value)))
+            .filter((value) => ESSENTIAL_OPTIONS.includes(value));
+        }
+
+        if (Number.isFinite(parsed.threshold)) {
+          const threshold = Math.min(100, Math.max(50, Number(parsed.threshold)));
+          matchThresholdSlider.value = String(threshold);
+        }
+      } catch {
+        localStorage.removeItem(FRIDGE_STORAGE_KEY);
+      }
+    }
+
+    function renderEssentials() {
+      essentialsList.innerHTML = ESSENTIAL_OPTIONS
+        .map(
+          (item, idx) => `
+            <label class="essential-item">
+              <input
+                type="checkbox"
+                data-index="${idx}"
+                ${selectedEssentials.includes(item) ? "checked" : ""}
+              />
+              <span>${escapeHtml(item)}</span>
+            </label>
+          `,
+        )
+        .join("");
+
+      essentialsList.querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+          const idx = Number(checkbox.dataset.index);
+          const item = ESSENTIAL_OPTIONS[idx];
+          if (!item) return;
+
+          if (checkbox.checked && !selectedEssentials.includes(item)) {
+            selectedEssentials.push(item);
+          }
+          if (!checkbox.checked) {
+            selectedEssentials = selectedEssentials.filter((value) => value !== item);
+          }
+
+          syncPresetSelection();
+          saveFridgeState();
+        });
+      });
+
+      syncPresetSelection();
+    }
+
+    function getGenerationIngredients() {
+      return [...new Set([...availableIngredients, ...selectedEssentials])];
+    }
+
+    function initializeFridgeState() {
+      loadFridgeState();
+      renderIngredients();
+      renderEssentials();
+      sliderValue.textContent = `${matchThresholdSlider.value}%`;
+      saveFridgeState();
+    }
+
+    function resetFridgeState() {
+      availableIngredients = [];
+      selectedEssentials = [...DEFAULT_ESSENTIALS];
+      matchThresholdSlider.value = "80";
+      sliderValue.textContent = "80%";
+      localStorage.removeItem(FRIDGE_STORAGE_KEY);
+
+      renderIngredients();
+      renderEssentials();
+      generatedRecipesList.innerHTML = "";
+      matchingRecipesList.innerHTML = "";
+      resultsSection.classList.remove("active");
+      matchingSection.style.display = "none";
+      generatedSection.style.display = "none";
+      emptyState.style.display = "none";
+    }
+
+    addIngredientBtn.addEventListener("click", addIngredient);
+    ingredientInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addIngredient();
+      }
+    });
+
+    function addIngredient() {
+      const rawValue = ingredientInput.value;
+      if (!rawValue.trim()) return;
+
+      const candidates = rawValue
+        .split(",")
+        .map(normalizeIngredientName)
+        .filter(Boolean);
+
+      for (const candidate of candidates) {
+        if (!availableIngredients.includes(candidate)) {
+          availableIngredients.push(candidate);
+        }
+      }
+
+      renderIngredients();
+      ingredientInput.value = "";
+      ingredientInput.focus();
+    }
+
+    function renderIngredients() {
+      ingredientTagsList.innerHTML = availableIngredients
+        .map(
+          (ing, idx) => `
+        <div class="ingredient-tag">
+          ${escapeHtml(ing)}
+          <button type="button" data-index="${idx}">x</button>
+        </div>
+      `,
+        )
+        .join("");
+
+      ingredientTagsList.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const idx = Number(btn.dataset.index);
+          if (Number.isInteger(idx) && idx >= 0) {
+            availableIngredients.splice(idx, 1);
+            renderIngredients();
+          }
+        });
+      });
+
+      saveFridgeState();
+    }
+
+    essentialPresetSelect.addEventListener("change", () => {
+      const preset = essentialPresetSelect.value;
+
+      if (preset === "all") {
+        selectedEssentials = [...ESSENTIAL_OPTIONS];
+      } else if (preset === "default") {
+        selectedEssentials = [...DEFAULT_ESSENTIALS];
+      } else if (preset === "none") {
+        selectedEssentials = [];
+      }
+
+      renderEssentials();
+      saveFridgeState();
+      if (preset !== "custom") {
+        essentialsDropdown.open = false;
+      }
+    });
+
+    matchThresholdSlider.addEventListener("input", (e) => {
+      sliderValue.textContent = `${e.target.value}%`;
+      saveFridgeState();
+    });
+
+    findRecipesBtn.addEventListener("click", async () => {
+      if (availableIngredients.length === 0) {
+        alert("Please add at least one ingredient.");
+        return;
+      }
+
+      const token = ensureLoggedIn();
+      if (!token) return;
+
+      findRecipesBtn.disabled = true;
+      matchingRecipesList.innerHTML = '<div class="loading"><div class="loading-spinner"></div></div>';
+      resultsSection.classList.add("active");
+      matchingSection.style.display = "block";
+      generatedSection.style.display = "none";
+      emptyState.style.display = "none";
+
+      try {
+        const threshold = Number(matchThresholdSlider.value);
+        const recipePool = await fetchRecipesForMatching(token, availableIngredients);
+        const recipes = recipePool
+          .map((recipe) => {
+            const matchPercent = computeIngredientMatch(recipe, availableIngredients);
+            return { ...recipe, __matchPercent: matchPercent };
+          })
+          .filter((recipe) => recipe.__matchPercent >= threshold)
+          .sort((a, b) => b.__matchPercent - a.__matchPercent);
+
+        if (recipes.length === 0) {
+          matchingRecipesList.innerHTML = "";
+          emptyState.style.display = "block";
+        } else {
+          matchingRecipesList.innerHTML = recipes
+            .map(
+              (recipe) => `
+                <div class="recipe-item" data-recipe-id="${recipe.id}">
+                  <h4>${escapeHtml(recipe.name)}</h4>
+                  <p>Prep: ${Number(recipe.prepTimeMinutes) || 0} min</p>
+                  <p>Servings: ${Number(recipe.servings) || 0}</p>
+                  <span class="match-badge">Matched ${recipe.__matchPercent}%</span>
+                </div>
+              `,
+            )
+            .join("");
+        }
+      } catch (error) {
+        matchingRecipesList.innerHTML = `<p style="color: red;">${escapeHtml(error.message || "Error loading recipes")}</p>`;
+      } finally {
+        findRecipesBtn.disabled = false;
+      }
+    });
+
+    generateRecipesBtn.addEventListener("click", async () => {
+      const generationIngredients = getGenerationIngredients();
+      if (generationIngredients.length === 0) {
+        alert("Please add at least one ingredient or enable essentials.");
+        return;
+      }
+
+      const token = ensureLoggedIn();
+      if (!token) return;
+
+      generateRecipesBtn.disabled = true;
+      generatedRecipesList.innerHTML = '<div class="loading"><div class="loading-spinner"></div></div>';
+      resultsSection.classList.add("active");
+      matchingSection.style.display = "none";
+      generatedSection.style.display = "block";
+      emptyState.style.display = "none";
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        const response = await fetch(`${BASE_URL}/recipes/generate`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            ingredients: generationIngredients,
+          }),
+        });
+        clearTimeout(timeoutId);
+
+        const payload = await parseApiError(response, "Failed to generate recipes");
+
+        const generated = Array.isArray(payload) ? payload : [];
+        currentGeneratedRecipes = generated.filter((recipe) =>
+          isGeneratedRecipeRelevant(recipe, availableIngredients),
+        );
+
+        if (currentGeneratedRecipes.length === 0) {
+          generatedRecipesList.innerHTML = '<p style="color: var(--text-muted);">No coherent recipe ideas with the current ingredients and essentials. Try adding one more core ingredient or adjust essentials.</p>';
+          return;
+        }
+
+        generatedRecipesList.innerHTML = currentGeneratedRecipes
+          .map(
+            (recipe, idx) => `
+              <div class="recipe-item" data-generated-index="${idx}">
+                <h4>${escapeHtml(recipe.name)}</h4>
+                <p>Prep: ${Number(recipe.prepTimeMinutes) || 0} min</p>
+                <p>Servings: ${Number(recipe.servings) || 0}</p>
+                <span class="generated-badge">AI Generated</span>
+              </div>
+            `,
+          )
+          .join("");
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          generatedRecipesList.innerHTML = '<p style="color: var(--text-muted);">Generation took too long. Try again with fewer ingredients.</p>';
+          return;
+        }
+        generatedRecipesList.innerHTML = `<p style="color: red;">${escapeHtml(error.message || "Error generating recipes")}</p>`;
+      } finally {
+        generateRecipesBtn.disabled = false;
+      }
+    });
+
+    regenerateBtn.addEventListener("click", () => {
+      generateRecipesBtn.click();
+    });
+
+    resetFridgeBtn.addEventListener("click", () => {
+      resetFridgeState();
+    });
+
+    initializeFridgeState();
+
+    matchingRecipesList.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-recipe-id]");
+      if (!target) return;
+      const recipeId = Number(target.getAttribute("data-recipe-id"));
+      if (!Number.isNaN(recipeId)) {
+        window.location.href = `recipe.html?id=${recipeId}`;
+      }
+    });
+
+    generatedRecipesList.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-generated-index]");
+      if (!target) return;
+      const index = Number(target.getAttribute("data-generated-index"));
+      const recipe = currentGeneratedRecipes[index];
+      if (!recipe) return;
+
+      sessionStorage.setItem("prefilledRecipe", JSON.stringify(recipe));
+      window.location.href = "create-recipe.html?mode=prefilled";
+    });
+  </script>
+</body>
+</html>

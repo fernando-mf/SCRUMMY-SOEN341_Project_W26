@@ -35,7 +35,7 @@ export type MealPlan = {
   entries: MealPlanEntry[];
 };
 
-//Request Schemas
+// Request Schemas
 
 const mealPlanEntryRequestSchema = z.object({
   recipeId: z.number().int().positive(),
@@ -48,7 +48,14 @@ const createMealPlanRequestSchema = z.object({
   weekNumber: z.number().int().min(1).max(52),
   startDate: z.coerce.date(),
   entries: z.array(mealPlanEntryRequestSchema).min(1),
-});
+}).refine(
+  (data) => {
+    const uniqueEntries = new Set(
+      data.entries.map(e => `${e.dayOfWeek}-${e.mealType}`)
+    );
+    return uniqueEntries.size === data.entries.length;
+  }
+);
 
 export type CreateMealPlanRequest = z.infer<typeof createMealPlanRequestSchema>;
 
@@ -57,7 +64,14 @@ const updateMealPlanRequestSchema = z.object({
   weekNumber: z.number().int().min(1).max(52),
   startDate: z.coerce.date(),
   entries: z.array(mealPlanEntryRequestSchema).min(1),
-});
+}).refine(
+  (data) => {
+    const uniqueEntries = new Set(
+      data.entries.map(e => `${e.dayOfWeek}-${e.mealType}`)
+    );
+    return uniqueEntries.size === data.entries.length;
+  }
+);
 
 export type UpdateMealPlanRequest = z.infer<typeof updateMealPlanRequestSchema>;
 

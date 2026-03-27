@@ -1,5 +1,10 @@
-import { PaginatedResponse } from "@api/helpers/pagination";
-import { CreateMealPlanRequest, IMealPlansService, MealPlan, UpdateMealPlanRequest } from "@api/meal-plans";
+import {
+  CreateMealPlanRequest,
+  GetMealPlanByStartDateRequest,
+  IMealPlansService,
+  MealPlan,
+  UpdateMealPlanRequest,
+} from "@api/meal-plans";
 import { ApiClient } from "./internal";
 
 export class MealPlansHttpClient implements IMealPlansService {
@@ -25,6 +30,19 @@ export class MealPlansHttpClient implements IMealPlansService {
     return this.client.Request({
       url: `/api/meal-plans/${mealPlanId}`,
       method: "DELETE",
+    });
+  }
+
+  GetMealPlanByStartDate(userId: number, req: Partial<GetMealPlanByStartDateRequest>): Promise<MealPlan> {
+    const params = new URLSearchParams();
+
+    if (req.startDate !== undefined && req.startDate !== null) {
+      params.set("startDate", req.startDate.toISOString());
+    }
+
+    return this.client.Request({
+      url: `/api/meal-plans?${params}`,
+      method: "GET",
     });
   }
 

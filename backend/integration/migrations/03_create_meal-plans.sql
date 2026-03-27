@@ -6,7 +6,8 @@ CREATE TABLE meal_plans (
     "startDate" DATE NOT NULL,
     "endDate" DATE NOT NULL,
     "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE ("authorId", "weekNumber")
 );
 
 CREATE TABLE meal_plan_entries (

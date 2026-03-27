@@ -13,7 +13,12 @@ import {
   Delete,
 } from "tsoa";
 import { HttpStatus } from "@api/helpers/http";
-import { CreateMealPlanRequest, MealPlan, UpdateMealPlanRequest } from "@api/meal-plans";
+import {
+  CreateMealPlanRequest,
+  GetMealPlanByStartDateRequest,
+  MealPlan,
+  UpdateMealPlanRequest,
+} from "@api/meal-plans";
 
 @Route("api/meal-plans")
 @Tags("Meal-Plans")
@@ -39,6 +44,14 @@ class MealPlanDocs extends Controller {
   @SuccessResponse(HttpStatus.NoContent, "Meal Plan Deleted")
   @Response(HttpStatus.BadRequest, "Meal Plan Invalid")
   async deleteRecipe(): Promise<void> {
+    return null as any;
+  }
+
+  @Get()
+  @Security("jwt")
+  @SuccessResponse(HttpStatus.Ok, "Meal Plans List")
+  @Response(HttpStatus.BadRequest, "Meal Plans query Invalid")
+  async getMealPlanByStartDate(@Queries() query: GetMealPlanByStartDateRequest): Promise<MealPlan> {
     return null as any;
   }
 

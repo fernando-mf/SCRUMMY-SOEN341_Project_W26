@@ -10,9 +10,9 @@
 
 ## **Quoc Thien Minh Tran** (ID: 40299089), FrontEnd 
 # Some of the work were done on Azmi's computer due to technical issues, refer to associated PR
-- 27-03-2026 - 2.0 hours - Task.71: implemented meal-plan frontend retrieval/list integration
-- 27-03-2026 - 2.0 hours - Task.76: implemented meal-plan frontend details view integration
-- 27-03-2026 - 2.0 hours - Task.83: implemented meal-plan edit flow integration
+- 25-03-2026 - 2.0 hours - Task.71: implemented meal-plan frontend retrieval/list integration
+- 25-03-2026 - 2.0 hours - Task.76: implemented meal-plan frontend details view integration
+- 25-03-2026 - 2.0 hours - Task.83: implemented meal-plan edit flow integration
 - 27-03-2026 - 2.0 hours - Task.88: implemented meal-plan delete flow integration
 - 27-03-2026 - 2.0 hours - Task.92: implemented meal-plan weekly view/persistence integration
 - 27-03-2026 - 2.0 hours - Task.112: fixed styling issues and improved meal-plan UI/UX

@@ -7,14 +7,14 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>MealMajor - Create Recipe</title>
-  <link rel="stylesheet" href="styles.css?v=13" />
+  <link rel="stylesheet" href="create-recipe.css?v=2" />
 </head>
 <body>
   <main class="page">
     <div class="modal-overlay" id="modal-overlay">
       <div class="modal">
         <div class="modal-header">
-          <a href="meal-plan.html" class="modal-close" title="Back to meal plan">←</a>
+          <a href="recipe.html" class="modal-close" title="Back to recipes">←</a>
           <h2>Quick Create Recipe</h2>
         </div>
 
@@ -27,9 +27,18 @@
             <input type="text" id="recipe-name" name="name" placeholder="Enter recipe name" required />
           </div>
 
-    
+          <!-- Description -->
+          <div class="form-group">
+            <label for="recipe-description">Description</label>
+            <textarea id="recipe-description" name="description" placeholder="Brief description of your recipe" rows="3"></textarea>
+          </div>
 
-         
+          <!-- Time & Servings Row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prep-time">Prep Time (min)</label>
+              <input type="number" id="prep-time" name="prepTimeMinutes" min="0" value="0" required />
+            </div>
             <div class="form-group">
               <label for="cook-time">Cook Time (min)</label>
               <input type="number" id="cook-time" name="cookTimeMinutes" min="0" value="0" required />
@@ -48,7 +57,26 @@
             </div>
           </div>
 
-          
+          <!-- Cost -->
+          <div class="form-group">
+            <label>Cost</label>
+            <div class="cost-options">
+              <input type="radio" id="cost-budget" name="cost" value="budget" />
+              <label for="cost-budget" class="cost-label">Budget</label>
+
+              <input type="radio" id="cost-moderate" name="cost" value="moderate" checked />
+              <label for="cost-moderate" class="cost-label">Moderate</label>
+
+              <input type="radio" id="cost-expensive" name="cost" value="expensive" />
+              <label for="cost-expensive" class="cost-label">Expensive</label>
+            </div>
+          </div>
+
+          <!-- Dietary Tags -->
+          <div class="form-group">
+            <label>Dietary Tags</label>
+            <div class="tags-options" id="dietary-tags-options"></div>
+          </div>
 
           <!-- Ingredients -->
           <div class="form-group">
@@ -91,7 +119,7 @@
 
           <!-- Form Actions -->
           <div class="form-actions">
-            <a href="meal-plan.html" class="btn btn-secondary">Cancel</a>
+            <a href="recipe.html" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn">Create Recipe</button>
           </div>
         </form>
@@ -107,7 +135,109 @@
       if (modal) {
         modal.style.display = "flex";
       }
+
+      // Handle pre-filled recipe data from Gemini generation
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("mode") === "prefilled") {
+        const prefilledData = sessionStorage.getItem("prefilledRecipe");
+        if (prefilledData) {
+          const recipe = JSON.parse(prefilledData);
+          fillRecipeForm(recipe);
+          sessionStorage.removeItem("prefilledRecipe"); // Clean up
+        }
+      }
     });
+
+    // Function to pre-fill the recipe form with generated data
+    function fillRecipeForm(recipe) {
+      // Basic fields
+      document.getElementById("recipe-name").value = recipe.name || "";
+      document.getElementById("recipe-description").value = recipe.description || "";
+      document.getElementById("prep-time").value = recipe.prepTimeMinutes || 0;
+      document.getElementById("cook-time").value = recipe.prepTimeMinutes || 0;
+      document.getElementById("servings").value = recipe.servings || 4;
+      document.getElementById("difficulty").value = recipe.difficulty || "medium";
+
+      // Cost
+      const costRadio = document.getElementById(`cost-${recipe.cost}`);
+      if (costRadio) costRadio.checked = true;
+
+      // Dietary tags
+      if (recipe.dietaryTags && recipe.dietaryTags.length > 0) {
+        const tagElements = document.querySelectorAll("#dietary-tags-options .tag");
+        tagElements.forEach((tag) => {
+          if (recipe.dietaryTags.includes(tag.textContent)) {
+            tag.classList.add("selected");
+          }
+        });
+      }
+
+      // Ingredients
+      if (recipe.ingredients && recipe.ingredients.length > 0) {
+        // Simulate adding ingredients
+        recipe.ingredients.forEach((ing) => {
+          // Create ingredient item directly in the list
+          const ingredientItem = document.createElement("div");
+          ingredientItem.className = "ingredient-item";
+          ingredientItem.innerHTML = `
+            <p class="ingredient-item-text">${ing.amount || 0} ${ing.unit} ${ing.name}</p>
+            <button type="button" class="ingredient-remove">Remove</button>
+          `;
+
+          document.getElementById("ingredients-list").appendChild(ingredientItem);
+
+          // Add remove functionality
+          ingredientItem.querySelector(".ingredient-remove").addEventListener("click", (e) => {
+            e.preventDefault();
+            ingredientItem.remove();
+          });
+        });
+
+        // Store ingredients in global state if needed by main.js
+        if (window.prefilledIngredients === undefined) {
+          window.prefilledIngredients = recipe.ingredients;
+        }
+      }
+
+      // Preparation steps
+      if (recipe.prepSteps) {
+        const stepsText = recipe.prepSteps;
+        const stepsList = document.getElementById("steps-list");
+
+        // Parse steps if they're comma or period separated
+        let steps = [];
+        if (stepsText.includes(". ")) {
+          steps = stepsText.split(". ").filter((s) => s.trim());
+        } else if (stepsText.includes(",")) {
+          steps = stepsText.split(",").filter((s) => s.trim());
+        } else {
+          steps = [stepsText];
+        }
+
+        steps.forEach((step, idx) => {
+          const stepItem = document.createElement("div");
+          stepItem.className = "step-item";
+          stepItem.innerHTML = `
+            <div class="step-number">${idx + 1}</div>
+            <input type="text" class="step-input" value="${step.trim()}" />
+            <button type="button" class="step-delete">Delete</button>
+          `;
+
+          stepsList.appendChild(stepItem);
+
+          // Add delete functionality
+          stepItem.querySelector(".step-delete").addEventListener("click", (e) => {
+            e.preventDefault();
+            stepItem.remove();
+          });
+        });
+
+        // Store steps in global state if needed
+        if (window.prefilledSteps === undefined) {
+          window.prefilledSteps = steps;
+        }
+      }
+    }
   </script>
 </body>
 </html>

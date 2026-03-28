@@ -6,13 +6,11 @@ exports[`RecipesService > Generate > success - generates and returns recipes 1`]
     "allergens": [
       "gluten",
     ],
-    "authorId": 1,
     "cost": 5,
     "dietaryTags": [
       "vegan",
     ],
     "difficulty": "easy",
-    "id": 1,
     "ingredients": [
       {
         "amount": 200,
@@ -30,13 +28,11 @@ exports[`RecipesService > Generate > success - generates and returns recipes 1`]
     "allergens": [
       "gluten",
     ],
-    "authorId": 1,
     "cost": 5,
     "dietaryTags": [
       "vegan",
     ],
     "difficulty": "easy",
-    "id": 2,
     "ingredients": [
       {
         "amount": 200,
@@ -54,13 +50,11 @@ exports[`RecipesService > Generate > success - generates and returns recipes 1`]
     "allergens": [
       "gluten",
     ],
-    "authorId": 1,
     "cost": 5,
     "dietaryTags": [
       "vegan",
     ],
     "difficulty": "easy",
-    "id": 3,
     "ingredients": [
       {
         "amount": 200,

@@ -212,6 +212,29 @@ button{
   margin-bottom: 12px;
 }
 
+#recipes-page .filters-bar {
+  width: 100%;
+  align-items: center;
+  gap: 12px;
+}
+
+#recipes-page .search-input {
+  flex: 1;
+  min-width: 220px;
+  margin-top: 0;
+}
+
+#recipes-page #search-btn {
+  margin-top: 0;
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+#recipes-page .btn-filter-toggle {
+  flex-shrink: 0;
+  margin-top: 0;
+}
+
 .btn-filter-toggle {
   display: inline-flex;
   align-items: center;
@@ -516,6 +539,21 @@ button{
 }
 
 @media (max-width: 640px) {
+  #recipes-page .filters-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  #recipes-page .search-input {
+    flex-basis: 100%;
+  }
+
+  #recipes-page #search-btn,
+  #recipes-page .btn-filter-toggle {
+    flex: 1;
+    justify-content: center;
+  }
+
   .form {
     width: 100%;
   }
@@ -594,13 +632,13 @@ button{
 }
 
 .tag:hover {
-  border-color: #007bff;
-  background-color: #f0f8ff;
+  border-color: var(--accent);
+  background-color: rgba(216, 107, 92, 0.08);
 }
 
 .tag.selected {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: var(--accent);
+  border-color: var(--accent);
   color: #fff;
 }
 

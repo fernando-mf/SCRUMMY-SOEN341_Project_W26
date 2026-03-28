@@ -102,7 +102,7 @@ export interface IRecipesService {
   Delete(userId: number, recipeId: number): Promise<void>;
   List(req: Partial<ListRecipesRequest>): Promise<ListRecipesResponse>;
   Get(recipeId: number): Promise<Recipe>;
-  Generate(userId: number, request: GenerateRecipeRequest): Promise<Recipe[]>;
+  Generate(userId: number, request: GenerateRecipeRequest): Promise<CreateRecipeRequest[]>;
 }
 
 export interface IRecipesRepository {
@@ -187,7 +187,7 @@ export class RecipesService implements IRecipesService {
     return await this.repository.Get(recipeId);
   }
 
-  async Generate(userId: number, request: GenerateRecipeRequest): Promise<Recipe[]> {
+  async Generate(userId: number, request: GenerateRecipeRequest): Promise<CreateRecipeRequest[]> {
     const validation = generateRecipeRequestSchema.safeParse(request);
     if (validation.error) {
       throw InvalidParamsError.FromZodError(validation.error);
@@ -210,12 +210,7 @@ export class RecipesService implements IRecipesService {
       exclusions,
     );
 
-    const createdRecipes: Recipe[] = [];
-    for (const recipeData of generatedRecipes) {
-      const recipe = await this.Create(userId, recipeData);
-      createdRecipes.push(recipe);
-    }
-
-    return createdRecipes;
+    // Return drafts only. Recipes are persisted only when user explicitly submits create recipe.
+    return generatedRecipes;
   }
 }

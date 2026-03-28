@@ -15,11 +15,11 @@ import {
 import { HttpStatus } from "@api/helpers/http";
 import {
   CreateRecipeRequest,
-  Recipe,
   UpdateRecipeRequest,
   ListRecipesRequest,
   ListRecipesResponse,
   GenerateRecipeRequest,
+  Recipe,
 } from "@api/recipes";
 
 @Route("api/recipes")
@@ -61,7 +61,7 @@ class RecipesDocs extends Controller {
   @Security("jwt")
   @SuccessResponse(HttpStatus.Ok, "Recipes Generated")
   @Response(HttpStatus.BadRequest, "Recipes Generation Invalid")
-  async generateRecipes(@Body() body: GenerateRecipeRequest): Promise<Recipe[]> {
+  async generateRecipes(@Body() body: GenerateRecipeRequest): Promise<CreateRecipeRequest[]> {
     return null as any;
   }
 }

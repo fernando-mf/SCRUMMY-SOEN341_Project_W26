@@ -1,10 +1,21 @@
 # Sprint 3 - Time Tracking
 
 ## **Azmi-Salah Bousedra** (ID: 40316065), FrontEnd
-- 
+- 25-03-2026 - 2.0 hours - Task.106: built fridge page UI (ingredient input/tags, results sections, responsive layout)
+- 25-03-2026 - 2.5 hours - Task.107: implemented ingredient state logic (add/remove/normalize/deduplicate) and threshold slider behavior
+- 25-03-2026 - 2.0 hours - Task.108: added essentials selector (preset dropdown + custom checklist) with UX polish
+- 26-03-2026 - 2.0 hours - Task.109: integrated fridge frontend with backend generation/matching routes
+- 26-03-2026 - 1.5 hours - Task.110: added local persistence (ingredients, essentials, threshold) and reset behavior
+- 26-03-2026 - 1.5 hours - Task.111: connected generated recipe prefill flow into create-recipe form with dietary tag auto-selection
 
 ## **Quoc Thien Minh Tran** (ID: 40299089), FrontEnd 
-- 
+# Some of the work were done on Azmi's computer due to technical issues, refer to associated PR
+- 25-03-2026 - 2.0 hours - Task.71: implemented meal-plan frontend retrieval/list integration
+- 25-03-2026 - 2.0 hours - Task.76: implemented meal-plan frontend details view integration
+- 25-03-2026 - 2.0 hours - Task.83: implemented meal-plan edit flow integration
+- 27-03-2026 - 2.0 hours - Task.88: implemented meal-plan delete flow integration
+- 27-03-2026 - 2.0 hours - Task.92: implemented meal-plan weekly view/persistence integration
+- 27-03-2026 - 2.0 hours - Task.112: fixed styling issues and improved meal-plan UI/UX
 
 ## **Tarek Al-Khen** (ID: 40272705), FrontEnd
 - 22-03-2026 - 1.5 hours - Task.64: fixed recipe creation styling

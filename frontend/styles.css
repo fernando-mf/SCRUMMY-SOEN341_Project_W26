@@ -632,13 +632,13 @@ button{
 }
 
 .tag:hover {
-  border-color: #007bff;
-  background-color: #f0f8ff;
+  border-color: var(--accent);
+  background-color: rgba(216, 107, 92, 0.08);
 }
 
 .tag.selected {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: var(--accent);
+  border-color: var(--accent);
   color: #fff;
 }
 

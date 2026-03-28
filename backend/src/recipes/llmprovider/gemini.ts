@@ -5,224 +5,10 @@ import type { CreateRecipeRequest, ILLMProvider } from "@api/recipes/recipes";
 import { createRecipeRequestSchema, Difficulty, Unit } from "@api/recipes/recipes";
 
 const generatedRecipesSchema = z.array(createRecipeRequestSchema);
-const unitValues = new Set<string>(Object.values(Unit));
-const difficultyValues = new Set<string>(Object.values(Difficulty));
+const generatedRecipesJsonSchema = z.toJSONSchema(generatedRecipesSchema);
 const GENERATION_TIMEOUT_MS = 9000;
 const MAX_RETRY_ATTEMPTS = 0;
 const RETRY_BASE_DELAY_MS = 600;
-
-const sweetSpreadTerms = [
-  "nutella",
-  "chocolate spread",
-  "jam",
-  "jelly",
-  "peanut butter",
-  "honey",
-  "maple syrup",
-];
-
-const savorySauceTerms = [
-  "bbq sauce",
-  "barbecue sauce",
-  "soy sauce",
-  "fish sauce",
-  "mustard",
-  "hot sauce",
-  "sriracha",
-  "ketchup",
-  "mayo",
-];
-
-const savorySpiceTerms = [
-  "paprika",
-  "cumin",
-  "garam masala",
-  "turmeric",
-  "chili powder",
-  "curry powder",
-  "oregano",
-  "thyme",
-  "rosemary",
-];
-
-const bridgeIngredientTerms = [
-  "chicken",
-  "beef",
-  "pork",
-  "tofu",
-  "egg",
-  "rice",
-  "pasta",
-  "potato",
-  "onion",
-  "garlic",
-  "tomato",
-  "cheese",
-  "milk",
-  "cream",
-  "banana",
-  "strawberry",
-];
-
-function includesAny(ingredients: string[], terms: string[]): boolean {
-  return ingredients.some((ingredient) =>
-    terms.some((term) => ingredient.includes(term) || term.includes(ingredient)),
-  );
-}
-
-function hasVeryLowCoherence(ingredients: string[]): boolean {
-  const normalized = ingredients
-    .map((ingredient) => ingredient.trim().toLowerCase())
-    .filter(Boolean);
-
-  if (normalized.length < 3) return false;
-
-  const hasSweetSpread = includesAny(normalized, sweetSpreadTerms);
-  const hasSavorySauce = includesAny(normalized, savorySauceTerms);
-  const hasSavorySpice = includesAny(normalized, savorySpiceTerms);
-  const hasBridge = includesAny(normalized, bridgeIngredientTerms);
-
-  // Strong conflict: sweet spread + savory sauce + savory spice with no bridge ingredient.
-  if (hasSweetSpread && hasSavorySauce && hasSavorySpice && !hasBridge) {
-    return true;
-  }
-
-  // Weak conflict escalates for small/random sets.
-  if (normalized.length <= 4 && hasSweetSpread && hasSavorySauce && !hasBridge) {
-    return true;
-  }
-
-  return false;
-}
-
-function parseAmountToken(rawAmount: unknown): number {
-  if (typeof rawAmount === "number" && rawAmount > 0) return rawAmount;
-  if (typeof rawAmount !== "string") return 1;
-
-  const value = rawAmount.trim();
-  const fractionMatch = value.match(/^(\d+)\/(\d+)$/);
-  if (fractionMatch) {
-    const numerator = Number(fractionMatch[1]);
-    const denominator = Number(fractionMatch[2]);
-    if (denominator > 0) return numerator / denominator;
-  }
-
-  const numeric = Number(value);
-  return Number.isFinite(numeric) && numeric > 0 ? numeric : 1;
-}
-
-function normalizeUnit(rawUnit: unknown): Unit {
-  const unit = String(rawUnit || "").trim().toLowerCase();
-  return unitValues.has(unit) ? (unit as Unit) : Unit.G;
-}
-
-function parseIngredient(rawIngredient: unknown): { name: string; amount: number; unit: Unit } | null {
-  if (!rawIngredient) return null;
-
-  if (typeof rawIngredient === "object") {
-    const ingredient = rawIngredient as Record<string, unknown>;
-    const name = String(ingredient.name || "").trim();
-    if (!name) return null;
-
-    return {
-      name,
-      amount: parseAmountToken(ingredient.amount),
-      unit: normalizeUnit(ingredient.unit),
-    };
-  }
-
-  const asString = String(rawIngredient).trim();
-  if (!asString) return null;
-
-  const match = asString.match(/^(\d+(?:\.\d+)?|\d+\/\d+)?\s*(g|ml|tbsp|tsp|cup|cloves)?\s*(.*)$/i);
-  if (!match) {
-    return { name: asString, amount: 1, unit: Unit.G };
-  }
-
-  const [, amountToken, unitToken, nameToken] = match;
-  const fallbackName = asString.replace(/^(\d+(?:\.\d+)?|\d+\/\d+)\s*/, "").trim();
-  const name = (nameToken || fallbackName || asString).trim();
-  if (!name) return null;
-
-  return {
-    name,
-    amount: parseAmountToken(amountToken),
-    unit: normalizeUnit(unitToken),
-  };
-}
-
-function normalizeStringArray(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    return value.map((item) => String(item).trim()).filter(Boolean);
-  }
-
-  if (typeof value === "string") {
-    return value
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean);
-  }
-
-  return [];
-}
-
-function toPositiveInt(rawValue: unknown, fallback: number): number {
-  const numeric = Number(rawValue);
-  if (!Number.isFinite(numeric)) return fallback;
-  const next = Math.floor(numeric);
-  return next > 0 ? next : fallback;
-}
-
-function toCost(rawValue: unknown): number {
-  if (typeof rawValue === "number" && rawValue >= 0) return rawValue;
-
-  const text = String(rawValue || "").trim().toLowerCase();
-  if (!text) return 10;
-  if (text === "budget") return 5;
-  if (text === "moderate") return 15;
-  if (text === "expensive") return 25;
-
-  const numeric = Number(text);
-  return Number.isFinite(numeric) && numeric >= 0 ? numeric : 10;
-}
-
-function normalizeDifficulty(rawValue: unknown): Difficulty {
-  const text = String(rawValue || "").trim().toLowerCase();
-  return difficultyValues.has(text) ? (text as Difficulty) : Difficulty.MEDIUM;
-}
-
-function normalizePrepSteps(rawValue: unknown): string {
-  if (Array.isArray(rawValue)) {
-    const lines = rawValue.map((line) => String(line).trim()).filter(Boolean);
-    return lines.join("\n");
-  }
-
-  const text = String(rawValue || "").trim();
-  return text || "1. Prepare ingredients.\n2. Cook until done.\n3. Serve.";
-}
-
-function extractJsonValue(rawText: string): unknown {
-  try {
-    return JSON.parse(rawText);
-  } catch {
-    const jsonBlock = rawText.match(/\{[\s\S]*\}|\[[\s\S]*\]/)?.[0];
-    if (!jsonBlock) {
-      throw new InternalError("LLM provider returned non-JSON output");
-    }
-    return JSON.parse(jsonBlock);
-  }
-}
-
-function getRecipeCandidates(raw: unknown): unknown[] {
-  if (Array.isArray(raw)) return raw;
-  if (!raw || typeof raw !== "object") return [];
-
-  const record = raw as Record<string, unknown>;
-  if (Array.isArray(record.recipes)) return record.recipes;
-  if (Array.isArray(record.data)) return record.data;
-  if (Array.isArray(record.results)) return record.results;
-  return [];
-}
 
 function getErrorMessage(err: unknown): string {
   if (err instanceof Error) return err.message;
@@ -296,30 +82,6 @@ function buildFallbackDrafts(rawIngredients: string[], count: number): CreateRec
   });
 }
 
-function coerceRecipe(rawRecipe: unknown, index: number): CreateRecipeRequest {
-  const recipe = (rawRecipe || {}) as Record<string, unknown>;
-
-  const ingredientSource = Array.isArray(recipe.ingredients)
-    ? recipe.ingredients
-    : normalizeStringArray(recipe.ingredients);
-
-  const ingredients = ingredientSource
-    .map(parseIngredient)
-    .filter((ingredient): ingredient is NonNullable<typeof ingredient> => Boolean(ingredient));
-
-  return {
-    name: String(recipe.name || recipe.title || `Generated Recipe ${index + 1}`).trim(),
-    ingredients: ingredients.length ? ingredients : [{ name: "water", amount: 100, unit: Unit.ML }],
-    prepTimeMinutes: toPositiveInt(recipe.prepTimeMinutes, 30),
-    prepSteps: normalizePrepSteps(recipe.prepSteps ?? recipe.instructions),
-    cost: toCost(recipe.cost),
-    difficulty: normalizeDifficulty(recipe.difficulty),
-    dietaryTags: normalizeStringArray(recipe.dietaryTags),
-    allergens: normalizeStringArray(recipe.allergens),
-    servings: toPositiveInt(recipe.servings, 2),
-  };
-}
-
 export class GeminiLLMProvider implements ILLMProvider {
   private ai: GoogleGenAI;
 
@@ -332,10 +94,6 @@ export class GeminiLLMProvider implements ILLMProvider {
   }
 
   async GenerateRecipes(ingredients: string[], count: number, exclusions: string[]): Promise<CreateRecipeRequest[]> {
-    if (hasVeryLowCoherence(ingredients)) {
-      return [];
-    }
-
     const ingredientList = ingredients.join(", ");
 
     const exclusionLine =
@@ -345,10 +103,6 @@ export class GeminiLLMProvider implements ILLMProvider {
 Generate at most ${count} recipe(s) using some or all of the following ingredients: ${ingredientList}.
 
   Return ONLY valid JSON. No markdown. No code fences.
-  The response must be either an array of recipes or an object with a "recipes" array.
-  Each recipe object must include exactly these keys:
-  name, ingredients, prepTimeMinutes, prepSteps, cost, difficulty, dietaryTags, allergens, servings.
-  Ingredients must be an array of objects with: name, amount, unit.
   If the ingredient list is too incoherent or unrealistic for practical cooking, return an empty array [].
   Do not force bizarre or novelty combinations just to produce output.
 
@@ -373,10 +127,11 @@ ${exclusionLine}`;
             contents: prompt,
             config: {
               responseMimeType: "application/json",
-            },
+              responseJsonSchema: generatedRecipesJsonSchema,
+            } as any,
           }),
           new Promise<never>((_, reject) => {
-            setTimeout(() => reject(new Error("LLM generation timed out")), GENERATION_TIMEOUT_MS);
+            setTimeout(() => reject(new InternalError("LLM generation timed out")), GENERATION_TIMEOUT_MS);
           }),
         ]);
 
@@ -385,18 +140,34 @@ ${exclusionLine}`;
           throw new InternalError("LLM provider returned empty response");
         }
 
-        const rawJson = extractJsonValue(text);
-        const candidates = getRecipeCandidates(rawJson).slice(0, count);
-        const normalized = candidates.map((recipe, index) => coerceRecipe(recipe, index));
-
-        const parsed = generatedRecipesSchema.safeParse(normalized);
-        if (parsed.error) {
-          throw new InternalError(`LLM provider returned invalid response: ${parsed.error.message}`);
+        let rawJson: unknown;
+        try {
+          rawJson = JSON.parse(text);
+        } catch {
+          throw new InternalError("LLM provider returned non-JSON output");
         }
 
-        return parsed.data;
+        const directParsed = generatedRecipesSchema.safeParse(rawJson);
+        if (directParsed.success) {
+          return directParsed.data.slice(0, count);
+        }
+
+        const wrappedRecipes =
+          rawJson && typeof rawJson === "object" && Array.isArray((rawJson as Record<string, unknown>).recipes)
+            ? (rawJson as Record<string, unknown>).recipes
+            : null;
+
+        if (wrappedRecipes) {
+          const wrappedParsed = generatedRecipesSchema.safeParse(wrappedRecipes);
+          if (wrappedParsed.success) {
+            return wrappedParsed.data.slice(0, count);
+          }
+        }
+
+        return buildFallbackDrafts(ingredients, count);
       } catch (err) {
-        if (err instanceof Error && err.message === "LLM generation timed out") {
+        const errorMessage = getErrorMessage(err);
+        if (errorMessage.toLowerCase().includes("timed out")) {
           return buildFallbackDrafts(ingredients, count);
         }
 
@@ -409,7 +180,7 @@ ${exclusionLine}`;
           return buildFallbackDrafts(ingredients, count);
         }
 
-        throw new InternalError(`Failed to generate recipes from LLM provider: ${err}`);
+        throw new InternalError(`Failed to generate recipes from LLM provider: ${errorMessage}`);
       }
     }
 

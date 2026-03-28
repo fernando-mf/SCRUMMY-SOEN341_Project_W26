@@ -9,13 +9,13 @@
 - 26-03-2026 - 1.5 hours - Task.111: connected generated recipe prefill flow into create-recipe form with dietary tag auto-selection
 
 ## **Quoc Thien Minh Tran** (ID: 40299089), FrontEnd 
-- TODO (28-03-2026 morning): planned tasks to be completed by Minh
-- 28-03-2026 - 2.0 hours - Task.71: TODO - meal-plan frontend retrieval/list integration
-- 28-03-2026 - 2.0 hours - Task.76: TODO - meal-plan frontend details view integration
-- 28-03-2026 - 2.0 hours - Task.83: TODO - meal-plan edit flow integration
-- 28-03-2026 - 2.0 hours - Task.88: TODO - meal-plan delete flow integration
-- 28-03-2026 - 2.0 hours - Task.92: TODO - meal-plan weekly view/persistence integration
-- 28-03-2026 - 2.0 hours - Task.112: TODO - fix styling issues and improve meal-plan UI/UX
+# Some of the work were done on Azmi's computer due to technical issues, refer to associated PR
+- 27-03-2026 - 2.0 hours - Task.71: implemented meal-plan frontend retrieval/list integration
+- 27-03-2026 - 2.0 hours - Task.76: implemented meal-plan frontend details view integration
+- 27-03-2026 - 2.0 hours - Task.83: implemented meal-plan edit flow integration
+- 27-03-2026 - 2.0 hours - Task.88: implemented meal-plan delete flow integration
+- 27-03-2026 - 2.0 hours - Task.92: implemented meal-plan weekly view/persistence integration
+- 27-03-2026 - 2.0 hours - Task.112: fixed styling issues and improved meal-plan UI/UX
 
 ## **Tarek Al-Khen** (ID: 40272705), FrontEnd
 - 22-03-2026 - 1.5 hours - Task.64: fixed recipe creation styling

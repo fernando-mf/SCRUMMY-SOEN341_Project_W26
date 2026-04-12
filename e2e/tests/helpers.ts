@@ -51,9 +51,41 @@ export async function loginUser(email: string, password: string): Promise<string
   return body.token;
 }
 
+export type UserProfile = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  dietPreferences: string[];
+  allergies: string[];
+};
+
+export async function updateProfile(token: string, profileOverrides: Partial<UserProfile>): Promise<void> {
+  const apiContext = await request.newContext();
+
+  let res = await apiContext.get(`${API_URL}/users`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok()) {
+    throw new Error(`Failed to fetch user profile: ${await res.text()}`);
+  }
+  const user: UserProfile = await res.json();
+
+  res = await apiContext.put(`${API_URL}/users`, {
+    headers: { Authorization: `Bearer ${token}` },
+    data: {
+      ...user,
+      ...profileOverrides,
+    },
+  });
+  if (!res.ok()) {
+    throw new Error(`Failed to update profile: ${await res.text()}`);
+  }
+}
+
 export async function setupAuthenticatedPage(page: Page, targetPath = "/profile.html", waitSelector = "#firstName") {
   const user = await registerUser();
   const token = await loginUser(user.email, user.password);
+  user.token = token;
 
   await page.goto("/login.html");
   await page.evaluate((t) => localStorage.setItem("token", t), token);
@@ -61,6 +93,45 @@ export async function setupAuthenticatedPage(page: Page, targetPath = "/profile.
   await page.waitForSelector(waitSelector);
 
   return user;
+}
+
+export interface CreateRecipeRequest {
+  name: string;
+  ingredients?: { name: string; amount: number; unit: string }[];
+  prepTimeMinutes?: number;
+  prepSteps?: string;
+  cost?: number;
+  difficulty?: "easy" | "medium" | "hard";
+  dietaryTags?: string[];
+  allergens?: string[];
+  servings?: number;
+}
+
+export async function createRecipe(
+  token: string,
+  overrides: Partial<CreateRecipeRequest> = {},
+): Promise<{ id: number }> {
+  const data = {
+    name: overrides.name ?? `Recipe ${Date.now()}`,
+    ingredients: overrides.ingredients ?? [{ name: "Flour", amount: 200, unit: "g" }],
+    prepTimeMinutes: overrides.prepTimeMinutes ?? 20,
+    prepSteps: overrides.prepSteps ?? "1. Mix ingredients\n2. Cook until done",
+    cost: overrides.cost ?? 15.0,
+    difficulty: overrides.difficulty ?? "easy",
+    dietaryTags: overrides.dietaryTags ?? [],
+    allergens: overrides.allergens ?? [],
+    servings: overrides.servings ?? 2,
+  };
+
+  const apiContext = await request.newContext();
+  const res = await apiContext.post(`${API_URL}/recipes`, {
+    headers: { Authorization: `Bearer ${token}` },
+    data,
+  });
+  if (!res.ok()) {
+    throw new Error(`Failed to create recipe: ${await res.text()}`);
+  }
+  return res.json();
 }
 
 export async function fillRecipeForm(page: Page, recipeName: string) {

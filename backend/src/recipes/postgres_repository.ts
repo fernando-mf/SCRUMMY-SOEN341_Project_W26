@@ -227,7 +227,7 @@ export class RecipesRepository implements IRecipesRepository {
     }));
   }
 
-  private applyIfSet<T>(val: T[] | T, fragment: any) {
+  private applyIfSet<T, U>(val: T[] | T, fragment: U) {
     let isValid = Boolean(val);
     if (Array.isArray(val)) {
       isValid = val.length > 0;

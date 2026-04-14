@@ -48,24 +48,25 @@ function makeCreateRecipeRequest(overrides: Partial<CreateRecipeRequest> = {}): 
 function mockRepository(existingRecipes: Recipe[] = []): IRecipesRepository {
   let idCounter = 1;
   return {
-    Create: vi.fn(async (recipe) => ({ id: idCounter++, ...recipe })),
+    Create: vi.fn((recipe): Promise<Recipe> => Promise.resolve({ id: idCounter++, ...recipe })),
     Update: vi.fn(async () => {}),
     Delete: vi.fn(async () => {}),
     List: vi.fn(
-      async (): Promise<ListRecipesResponse> => ({
-        data: existingRecipes,
-        currentPage: 1,
-        totalCount: existingRecipes.length,
-        totalPages: existingRecipes.length > 0 ? 1 : 0,
-      }),
+      (): Promise<ListRecipesResponse> =>
+        Promise.resolve({
+          data: existingRecipes,
+          currentPage: 1,
+          totalCount: existingRecipes.length,
+          totalPages: existingRecipes.length > 0 ? 1 : 0,
+        }),
     ),
-    Get: vi.fn(async () => makeRecipe()),
+    Get: vi.fn((): Promise<Recipe> => Promise.resolve(makeRecipe())),
   };
 }
 
 function mockLLMProvider(response?: CreateRecipeRequest[]): ILLMProvider {
   return {
-    GenerateRecipes: vi.fn(async () => response ?? []),
+    GenerateRecipes: vi.fn((): Promise<CreateRecipeRequest[]> => Promise.resolve(response ?? [])),
   };
 }
 
@@ -89,7 +90,7 @@ describe("RecipesService", () => {
       const result = await service.Generate(testUserId, { ingredients: ["chicken"] });
 
       expect(result).toHaveLength(3);
-  expect(repository.Create).not.toHaveBeenCalled();
+      expect(repository.Create).not.toHaveBeenCalled();
       expect(llmProvider.GenerateRecipes).toHaveBeenCalledWith(["chicken"], 3, []);
       expect(result).length(3);
       expect(result[0].name).toBe("Recipe 1");
@@ -111,7 +112,7 @@ describe("RecipesService", () => {
 
     test("LLM provider failure", async () => {
       const llmProvider: ILLMProvider = {
-        GenerateRecipes: vi.fn(async () => {
+        GenerateRecipes: vi.fn(() => {
           throw new Error("Gemini API unavailable");
         }),
       };

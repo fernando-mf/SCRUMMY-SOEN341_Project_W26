@@ -1,12 +1,7 @@
 import postgres from "postgres";
 import { ConflictError, NotFoundError } from "@api/helpers/errors";
 import { PostgresErrorCode } from "@api/helpers/postgres";
-import {
-  GetMealPlanByStartDateRequest,
-  IMealPlansRepository,
-  MealPlan,
-  MealPlanEntry,
-} from "./meal-plans";
+import { GetMealPlanByStartDateRequest, IMealPlansRepository, MealPlan, MealPlanEntry } from "./meal-plans";
 
 export class MealPlansRepository implements IMealPlansRepository {
   constructor(private db: postgres.Sql) {}
@@ -49,7 +44,10 @@ export class MealPlansRepository implements IMealPlansRepository {
         ...mealPlan,
       };
     } catch (err) {
-      if (err instanceof postgres.PostgresError && err.code === PostgresErrorCode.UniqueViolation) {
+      if (
+        err instanceof postgres.PostgresError &&
+        (err.code as PostgresErrorCode) === PostgresErrorCode.UniqueViolation
+      ) {
         throw new ConflictError("weekNumber");
       }
 
@@ -93,7 +91,10 @@ export class MealPlansRepository implements IMealPlansRepository {
         `;
       }
     } catch (err) {
-      if (err instanceof postgres.PostgresError && err.code === PostgresErrorCode.UniqueViolation) {
+      if (
+        err instanceof postgres.PostgresError &&
+        (err.code as PostgresErrorCode) === PostgresErrorCode.UniqueViolation
+      ) {
         throw new ConflictError("weekNumber");
       }
 
@@ -211,6 +212,4 @@ export class MealPlansRepository implements IMealPlansRepository {
       entries: indexedEntries[m.id] ?? [],
     }));
   }
-
 }
-

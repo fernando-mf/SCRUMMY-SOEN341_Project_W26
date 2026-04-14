@@ -36,7 +36,10 @@ export class UsersRepository implements IUsersRepository {
 
       return result[0] as User;
     } catch (err) {
-      if (err instanceof postgres.PostgresError && err.code === PostgresErrorCode.UniqueViolation) {
+      if (
+        err instanceof postgres.PostgresError &&
+        (err.code as PostgresErrorCode) === PostgresErrorCode.UniqueViolation
+      ) {
         throw new ConflictError("email");
       }
 

@@ -2,7 +2,7 @@ const BASE_URL =
   window.__BASE_URL__ ||
   (window.location.hostname === "localhost"
     ? "http://localhost:3000/api"
-    : "/api");
+    : `${window.location.origin}/api`);
 
 const registerForm = document.getElementById("register-form");
 const loginForm = document.getElementById("login-form");

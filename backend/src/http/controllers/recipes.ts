@@ -1,6 +1,5 @@
 import type { RequestHandler } from "express";
-import { AuthenticationError } from "@api/helpers/errors";
-import { HttpStatus } from "@api/helpers/http";
+import { HttpStatus, UserIDFromRequest } from "@api/helpers/http";
 import type {
   CreateRecipeRequest,
   Difficulty,
@@ -12,12 +11,7 @@ import type {
 
 export function HandleCreateRecipe(service: IRecipesService): RequestHandler {
   return async (req, res) => {
-    const auth = (req as any).auth;
-    const authorId = parseInt(auth?.sub);
-    if (isNaN(authorId)) {
-      throw new AuthenticationError("invalid token");
-    }
-
+    const authorId = UserIDFromRequest(req);
     const recipeReq = req.body as CreateRecipeRequest;
 
     const recipe = await service.Create(authorId, recipeReq);
@@ -28,12 +22,7 @@ export function HandleCreateRecipe(service: IRecipesService): RequestHandler {
 
 export function HandleUpdateRecipe(service: IRecipesService): RequestHandler {
   return async (req, res) => {
-    const auth = (req as any).auth;
-    const authorId = parseInt(auth?.sub);
-    if (isNaN(authorId)) {
-      throw new AuthenticationError("invalid token");
-    }
-
+    const authorId = UserIDFromRequest(req);
     const recipeId = Number(req.params.id);
     const recipeReq = req.body as UpdateRecipeRequest;
 
@@ -45,12 +34,7 @@ export function HandleUpdateRecipe(service: IRecipesService): RequestHandler {
 
 export function HandleDeleteRecipe(service: IRecipesService): RequestHandler {
   return async (req, res) => {
-    const auth = (req as any).auth;
-    const authorId = parseInt(auth?.sub);
-    if (isNaN(authorId)) {
-      throw new AuthenticationError("invalid token");
-    }
-
+    const authorId = UserIDFromRequest(req);
     const recipeId = Number(req.params.id);
 
     await service.Delete(authorId, recipeId);
@@ -83,26 +67,17 @@ export function HandleListRecipes(service: IRecipesService): RequestHandler {
 
 export function HandleGetRecipe(service: IRecipesService): RequestHandler {
   return async (req, res) => {
-    const auth = (req as any).auth;
-    const userId = parseInt(auth?.sub);
-    if (isNaN(userId)) {
-      throw new AuthenticationError("invalid token");
-    }
-
     const recipeId = Number(req.params.id);
+
     const recipe = await service.Get(recipeId);
+
     res.status(HttpStatus.Ok).json(recipe);
   };
 }
 
 export function HandleGenerateRecipe(service: IRecipesService): RequestHandler {
   return async (req, res) => {
-    const auth = (req as any).auth;
-    const userId = parseInt(auth?.sub);
-    if (isNaN(userId)) {
-      throw new AuthenticationError("invalid token");
-    }
-
+    const userId = UserIDFromRequest(req);
     const generationRequest = req.body as GenerateRecipeRequest;
 
     const results = await service.Generate(userId, generationRequest);

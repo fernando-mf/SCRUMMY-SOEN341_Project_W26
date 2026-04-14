@@ -19,6 +19,7 @@ dist/
 
 # Logs
 *.log
+!docs/**/*.log
 npm-debug.log*
 
 # swagger docs

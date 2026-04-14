@@ -6,6 +6,10 @@
 ## **Quoc Thien Minh Tran** (ID: 40299089), FrontEnd 
 
 ## **Tarek Al-Khen** (ID: 40272705), FrontEnd
+-12-04-2026 - 2 hours - Project Report:
+Worked on Velocity and a list of user stories and non-story tasks for each iteration. 
+Added Code for the top 5 most important files File path with a clickable GitHub link.
+
 
 ## **Gianluca Marino** (ID: 40297326), BackEnd/Database 
 - 12-04-2026 - 3 hours - US.31, US.32, US.36: Implemented acceptance tests for meal plan management

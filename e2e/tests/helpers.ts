@@ -140,16 +140,32 @@ export async function fillRecipeForm(page: Page, recipeName: string) {
   await page.fill("#servings", "2");
   await page.selectOption("#difficulty", "easy");
 
-  // Add one ingredient
   await page.fill("#ingredient-name", "Flour");
   await page.fill("#ingredient-amount", "200");
   await page.selectOption("#ingredient-unit", "g");
   await page.click("#add-ingredient-btn");
 
-  // Add one preparation step
   await page.click("#add-step-btn");
   await page.fill(".step-input", "Mix all ingredients together");
 
-  // Blur the textarea so the change event fires and updates the steps array
   await page.locator(".step-input").evaluate((el) => el.blur());
+}
+
+export interface MealPlanAssignment {
+  planName?: string;
+  day?: string;
+  mealType?: string;
+  recipeName: string;
+}
+
+export async function fillMealPlanForm(page: Page, assignment: MealPlanAssignment) {
+  const { planName, day = "Monday", mealType = "breakfast", recipeName } = assignment;
+
+  if (planName) {
+    await page.fill("#plan-name", planName);
+  }
+
+  await page.selectOption("#meal-day", day);
+  await page.selectOption("#meal-type", mealType);
+  await page.selectOption("#recipe-select", { label: recipeName });
 }

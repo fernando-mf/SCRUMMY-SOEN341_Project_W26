@@ -1,0 +1,137 @@
+
+> mealmajor-api@1.0.0 lint
+> eslint src
+
+
+/Users/fernandomf/Documents/code/SCRUMMY-SOEN341_Project_W26/backend/src/http/controllers/meal-plans.ts
+   8:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+   8:26  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+   8:31  warning  Unsafe member access .auth on an `any` value                            @typescript-eslint/no-unsafe-member-access
+   9:31  error    Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+   9:37  warning  Unsafe member access .sub on an `any` value                             @typescript-eslint/no-unsafe-member-access
+  24:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  24:26  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+  24:31  warning  Unsafe member access .auth on an `any` value                            @typescript-eslint/no-unsafe-member-access
+  25:31  error    Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  25:37  warning  Unsafe member access .sub on an `any` value                             @typescript-eslint/no-unsafe-member-access
+  41:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  41:26  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+  41:31  warning  Unsafe member access .auth on an `any` value                            @typescript-eslint/no-unsafe-member-access
+  42:31  error    Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  42:37  warning  Unsafe member access .sub on an `any` value                             @typescript-eslint/no-unsafe-member-access
+  57:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  57:26  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+  57:31  warning  Unsafe member access .auth on an `any` value                            @typescript-eslint/no-unsafe-member-access
+  58:29  error    Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  58:35  warning  Unsafe member access .sub on an `any` value                             @typescript-eslint/no-unsafe-member-access
+  77:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  77:26  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+  77:31  warning  Unsafe member access .auth on an `any` value                            @typescript-eslint/no-unsafe-member-access
+  78:29  error    Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  78:35  warning  Unsafe member access .sub on an `any` value                             @typescript-eslint/no-unsafe-member-access
+
+/Users/fernandomf/Documents/code/SCRUMMY-SOEN341_Project_W26/backend/src/http/controllers/recipes.ts
+   15:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+   15:26  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+   15:31  warning  Unsafe member access .auth on an `any` value                            @typescript-eslint/no-unsafe-member-access
+   16:31  error    Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+   16:37  warning  Unsafe member access .sub on an `any` value                             @typescript-eslint/no-unsafe-member-access
+   31:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+   31:26  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+   31:31  warning  Unsafe member access .auth on an `any` value                            @typescript-eslint/no-unsafe-member-access
+   32:31  error    Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+   32:37  warning  Unsafe member access .sub on an `any` value                             @typescript-eslint/no-unsafe-member-access
+   48:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+   48:26  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+   48:31  warning  Unsafe member access .auth on an `any` value                            @typescript-eslint/no-unsafe-member-access
+   49:31  error    Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+   49:37  warning  Unsafe member access .sub on an `any` value                             @typescript-eslint/no-unsafe-member-access
+   86:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+   86:26  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+   86:31  warning  Unsafe member access .auth on an `any` value                            @typescript-eslint/no-unsafe-member-access
+   87:29  error    Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+   87:35  warning  Unsafe member access .sub on an `any` value                             @typescript-eslint/no-unsafe-member-access
+  100:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  100:26  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+  100:31  warning  Unsafe member access .auth on an `any` value                            @typescript-eslint/no-unsafe-member-access
+  101:29  error    Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  101:35  warning  Unsafe member access .sub on an `any` value                             @typescript-eslint/no-unsafe-member-access
+
+/Users/fernandomf/Documents/code/SCRUMMY-SOEN341_Project_W26/backend/src/http/controllers/users.ts
+   8:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+   8:26  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+   8:31  warning  Unsafe member access .auth on an `any` value                            @typescript-eslint/no-unsafe-member-access
+   9:29  error    Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+   9:35  warning  Unsafe member access .sub on an `any` value                             @typescript-eslint/no-unsafe-member-access
+  24:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  24:26  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+  24:31  warning  Unsafe member access .auth on an `any` value                            @typescript-eslint/no-unsafe-member-access
+  25:29  error    Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  25:35  warning  Unsafe member access .sub on an `any` value                             @typescript-eslint/no-unsafe-member-access
+
+/Users/fernandomf/Documents/code/SCRUMMY-SOEN341_Project_W26/backend/src/http/index.ts
+   3:32  error  'NextFunction' is defined but never used                                                                   @typescript-eslint/no-unused-vars
+   3:46  error  'Request' is defined but never used                                                                        @typescript-eslint/no-unused-vars
+   3:55  error  'Response' is defined but never used                                                                       @typescript-eslint/no-unused-vars
+  28:33  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/Users/fernandomf/Documents/code/SCRUMMY-SOEN341_Project_W26/backend/src/http/middleware.ts
+   2:35  error    'InvalidParamsError' is defined but never used  @typescript-eslint/no-unused-vars
+  33:13  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  33:18  warning  Unsafe member access .auth on an `any` value    @typescript-eslint/no-unsafe-member-access
+
+/Users/fernandomf/Documents/code/SCRUMMY-SOEN341_Project_W26/backend/src/meal-plans/postgres_repository.ts
+  52:52  error  The two values in this comparison do not have a shared enum type  @typescript-eslint/no-unsafe-enum-comparison
+  96:52  error  The two values in this comparison do not have a shared enum type  @typescript-eslint/no-unsafe-enum-comparison
+
+/Users/fernandomf/Documents/code/SCRUMMY-SOEN341_Project_W26/backend/src/recipes/llmprovider/gemini.ts
+   26:27  error    'maybeError?.code ?? ""' will use Object's default stringification format ('[object Object]') when stringified  @typescript-eslint/no-base-to-string
+  128:13  warning  Unsafe assignment of an `any` value                                                                             @typescript-eslint/no-unsafe-assignment
+  131:18  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+
+/Users/fernandomf/Documents/code/SCRUMMY-SOEN341_Project_W26/backend/src/recipes/llmprovider/mock_llmprovider.ts
+  4:3   error  Async method 'GenerateRecipes' has no 'await' expression                      @typescript-eslint/require-await
+  4:63  error  'exclusions' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/fernandomf/Documents/code/SCRUMMY-SOEN341_Project_W26/backend/src/recipes/postgres_repository.ts
+  112:11  error    Unsafe argument of type `any` assigned to a parameter of type `ParameterOrFragment<never>`  @typescript-eslint/no-unsafe-argument
+  113:11  error    Unsafe argument of type `any` assigned to a parameter of type `ParameterOrFragment<never>`  @typescript-eslint/no-unsafe-argument
+  114:11  error    Unsafe argument of type `any` assigned to a parameter of type `ParameterOrFragment<never>`  @typescript-eslint/no-unsafe-argument
+  115:11  error    Unsafe argument of type `any` assigned to a parameter of type `ParameterOrFragment<never>`  @typescript-eslint/no-unsafe-argument
+  116:11  error    Unsafe argument of type `any` assigned to a parameter of type `ParameterOrFragment<never>`  @typescript-eslint/no-unsafe-argument
+  117:11  error    Unsafe argument of type `any` assigned to a parameter of type `ParameterOrFragment<never>`  @typescript-eslint/no-unsafe-argument
+  118:11  error    Unsafe argument of type `any` assigned to a parameter of type `ParameterOrFragment<never>`  @typescript-eslint/no-unsafe-argument
+  230:49  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  236:5   warning  Unsafe return of a value of type `any`                                                      @typescript-eslint/no-unsafe-return
+
+/Users/fernandomf/Documents/code/SCRUMMY-SOEN341_Project_W26/backend/src/recipes/recipes.test.ts
+   51:34  error    Async arrow function has no 'await' expression                                                                                                                                                                                                                                                                                              @typescript-eslint/require-await
+   51:38  warning  Unsafe return of a value of type `any`                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unsafe-return
+   55:46  error    Async arrow function has no 'await' expression                                                                                                                                                                                                                                                                                              @typescript-eslint/require-await
+   62:25  error    Async arrow function has no 'await' expression                                                                                                                                                                                                                                                                                              @typescript-eslint/require-await
+   68:37  error    Async arrow function has no 'await' expression                                                                                                                                                                                                                                                                                              @typescript-eslint/require-await
+   92:10  error    A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+   93:14  error    A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  108:14  error    A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  109:14  error    A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  114:41  error    Async arrow function has no 'await' expression                                                                                                                                                                                                                                                                                              @typescript-eslint/require-await
+  123:14  error    A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  134:14  error    A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+
+/Users/fernandomf/Documents/code/SCRUMMY-SOEN341_Project_W26/backend/src/users/postgres_repository.ts
+  39:52  error  The two values in this comparison do not have a shared enum type  @typescript-eslint/no-unsafe-enum-comparison
+
+✖ 96 problems (41 errors, 55 warnings)
+

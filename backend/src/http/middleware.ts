@@ -1,7 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
-import { AppError, InternalError, InvalidParamsError, AuthenticationError } from "@api/helpers/errors";
-import { verifyToken } from "@api/helpers/jwt";
 import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import { AppError, AuthenticationError, InternalError } from "@api/helpers/errors";
+import { AuthInfoToRequest } from "@api/helpers/http";
+import { verifyToken } from "@api/helpers/jwt";
 
 export function ErrorMiddleware(err: Error, _req: Request, res: Response, _next: NextFunction) {
   console.error(err);
@@ -22,7 +23,7 @@ export function ErrorMiddleware(err: Error, _req: Request, res: Response, _next:
 export function RequireAuth(req: Request, _res: Response, next: NextFunction) {
   const header = req.headers.authorization;
 
-  if (!header || !header.startsWith("Bearer ")) {
+  if (!header?.startsWith("Bearer ")) {
     throw new AuthenticationError("missing token");
   }
 
@@ -30,7 +31,8 @@ export function RequireAuth(req: Request, _res: Response, next: NextFunction) {
 
   try {
     const payload = verifyToken(token);
-    (req as any).auth = payload; // attach session
+    AuthInfoToRequest(req, payload);
+
     next();
   } catch (err) {
     if (err instanceof TokenExpiredError) {

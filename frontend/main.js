@@ -445,6 +445,7 @@ if (recipesPage) {
           <div class="recipe-header">
             <h3>${recipe.name}</h3>
             ${showDeleteAction ? '<button type="button" class="btn btn-secondary recipe-delete-btn" data-delete-recipe-id="' + recipe.id + '">Delete</button>' : ""}
+            ${showDeleteAction ? '<a class="btn btn-secondary recipe-edit-btn" href="create-recipe.html?edit=' + recipe.id + '">Edit</a>' : ""}
           </div>
           <div class="recipe-meta-row">
             <span class="recipe-meta-item">
@@ -996,7 +997,72 @@ if (createRecipeForm) {
     addStep();
   });
 
+  let editRecipeId = null;
+
+  async function hydrateEditRecipe() {
+    const url = new URL(window.location.href);
+    const editId = url.searchParams.get("edit");
+    if (!editId) { 
+      return; 
+    }
+
+    editRecipeId = Number(editId);
+    const token = localStorage.getItem("token");
+    if (!token) { 
+      return; 
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/recipes/${editRecipeId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) { 
+        return; 
+      }
+
+      const recipe = await response.json();
+
+      document.getElementById("recipe-name").value = recipe.name || "";
+      document.getElementById("prep-time").value = recipe.prepTimeMinutes || 1;
+      document.getElementById("servings").value = recipe.servings || 1;
+      document.getElementById("difficulty").value = recipe.difficulty || "medium";
+
+      const costKey = recipe.cost <= 5 ? "budget" : recipe.cost <= 15 ? "moderate" : "expensive";
+      const costRadio = document.getElementById(`cost-${costKey}`);
+      if (costRadio) { 
+        costRadio.checked = true; 
+      }
+
+      applyPrefilledDietaryTags(recipe.dietaryTags || []);
+
+      ingredients = (recipe.ingredients || []).map((ing) => ({
+        ...ing,
+        amount: parseFloat(String(ing.amount)) || 0,
+      }));
+      renderIngredients();
+
+      if (recipe.prepSteps) {
+        steps = recipe.prepSteps.split("\n").map((s) => s.trim()).filter(Boolean);
+      }
+      renderSteps();
+
+      const header = document.querySelector(".modal-header h2");
+      if (header) { 
+        header.textContent = "Edit Recipe"; 
+      }
+
+      const submitBtn = document.querySelector('#create-recipe-form button[type="submit"]');
+      if (submitBtn) { 
+        submitBtn.textContent = "Update Recipe"; 
+      }
+
+    } catch {
+      setMessage(formMessage, "Failed to load recipe for editing.", "error");
+    }
+  }
+
   hydratePrefilledRecipe();
+  hydrateEditRecipe();
 
   createRecipeForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -1048,6 +1114,32 @@ if (createRecipeForm) {
       servings,
       ingredients,
     };
+
+    if (editRecipeId) {
+      try {
+        const response = await fetch(`${BASE_URL}/recipes/${editRecipeId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(request),
+        });
+
+        if (!response.ok) {
+          setMessage(formMessage, "Failed to update recipe.", "error");
+          return;
+        }
+
+        setMessage(formMessage, "Recipe updated successfully! Redirecting...", "ok");
+        setTimeout(() => {
+          window.location.href = "recipe.html?mine=1";
+        }, 500);
+      } catch {
+        setMessage(formMessage, "Failed to update recipe.", "error");
+      }
+      return;
+    }
 
     try {
       const response = await fetch(`${BASE_URL}/recipes`, {

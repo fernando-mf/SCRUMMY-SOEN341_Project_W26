@@ -1,16 +1,10 @@
 import type { RequestHandler } from "express";
-import { AuthenticationError } from "@api/helpers/errors";
-import { HttpStatus } from "@api/helpers/http";
+import { HttpStatus, UserIDFromRequest } from "@api/helpers/http";
 import type { CreateMealPlanRequest, IMealPlansService, UpdateMealPlanRequest } from "@api/meal-plans";
 
 export function HandleCreateMealPlan(service: IMealPlansService): RequestHandler {
   return async (req, res) => {
-    const auth = (req as any).auth;
-    const authorId = parseInt(auth?.sub);
-    if (isNaN(authorId)) {
-      throw new AuthenticationError("invalid token");
-    }
-
+    const authorId = UserIDFromRequest(req);
     const mealPlanReq = req.body as CreateMealPlanRequest;
 
     const recipe = await service.Create(authorId, mealPlanReq);
@@ -21,12 +15,7 @@ export function HandleCreateMealPlan(service: IMealPlansService): RequestHandler
 
 export function HandleUpdateMealPlan(service: IMealPlansService): RequestHandler {
   return async (req, res) => {
-    const auth = (req as any).auth;
-    const authorId = parseInt(auth?.sub);
-    if (isNaN(authorId)) {
-      throw new AuthenticationError("invalid token");
-    }
-
+    const authorId = UserIDFromRequest(req);
     const mealPlanId = Number(req.params.id);
     const mealPlanReq = req.body as UpdateMealPlanRequest;
 
@@ -38,12 +27,7 @@ export function HandleUpdateMealPlan(service: IMealPlansService): RequestHandler
 
 export function HandleDeleteMealPlan(service: IMealPlansService): RequestHandler {
   return async (req, res) => {
-    const auth = (req as any).auth;
-    const authorId = parseInt(auth?.sub);
-    if (isNaN(authorId)) {
-      throw new AuthenticationError("invalid token");
-    }
-
+    const authorId = UserIDFromRequest(req);
     const mealPlanId = Number(req.params.id);
 
     await service.Delete(authorId, mealPlanId);
@@ -54,12 +38,7 @@ export function HandleDeleteMealPlan(service: IMealPlansService): RequestHandler
 
 export function HandleGetMealPlanByStartDate(service: IMealPlansService): RequestHandler {
   return async (req, res) => {
-    const auth = (req as any).auth;
-    const userId = parseInt(auth?.sub);
-    if (isNaN(userId)) {
-      throw new AuthenticationError("invalid token");
-    }
-
+    const userId = UserIDFromRequest(req);
     const rawQuery = req.query as Record<string, string>;
 
     const request = {
@@ -74,16 +53,10 @@ export function HandleGetMealPlanByStartDate(service: IMealPlansService): Reques
 
 export function HandleGetMealPlan(service: IMealPlansService): RequestHandler {
   return async (req, res) => {
-    const auth = (req as any).auth;
-    const userId = parseInt(auth?.sub);
-    if (isNaN(userId)) {
-      throw new AuthenticationError("invalid token");
-    }
-
     const mealPlanId = Number(req.params.id);
+
     const mealPlan = await service.Get(mealPlanId);
 
     res.status(HttpStatus.Ok).json(mealPlan);
   };
 }
-

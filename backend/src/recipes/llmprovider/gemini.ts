@@ -23,7 +23,7 @@ function isRetryableProviderError(err: unknown): boolean {
     return true;
   }
 
-  const codeText = String(maybeError?.code ?? "").toLowerCase();
+  const codeText = String(maybeError?.code?.toString() ?? "").toLowerCase();
   if (codeText === "unavailable" || codeText === "resource_exhausted") {
     return true;
   }
@@ -128,7 +128,7 @@ ${exclusionLine}`;
             config: {
               responseMimeType: "application/json",
               responseJsonSchema: generatedRecipesJsonSchema,
-            } as any,
+            },
           }),
           new Promise<never>((_, reject) => {
             setTimeout(() => reject(new InternalError("LLM generation timed out")), GENERATION_TIMEOUT_MS);
